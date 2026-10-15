@@ -21,7 +21,7 @@ For launch, replace the adapter with Shopify Storefront API reads. Shopify Admin
 
 ## Brand assets
 
-The wordmark, garment illustrations, and product details are temporary concepts. The original SVG woodland texture is a placeholder, not licensed Bottomland artwork. Replace it with owner-provided or licensed artwork. The supplied profile picture has not been bundled; obtain an original high-resolution logo file for the header and products. The story photograph currently loads from Unsplash and web fonts from Google Fonts; replace with the channel's approved images and self-host assets before launch.
+The wordmark, garment illustrations, and product details are temporary concepts. The original SVG woodland texture is a placeholder, not licensed Bottomland artwork. Replace it with owner-provided or licensed artwork. The supplied profile picture has not been bundled; obtain an original high-resolution logo file for the header and products. The landing photograph is owner-provided. Saira is self-hosted with its license in public/fonts; the story section uses the original woodland placeholder.
 
 ## Before launch
 
@@ -30,3 +30,12 @@ Connect and test Shopify/Printify with real variants, shipping, taxes, inventory
 ## Automatic Cloudflare Pages previews
 
 Connect this GitHub repository through Cloudflare Workers & Pages → Create application → Pages → Import an existing Git repository. Select production branch `main`, build command `npm run build`, and output directory `dist`; leave root directory blank. The `.node-version` file selects Node 24. Enable automatic production deployments. Every push to `main` triggers a new deployment at the same Pages URL. This is a build-and-refresh preview, not instant development-server hot reload.
+
+
+## Dynamic newest video
+
+Cloudflare Pages automatically deploys `functions/api/latest-video.js` with the site. It resolves the Chasing606 handle to its channel ID and reads YouTube's public Atom upload feed. The newest published upload (including Shorts if present in the feed) is cached at the edge for 15 minutes and in the browser for 5 minutes. Visitors load the embedded player only after clicking Play. No API key or manual video URL is needed.
+
+An optional Cloudflare variable `YOUTUBE_CHANNEL_ID` can hold the channel's public UC… ID to skip handle resolution. No credential is required. If YouTube blocks a request or the feed is unavailable, the page links to the channel's videos instead of showing an incorrect upload. `npm run dev` serves the same endpoint locally. `npm run preview` serves only the static bundle, so use development mode or Cloudflare to test the endpoint.
+
+Validation: `node --test` tests channel lookup, latest-upload selection, XML decoding, and unavailable/invalid feed handling. Live YouTube retrieval could not be verified in the coding workspace because its outbound YouTube requests are blocked; check `/api/latest-video` on the deployed Pages domain. The successful player UI was tested with a simulated feed response, separately from the real unavailable-feed response.

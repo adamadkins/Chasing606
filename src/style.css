@@ -62,3 +62,6 @@ header{height:94px;display:flex;padding:0 5%}.header-brand{position:absolute;lef
 @media(prefers-reduced-motion:reduce){.menu-morph>span{transition:none}}
 .product.will-reveal{opacity:0;transform:translateY(22px);transition:opacity .55s ease var(--reveal-delay,0ms),transform .65s cubic-bezier(.18,.7,.2,1) var(--reveal-delay,0ms)}.product.will-reveal.is-revealed{opacity:1;transform:translateY(0)}.product.will-reveal:focus-visible{opacity:1;transform:none;transition:none}
 @media(prefers-reduced-motion:reduce){.product.will-reveal{opacity:1;transform:none;transition:none}}
+/* Quiet header controls for touch, with a neutral keyboard-only focus ring. */
+.menu-button:focus,.cart-toggle:focus{outline:none}.menu-button:focus-visible,.cart-toggle:focus-visible{outline:1px solid #c2bca8;outline-offset:5px;border-radius:2px}.mobile-menu-social .social-links{display:grid;grid-template-columns:repeat(3,1fr);gap:0;width:100%;justify-items:center}.mobile-menu-social .social-links a{width:42px;height:42px}
+@media(hover:none) and (pointer:coarse){.menu-button:focus-visible,.cart-toggle:focus-visible{outline:none}}

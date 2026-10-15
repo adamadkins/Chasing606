@@ -39,3 +39,7 @@ Cloudflare Pages automatically deploys `functions/api/latest-video.js` with the 
 An optional Cloudflare variable `YOUTUBE_CHANNEL_ID` can hold the channel's public UC… ID to skip handle resolution. No credential is required. If YouTube blocks a request or the feed is unavailable, the page links to the channel's videos instead of showing an incorrect upload. `npm run dev` serves the same endpoint locally. `npm run preview` serves only the static bundle, so use development mode or Cloudflare to test the endpoint.
 
 Validation: `node --test` tests channel lookup, latest-upload selection, XML decoding, and unavailable/invalid feed handling. Live YouTube retrieval could not be verified in the coding workspace because its outbound YouTube requests are blocked; check `/api/latest-video` on the deployed Pages domain. The successful player UI was tested with a simulated feed response, separately from the real unavailable-feed response.
+
+### Current hosting: Cloudflare Workers
+
+The current address is https://chasing606.adkins-adam04.workers.dev/. `wrangler.jsonc` deploys `worker/index.js` and the built `dist` assets together. Keep the Cloudflare Git build command `npm run build` and deploy command `npx wrangler deploy`. Requests to `/api/*` run the Worker; other requests serve static assets. The same feed implementation remains compatible with Pages. A static-assets-only deploy will not run the video feed, so retain the Worker entry point and asset binding in the configuration.

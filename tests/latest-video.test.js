@@ -22,3 +22,11 @@ test('unavailable upstream and empty feeds fail instead of inventing a video', a
  await assert.rejects(loadLatestVideo({ channelId, fetcher: async () => new Response('', { status: 403 }) }));
  await assert.rejects(loadLatestVideo({ channelId, fetcher: async () => new Response('<feed/>') }));
 });
+
+test('Worker routes API requests and serves the static site through assets', async () => {
+ const { default: worker } = await import('../worker/index.js');
+ const response = await worker.fetch(new Request('https://example.com/'), { ASSETS: { fetch: async () => new Response('site') } });
+ assert.equal(await response.text(), 'site');
+ const denied = await worker.fetch(new Request('https://example.com/api/latest-video', { method:'POST' }), {});
+ assert.equal(denied.status, 405);
+});

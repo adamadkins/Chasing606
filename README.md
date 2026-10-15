@@ -43,3 +43,10 @@ Validation: `node --test` tests channel lookup, latest-upload selection, XML dec
 ### Current hosting: Cloudflare Workers
 
 The current address is https://chasing606.adkins-adam04.workers.dev/. `wrangler.jsonc` deploys `worker/index.js` and the built `dist` assets together. Use the Cloudflare deploy command `npx wrangler deploy`. Wrangler runs `npm run build` through its configured custom build step, so a separate Cloudflare build command is optional. Requests to `/api/*` run the Worker; other requests serve static assets. The same feed implementation remains compatible with Pages. A static-assets-only deploy will not run the video feed, so retain the Worker entry point and asset binding in the configuration.
+
+## Pages, contact, and preview cart
+
+- `/` is the channel homepage; `/merch` is the dedicated catalog with search, category filters, and price sorting; `/contact` contains contact details and an email-draft composer. The Workers SPA fallback supports direct visits to each path.
+- The contact form opens a `mailto:` draft addressed to `chasingbucks606@gmail.com`. The visitor reviews and sends it in their email app. It does not send mail from a server or show a false delivery confirmation. Server-side form delivery would require an email service and its credentials.
+- The preview cart persists selected product IDs, sizes, and quantities in local browser storage. It supports add/remove, quantity updates, and subtotals. Checkout remains disabled until real Shopify commerce is connected; sample amounts exclude shipping and tax.
+- The centered header uses `public/header-logo.png` (the owner's second logo), with CSS sizing that keeps the mark fully contained within the dark sticky header. The original image files are preserved without editing. The landing photograph is framed around the deer with less enlargement; higher-resolution source photography would be needed for more actual detail.

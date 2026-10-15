@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Icon from './Icon';
 import Brand from './Brand';
-const links = [{ href:'#shop', label:'Shop the gear' }, { href:'#watch', label:'Watch the hunts' }, { href:'#story', label:'Our story' }];
+const links = [{ href:'/merch', label:'Merch' }, { href:'/#watch', label:'Watch the hunts' }, { href:'/#story', label:'Our story' }, { href:'/contact', label:'Contact us' }];
 export default function Navigation() {
   const [open, setOpen] = useState(false);
   const trigger = useRef(null);
@@ -36,7 +36,7 @@ export default function Navigation() {
     };
   }, [open]);
   return <>
-    <nav className="desktop-nav" aria-label="Main navigation">{links.map(link => <a key={link.href} href={link.href}>{link.label}</a>)}</nav>
+    <nav className="desktop-nav" aria-label="Main navigation"><div className="nav-group">{links.slice(0,2).map(link => <a key={link.href} href={link.href}>{link.label}</a>)}</div><div className="nav-group">{links.slice(2).map(link => <a key={link.href} href={link.href}>{link.label}</a>)}</div></nav>
     <button ref={trigger} className="menu-button" aria-label="Open menu" aria-expanded={open} aria-controls="mobile-navigation" onClick={() => setOpen(true)}>MENU <Icon name="menu"/></button>
     <div ref={panel} id="mobile-navigation" className={`mobile-menu${open ? ' is-open' : ''}`} role="dialog" aria-modal={open ? 'true' : undefined} aria-label="Navigation menu" aria-hidden={!open} inert={!open}>
       <div className="mobile-menu-top"><Brand/><button className="menu-close" aria-label="Close menu" onClick={() => setOpen(false)}><span>CLOSE</span><Icon name="close"/></button></div>

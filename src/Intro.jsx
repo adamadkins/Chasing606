@@ -1,4 +1,5 @@
 import React, { useLayoutEffect, useRef, useState } from 'react';
+import Icon from './Icon';
 const seenKey = 'chasing606-intro-seen';
 function shouldPlay() {
   if (matchMedia('(prefers-reduced-motion: reduce)').matches || location.hash) return false;
@@ -65,5 +66,5 @@ export default function Intro() {
     };
   }, [active]);
   if (!active) return null;
-  return <div className="brand-intro" ref={layer} role="dialog" aria-modal="true" aria-label="Welcome to Chasing 606"><div ref={backdrop} className="intro-backdrop"/><img ref={logo} className="intro-logo" src="/logo.png" width="3100" height="3356" alt="Chasing 606"/><button ref={skip} className="intro-skip" onClick={() => setActive(false)}>SKIP INTRO</button></div>;
+  return <div className="brand-intro" ref={layer} role="dialog" aria-modal="true" aria-label="Welcome to Chasing 606"><div ref={backdrop} className="intro-backdrop"/><img ref={logo} className="intro-logo" src="/logo.png" width="3100" height="3356" alt="Chasing 606"/><button ref={skip} className="intro-skip" aria-label="Close intro" onClick={() => setActive(false)}><Icon name="close"/></button></div>;
 }

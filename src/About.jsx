@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import Icon from './Icon';
 import SocialLinks from './SocialLinks';
+import whitetailBuckImg from './assets/images/whitetail_buck_1792096498234.jpg';
 
 export default function About() {
   useEffect(() => {
@@ -31,10 +32,20 @@ export default function About() {
         </div>
         <div className="about-hero-image-wrap">
           <img
-            src="/src/assets/images/whitetail_buck_1792096498234.jpg"
+            src={whitetailBuckImg || "/images/whitetail_buck.jpg"}
             alt="Trophy whitetail buck in autumn timber"
             className="about-hero-img"
+            loading="eager"
+            decoding="sync"
+            fetchPriority="high"
             referrerPolicy="no-referrer"
+            onError={(e) => {
+              if (e.currentTarget.src !== window.location.origin + '/images/whitetail_buck.jpg' && !e.currentTarget.src.includes('/images/whitetail_buck.jpg')) {
+                e.currentTarget.src = '/images/whitetail_buck.jpg';
+              } else {
+                e.currentTarget.src = 'https://images.unsplash.com/photo-1484406566174-9da000fda645?auto=format&fit=crop&w=1400&q=85';
+              }
+            }}
           />
           <div className="about-hero-tag">
             <span>THE HEART OF 606</span>

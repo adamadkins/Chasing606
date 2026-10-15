@@ -1,6 +1,6 @@
 # Chasing 606
 
-A responsive React storefront foundation for the Chasing 606 hunting, fishing, and outdoors channel.
+A responsive React storefront foundation for the Chasing 606 hunting channel.
 
 ## Development
 

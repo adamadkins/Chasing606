@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Icon from './Icon';
 import SocialLinks from './SocialLinks';
-const links = [{ href:'/merch', label:'Merch' }, { href:'/#watch', label:'Watch the hunts' }, { href:'/#story', label:'Our story' }, { href:'/contact', label:'Contact us' }];
+const links = [{ href:'/merch', label:'Merch' }, { href:'/#watch', label:'Watch the hunts' }, { href:'/about', label:'Our story' }, { href:'/contact', label:'Contact us' }];
 export default function Navigation() {
   const [open, setOpen] = useState(false);
   const trigger = useRef(null);
@@ -42,7 +42,7 @@ export default function Navigation() {
 
       <div className="mobile-menu-body"><p className="eyebrow">FROM THE HEART OF 606</p><nav className="mobile-nav" aria-label="Mobile navigation">{links.map((link, index) => <a key={link.href} href={link.href} style={{ '--index':index }} onClick={() => setOpen(false)}><span className="nav-number">0{index+1}</span><span>{link.label}</span><Icon/></a>)}</nav></div>
       <div className="mobile-menu-social"><SocialLinks/></div>
-      <div className="mobile-menu-bottom"><span>GUIDED BY SIGN. GROUNDED IN SILENCE.</span><span>PROVERBS 12:27</span></div>
+      <div className="mobile-menu-bottom"><span>GUIDED BY SIGN. GROUNDED IN SILENCE.</span></div>
     </div>
   </>;
 }

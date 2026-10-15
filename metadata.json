@@ -1,0 +1,8 @@
+{
+  "name": "Chasing 606",
+  "description": "Hunting suburban giants from the heart of 606. Explore the channel, outdoor stories, and gear collection.",
+  "permissions": [],
+  "capabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

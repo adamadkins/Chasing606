@@ -1,6 +1,11 @@
 import { defineConfig } from 'vite';
 import { onRequestGet } from './functions/api/latest-video.js';
 export default defineConfig({
+  server: {
+    host: '0.0.0.0',
+    port: 3000,
+    allowedHosts: 'all',
+  },
   plugins: [{
     name: 'local-video-feed',
     configureServer(server) {

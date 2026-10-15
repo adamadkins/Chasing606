@@ -49,11 +49,11 @@ return <><header><a className="header-brand" href="/" aria-label="Chasing 606 ho
       </a>
       <p className="footer-tagline">Hunting. Patience. Chasing what matters.</p>
     </div>
-    <nav className="footer-nav" aria-label="Footer navigation">
+    <div className="footer-nav" role="navigation" aria-label="Footer navigation">
       <a href="/merch">Merch</a>
       <a href="/about">Our story</a>
       <a href="/contact">Contact us</a>
-    </nav>
+    </div>
     <div className="footer-social-section">
       <SocialLinks/>
     </div>

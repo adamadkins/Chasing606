@@ -32,17 +32,27 @@ export default function Intro() {
     document.addEventListener('keydown', keydown);
     async function animate() {
       try {
-        await logo.current.decode();
+        try {
+          if (logo.current && logo.current.decode) {
+            await logo.current.decode();
+          }
+        } catch {
+          /* Continue even if decode is not supported or rejected */
+        }
         if (cancelled) return;
         const start = medallion.current.getBoundingClientRect();
         const end = target.getBoundingClientRect();
+        if (!start.width || !end.width) {
+          finish();
+          return;
+        }
         const dx = (end.left + end.width / 2) - (start.left + start.width / 2);
         const dy = (end.top + end.height / 2) - (start.top + start.height / 2);
         const scale = end.width / start.width;
         animations.push(medallion.current.animate([
-          { opacity: 0, transform: 'translate(-50%, -50%) scale(0.92)' },
+          { opacity: 0, transform: 'translate(-50%, -50%) scale(0.9)' },
           { opacity: 1, transform: 'translate(-50%, -50%) scale(1)' },
-        ], { duration: 320, easing: 'ease-out', fill: 'forwards' }));
+        ], { duration: 340, easing: 'ease-out', fill: 'forwards' }));
         animations.push(backdrop.current.animate([
           { opacity: 1 },
           { opacity: 0 },
@@ -71,5 +81,12 @@ export default function Intro() {
     };
   }, [active]);
   if (!active) return null;
-  return <div className="brand-intro" ref={layer} tabIndex={-1} role="dialog" aria-modal="true" aria-label="Welcome to Chasing 606"><div ref={backdrop} className="intro-backdrop"/><div ref={medallion} className="intro-medallion"><img ref={logo} className="intro-logo" src="/logo.png" width="3100" height="3356" alt="Chasing 606"/></div></div>;
+  return (
+    <div className="brand-intro" ref={layer} tabIndex={-1} role="dialog" aria-modal="true" aria-label="Welcome to Chasing 606">
+      <div ref={backdrop} className="intro-backdrop"/>
+      <div ref={medallion} className="intro-medallion">
+        <img ref={logo} className="intro-logo" src="/logo.png" width="3100" height="3356" alt="Chasing 606" loading="eager" decoding="sync"/>
+      </div>
+    </div>
+  );
 }

@@ -1,9 +1,6 @@
-import React, { useState } from 'react';
-import Icon from './Icon';
+import React from 'react';
 export default function Brand({ small = false }) {
-  const [loaded, setLoaded] = useState(false);
-  return <span className={`brand${small ? ' small' : ''}${loaded ? ' has-logo' : ''}`}>
-    <img className="brand-logo" src="/logo.png" alt={loaded ? 'Chasing 606' : ''} onLoad={() => setLoaded(true)} onError={() => setLoaded(false)} style={{ display:loaded ? 'block' : 'none' }}/>
-    {!loaded && <><span className="mountains"><Icon name="mark"/></span><span>CHASING <b>606</b><small>ROOTED IN THE HUNT</small></span></>}
+  return <span className={`brand has-logo${small ? ' small' : ''}`}>
+    <img className="brand-logo" src="/logo.png" alt="Chasing 606" width="3100" height="3356" decoding="async"/>
   </span>;
 }

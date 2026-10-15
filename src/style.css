@@ -66,6 +66,9 @@ header{height:94px;display:flex;padding:0 5%}.header-brand{position:absolute;lef
 .menu-button:focus,.cart-toggle:focus{outline:none}.menu-button:focus-visible,.cart-toggle:focus-visible{outline:1px solid #c2bca8;outline-offset:5px;border-radius:2px}.mobile-menu-social .social-links{display:grid;grid-template-columns:repeat(3,1fr);gap:0;width:100%;justify-items:center}.mobile-menu-social .social-links a{width:42px;height:42px}
 @media(hover:none) and (pointer:coarse){.menu-button:focus-visible,.cart-toggle:focus-visible{outline:none}}
 /* A one-session brand introduction that lands on the actual header logo. */
-.brand-intro{position:fixed;inset:0;z-index:200;overflow:hidden}.intro-backdrop{position:absolute;inset:0;background:#181d16}.intro-logo{position:absolute;left:50%;top:50%;width:min(75vw,55vh,500px);height:auto;max-height:75vh;object-fit:contain;transform:translate(-50%,-50%);transform-origin:center;opacity:0;mix-blend-mode:screen;will-change:transform,opacity}.intro-skip{position:absolute;bottom:calc(30px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);border:0;border-bottom:1px solid #b6bea55c;padding:12px 4px;background:transparent;color:#c4cbb7;font:inherit;font-size:9px;letter-spacing:2px;cursor:pointer}.intro-skip:focus-visible{outline:1px solid #d5d9c6;outline-offset:5px}
+.brand-intro{position:fixed;inset:0;z-index:200;overflow:hidden}.intro-backdrop{position:absolute;inset:0;background:#181d16}.intro-logo{position:absolute;left:50%;top:50%;width:min(75vw,55vh,500px);height:auto;max-height:75vh;object-fit:contain;transform:translate(-50%,-50%);transform-origin:center;opacity:0;mix-blend-mode:screen;will-change:transform,opacity}
 @media(prefers-reduced-motion:reduce){.brand-intro{display:none}}
-.intro-skip{top:calc(18px + env(safe-area-inset-top));right:20px;bottom:auto;left:auto;transform:none;border:0;padding:12px;display:grid;place-items:center}.intro-skip .icon{width:24px;height:24px}
+
+
+/* Preserve the content width while intro/menu/cart temporarily lock scrolling. */
+html{scrollbar-gutter:stable}.brand-intro:focus{outline:none}

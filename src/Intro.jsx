@@ -1,5 +1,4 @@
 import React, { useLayoutEffect, useRef, useState } from 'react';
-import Icon from './Icon';
 const seenKey = 'chasing606-intro-seen';
 function shouldPlay() {
   if (matchMedia('(prefers-reduced-motion: reduce)').matches || location.hash) return false;
@@ -7,7 +6,7 @@ function shouldPlay() {
 }
 export default function Intro() {
   const [active, setActive] = useState(shouldPlay);
-  const layer = useRef(null), logo = useRef(null), backdrop = useRef(null), skip = useRef(null);
+  const layer = useRef(null), logo = useRef(null), backdrop = useRef(null);
   useLayoutEffect(() => {
     if (!active) return;
     const target = document.querySelector('.header-brand .brand-logo');
@@ -21,13 +20,13 @@ export default function Intro() {
     const siblings = [...layer.current.parentElement.children].filter(node => node !== layer.current);
     const oldInert = siblings.map(node => node.inert);
     siblings.forEach(node => { node.inert = true; });
-    skip.current.focus({ preventScroll:true });
+    layer.current.focus({ preventScroll:true });
     let cancelled = false;
     const animations = [];
     const finish = () => { if (!cancelled) setActive(false); };
     const timeout = setTimeout(finish, 4500);
     const preference = matchMedia('(prefers-reduced-motion: reduce)');
-    const keydown = event => { if (event.key === 'Escape') finish(); if (event.key === 'Tab') { event.preventDefault(); skip.current?.focus(); } };
+    const keydown = event => { if (event.key === 'Escape') finish(); if (event.key === 'Tab') { event.preventDefault(); layer.current?.focus(); } };
     window.addEventListener('resize', finish);
     preference.addEventListener('change', finish);
     document.addEventListener('keydown', keydown);
@@ -41,7 +40,6 @@ export default function Intro() {
         const dy = end.y + end.height / 2 - (start.y + start.height / 2);
         animations.push(logo.current.animate([{ opacity:0 }, { opacity:1 }], { duration:250, fill:'forwards' }));
         animations.push(backdrop.current.animate([{ opacity:1 }, { opacity:0 }], { delay:650, duration:1000, easing:'ease-in-out', fill:'forwards' }));
-        animations.push(skip.current.animate([{ opacity:1 }, { opacity:0 }], { delay:650, duration:200, fill:'forwards' }));
         const flight = logo.current.animate([
           { transform:'translate(-50%, -50%) scale(1)' },
           { transform:`translate(-50%, -50%) translate(${dx}px, ${dy}px) scale(${end.width/start.width}, ${end.height/start.height})` },
@@ -66,5 +64,5 @@ export default function Intro() {
     };
   }, [active]);
   if (!active) return null;
-  return <div className="brand-intro" ref={layer} role="dialog" aria-modal="true" aria-label="Welcome to Chasing 606"><div ref={backdrop} className="intro-backdrop"/><img ref={logo} className="intro-logo" src="/logo.png" width="3100" height="3356" alt="Chasing 606"/><button ref={skip} className="intro-skip" aria-label="Close intro" onClick={() => setActive(false)}><Icon name="close"/></button></div>;
+  return <div className="brand-intro" ref={layer} tabIndex={-1} role="dialog" aria-modal="true" aria-label="Welcome to Chasing 606"><div ref={backdrop} className="intro-backdrop"/><img ref={logo} className="intro-logo" src="/logo.png" width="3100" height="3356" alt="Chasing 606"/></div>;
 }

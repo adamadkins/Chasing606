@@ -5,3 +5,13 @@
 :root{--green:#302f24;--rust:#8c6847}.announcement,.join{background-image:linear-gradient(#27291cbb,#27291cbb),url('/woodland.svg');background-size:auto,480px}.hero{background-image:linear-gradient(90deg,rgba(23,23,17,.91),rgba(30,31,22,.55)),url('/woodland.svg');background-size:cover,760px}.hero:after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 80% 30%,#b6a88218,transparent 60%);pointer-events:none}.hero-content,.hero-bottom{z-index:1}.hero h1 em{color:#c6b68d}.hero-content{width:100%}.hero-grain{position:absolute;right:9%;top:18%;height:62%;width:30%;opacity:.18;background:url('/woodland.svg') center/cover;border:1px solid #d2c09855;transform:rotate(-5deg);box-shadow:18px 18px 0 #161a1355}.story{background:#e8e4d7}.art-wrap{background:#e9e5da}.product-art.hat{background-image:linear-gradient(#eeeaddd9,#eeeaddd9),url('/woodland.svg')}@media(max-width:560px){.hero-grain{right:5%;width:40%;opacity:.12}}
 
 .hero h1{font-size:clamp(64px,7.8vw,116px)}.hero-content .hero-mission{max-width:530px}.hero-content .hero-scripture{font-size:11px!important;letter-spacing:2px;text-transform:uppercase;color:#c6b68d!important;margin-top:18px}@media(max-width:560px){.hero h1{font-size:clamp(52px,13vw,72px)}.hero-content .hero-mission{max-width:340px}}
+
+/* Owner-supplied landing photograph. Keep copy to the right on wide screens. */
+.hero{background-image:linear-gradient(90deg,rgba(20,23,16,.05) 20%,rgba(20,23,16,.25) 48%,rgba(20,23,16,.92) 78%),url('/Picture1.jpg');background-size:cover;background-position:center 40%;min-height:680px;height:76vh;max-height:900px}
+.hero-content{width:46%;margin-left:auto;padding:50px 5% 85px 0}
+.hero h1{font-size:clamp(58px,5.5vw,88px)}
+.hero-content .hero-mission{max-width:460px;color:#f0ecdf;text-shadow:0 1px 5px #0008}
+.hero-actions{flex-wrap:wrap;gap:22px}
+.hero:after{display:none}
+@media(max-width:850px){.hero{height:auto;max-height:none;min-height:0;background-color:#20251b;background-image:linear-gradient(180deg,transparent 180px,#20251b 440px),url('/Picture1.jpg');background-size:100% 460px,auto 460px;background-position:top center;background-repeat:no-repeat;align-items:flex-end}.hero-content{width:100%;margin:0;padding:410px 7% 85px}.hero h1{font-size:clamp(50px,8vw,72px)}.hero-content .hero-mission{max-width:530px}.hero-bottom{left:7%;right:7%}}
+@media(max-width:560px){.hero{background-image:linear-gradient(180deg,transparent 170px,#20251b 350px),url('/Picture1.jpg');background-size:100% 370px,auto 370px;background-position:top center}.hero-content{padding-top:325px}.hero h1{font-size:clamp(48px,12vw,66px)}}

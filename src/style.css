@@ -50,3 +50,7 @@ header{height:94px;display:flex;padding:0 5%}.header-brand{position:absolute;lef
 .header-brand{top:50%;transform:translate(-50%,-50%);background:transparent;border-radius:0;padding:0}.header-brand .brand.has-logo{width:88px;height:86px}.header-brand .brand-logo{width:140px;transform:translateY(9px)}
 @media(max-width:850px){.header-brand{top:50%;padding:0}.header-brand .brand.has-logo{width:77px;height:76px}.header-brand .brand-logo{width:127px;transform:translateY(8px)}}
 @media(max-width:560px){.header-brand .brand.has-logo{width:72px;height:70px}.header-brand .brand-logo{width:120px;transform:translateY(8px)}}
+/* Original logo, centered with a modest overhang. */
+.header-brand{top:3px;transform:translateX(-50%);padding:0 8px 6px;background:#181d16;border-radius:0 0 38px 38px}.header-brand .brand.has-logo{width:100px;height:112px}.header-brand .brand-logo{width:104px;height:112px;object-fit:contain;transform:none}
+@media(max-width:850px){.header-brand{top:2px;padding:0 7px 5px}.header-brand .brand.has-logo{width:86px;height:98px}.header-brand .brand-logo{width:90px;height:98px;transform:none}}
+@media(max-width:560px){.header-brand .brand.has-logo{width:78px;height:90px}.header-brand .brand-logo{width:83px;height:90px}}

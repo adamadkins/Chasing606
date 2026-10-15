@@ -21,7 +21,7 @@ For launch, replace the adapter with Shopify Storefront API reads. Shopify Admin
 
 ## Brand assets
 
-The wordmark, garment illustrations, and product details are temporary concepts. The original SVG woodland texture is a placeholder, not licensed Bottomland artwork. Replace it with owner-provided or licensed artwork. The supplied profile picture has not been bundled; obtain an original high-resolution logo file for the header and products. The landing photograph is owner-provided. Saira is self-hosted with its license in public/fonts; the story section uses the original woodland placeholder.
+The wordmark, garment illustrations, and product details are temporary concepts. The original SVG woodland texture is a placeholder, not licensed Bottomland artwork. Replace it with owner-provided or licensed artwork. Upload the owner-provided white logo to `public/logo.png`. The header, mobile menu, and footer automatically use it on a dark background once available; the text mark remains as a fallback until then. The landing photograph is owner-provided. Saira is self-hosted with its license in public/fonts; the story section uses the owner-provided hunting photograph.
 
 ## Before launch
 

@@ -2733,3 +2733,12 @@ html{scrollbar-gutter:stable}.brand-intro:focus{outline:none}
 @media(prefers-reduced-motion:reduce){
   .product-photo-viewport>img{transition:none}
 }
+
+/* Keep scroll gestures inside the open product dialog, not the page behind it. */
+.product-modal-backdrop{
+  overscroll-behavior:contain;
+}
+.product-modal-dialog{
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+}

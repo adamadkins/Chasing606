@@ -2364,3 +2364,41 @@ html{scrollbar-gutter:stable}.brand-intro:focus{outline:none}
  }
  .product-photo-lightbox-close{top:12px;right:16px}
 }
+
+/* Consistent centered merchandise framing throughout the catalog.
+   The source mockups have uneven built-in whitespace, so give every item
+   generous breathing room and a slight upward optical adjustment. */
+.merch-product-tile .product-art{
+ display:grid!important;place-items:center!important;
+ background:#edeae0;overflow:hidden;
+}
+.merch-product-tile .product-art img,
+.merch-product-tile .product-photo img{
+ display:block!important;box-sizing:border-box!important;
+ width:100%!important;height:100%!important;
+ padding:11% 11% 14%!important;
+ object-fit:contain!important;object-position:center center!important;
+ transform:translateY(-3%)!important;
+}
+.merch-product-tile .product:hover .product-art img{
+ transform:translateY(-3%) scale(1.02)!important;
+}
+.product-modal-hero-frame{
+ display:grid!important;place-items:center!important;
+ background:#efeee8;
+}
+.product-modal-image-open{
+ padding:12% 12% 16%!important;
+ display:grid!important;place-items:center!important;
+}
+.product-modal-image-open .product-modal-hero-img{
+ width:100%!important;height:100%!important;
+ object-fit:contain!important;object-position:center center!important;
+ transform:translateY(-4%)!important;
+}
+.product-modal-hero-frame:hover .product-modal-image-open .product-modal-hero-img{
+ transform:translateY(-4%)!important;
+}
+@media(max-width:850px){
+ .product-modal-image-open{padding:13% 12% 17%!important}
+}

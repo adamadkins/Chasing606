@@ -158,7 +158,7 @@ export default function ProductModal({ product, onClose, onAddToCart, commerce }
             <p className="modal-description">{product.description}</p>
 
             {/* Color Selector */}
-            {colors.length > 1 && (
+            {colors.length > 0 && (
               <div className="modal-option-block">
                 <div className="modal-option-label">
                   <span>Color:</span>

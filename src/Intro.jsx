@@ -14,9 +14,12 @@ export default function Intro() {
     if (!target) { setActive(false); return; }
     try { sessionStorage.setItem(seenKey, 'yes'); } catch { /* Private browsing may disable storage. */ }
     const oldVisibility = target.style.visibility;
+    const oldOpacity = target.style.opacity;
+    const oldTransition = target.style.transition;
     const oldOverflow = document.body.style.overflow;
     const oldFocus = document.activeElement;
     target.style.visibility = 'hidden';
+    target.style.transition = 'none';
     document.body.style.overflow = 'hidden';
     const siblings = [...layer.current.parentElement.children].filter(node => node !== layer.current);
     const oldInert = siblings.map(node => node.inert);
@@ -24,7 +27,7 @@ export default function Intro() {
     layer.current.focus({ preventScroll:true });
     let cancelled = false;
     const animations = [];
-    const finish = () => { if (!cancelled) { medallion.current?.style.setProperty('opacity', '0'); setActive(false); } };
+    const finish = () => { if (!cancelled) setActive(false); };
     const timeout = setTimeout(finish, 4500);
     const preference = window.matchMedia?.('(prefers-reduced-motion: reduce)');
     const orientation = window.screen?.orientation?.type || (window.innerWidth > window.innerHeight ? 'landscape' : 'portrait');
@@ -77,6 +80,25 @@ export default function Intro() {
         ], { delay: 650, duration: 1100, easing: 'cubic-bezier(.65, 0, .2, 1)', fill: 'forwards' });
         animations.push(flight);
         await flight.finished;
+        if (cancelled) return;
+
+        // The flying medallion and real header logo aren't pixel-identical.
+        // Blend them together at the same position instead of swapping in
+        // one frame, which otherwise makes the final landing look like a jump.
+        target.style.opacity = '0';
+        target.style.visibility = 'visible';
+        const handoff = [
+          medallion.current.animate(
+            [{ opacity: 1 }, { opacity: 0 }],
+            { duration: 220, easing: 'ease-in-out', fill: 'forwards' }
+          ),
+          target.animate(
+            [{ opacity: 0 }, { opacity: 1 }],
+            { duration: 220, easing: 'ease-in-out', fill: 'forwards' }
+          )
+        ];
+        animations.push(...handoff);
+        await Promise.all(handoff.map(animation => animation.finished));
         finish();
       } catch { finish(); }
     }
@@ -86,6 +108,8 @@ export default function Intro() {
       clearTimeout(timeout);
       animations.forEach(animation => animation.cancel());
       target.style.visibility = oldVisibility;
+      target.style.opacity = oldOpacity;
+      target.style.transition = oldTransition;
       document.body.style.overflow = oldOverflow;
       siblings.forEach((node,index) => { node.inert = oldInert[index]; });
       window.removeEventListener('resize', onResize);

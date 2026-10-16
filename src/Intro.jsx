@@ -82,33 +82,29 @@ export default function Intro() {
         await flight.finished;
         if (cancelled) return;
 
-        // The flying medallion and real header logo aren't pixel-identical.
-        // Blend them together at the same position instead of swapping in
-        // one frame, which otherwise makes the final landing look like a jump.
-        target.style.opacity = '0';
+        // Keep the actual header badge opaque under the flying badge.
+        // Fading both at once exposed the hero photo through the lower edge
+        // for a frame on mobile browsers.
+        target.style.opacity = '1';
         target.style.visibility = 'visible';
-        const handoff = [
-          medallion.current.animate(
-            [{ opacity: 1 }, { opacity: 0 }],
-            { duration: 220, easing: 'ease-in-out', fill: 'forwards' }
-          ),
-          target.animate(
-            [{ opacity: 0 }, { opacity: 1 }],
-            { duration: 220, easing: 'ease-in-out', fill: 'forwards' }
-          )
-        ];
-        animations.push(...handoff);
-        await Promise.all(handoff.map(animation => animation.finished));
-        finish();
+        const handoff = medallion.current.animate(
+          [{ opacity: 1 }, { opacity: 0 }],
+          { duration: 220, easing: 'ease-in-out', fill: 'forwards' }
+        );
+        animations.push(handoff);
+        await handoff.finished;
+        if (!cancelled) finish();
       } catch { finish(); }
     }
     animate();
     return () => {
       cancelled = true;
       clearTimeout(timeout);
-      animations.forEach(animation => animation.cancel());
+      // Restore the real badge before cancelling the overlay animations so
+      // a compositor frame can never reveal the hero through the badge.
       target.style.visibility = oldVisibility;
       target.style.opacity = oldOpacity;
+      animations.forEach(animation => animation.cancel());
       target.style.transition = oldTransition;
       document.body.style.overflow = oldOverflow;
       siblings.forEach((node,index) => { node.inert = oldInert[index]; });

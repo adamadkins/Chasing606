@@ -2167,14 +2167,27 @@ html{scrollbar-gutter:stable}.brand-intro:focus{outline:none}
 .product-modal-hero-img{width:100%;height:100%;object-fit:contain!important;object-position:center;transform:none!important}
 .product-modal-hero-frame:hover .product-modal-hero-img{transform:none!important}
 
-/* Compact, collapsible merchandise filters on phones and tablets. */
-.mobile-filter-toggle{display:none}
+/* Mobile-only filter drawer: hidden on desktop, animated on smaller screens. */
+.shop.merch-page .mobile-filter-toggle{display:none!important}
 @media(max-width:780px){
- .mobile-filter-toggle{display:flex;align-items:center;justify-content:space-between;width:100%;margin:12px 0 0;padding:13px 16px;border:1px solid #c9cebe;background:#f4f1e8;color:#263020;font:700 13px 'Saira',sans-serif;letter-spacing:.3px;cursor:pointer}
- .mobile-filter-toggle span:last-child{font-size:22px;font-weight:400;line-height:1}
+ .shop.merch-page .mobile-filter-toggle{display:flex!important;align-items:center;justify-content:space-between;width:100%;margin:12px 0 0;padding:13px 16px;border:1px solid #c9cebe;background:#f4f1e8;color:#263020;font:700 13px 'Saira',sans-serif;letter-spacing:.3px;cursor:pointer}
+ .mobile-filter-toggle span:last-child{font-size:22px;font-weight:400;line-height:1;transition:transform .25s ease}
+ .mobile-filter-toggle[aria-expanded="true"] span:last-child{transform:rotate(180deg)}
  .merch-layout{gap:14px}
- .merch-sidebar{display:none;position:static;top:auto;padding:14px;gap:12px;margin:0;border-top:0}
- .merch-sidebar.mobile-open{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:end}
+ .merch-sidebar{
+   display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:end;
+   position:static;top:auto;min-width:0;box-sizing:border-box;
+   padding:0 14px;gap:0 12px;margin:0;
+   max-height:0;opacity:0;overflow:hidden;visibility:hidden;pointer-events:none;
+   border-top:0;border-bottom-width:0;
+   transform:translateY(-7px);
+   transition:max-height .38s cubic-bezier(.22,1,.36,1),opacity .25s ease,transform .3s ease,padding .32s ease,border-bottom-width .32s ease,visibility 0s linear .38s;
+ }
+ .merch-sidebar.mobile-open{
+   max-height:640px;opacity:1;visibility:visible;pointer-events:auto;
+   padding:14px;gap:12px;border-bottom-width:1px;transform:translateY(0);
+   transition:max-height .42s cubic-bezier(.22,1,.36,1),opacity .28s ease,transform .3s ease,padding .32s ease,border-bottom-width .32s ease,visibility 0s;
+ }
  .merch-sidebar h3{grid-column:1/-1;font-size:11px}
  .merch-sidebar label{min-width:0;font-size:11px;gap:5px}
  .merch-sidebar select{min-width:0;padding:10px 8px;font-size:12px;min-height:40px}
@@ -2182,4 +2195,5 @@ html{scrollbar-gutter:stable}.brand-intro:focus{outline:none}
  .merch-sidebar>button{grid-column:1/-1;min-height:40px}
  .catalog-controls{gap:10px}
 }
-@media(max-width:420px){.merch-sidebar.mobile-open{grid-template-columns:repeat(2,minmax(0,1fr))}.merch-sidebar{padding:12px}.merch-sidebar select{font-size:11px}}
+@media(max-width:420px){.merch-sidebar{padding-left:12px;padding-right:12px}.merch-sidebar.mobile-open{padding:12px}.merch-sidebar select{font-size:11px}}
+@media(prefers-reduced-motion:reduce){.merch-sidebar,.merch-sidebar.mobile-open,.mobile-filter-toggle span:last-child{transition:none!important;transform:none!important}}

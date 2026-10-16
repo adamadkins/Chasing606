@@ -32,7 +32,8 @@ export function normalize(product){
    price: Number(v.unitPrice.value),
    currencyCode: v.unitPrice.currency,
    available: product.state?.type==='AVAILABLE' && (v.stock?.type==='UNLIMITED' || v.stock?.inStock>0),
-   image: v.images?.[0]?.url || null
+   image: v.images?.[0]?.url || null,
+   images: (v.images || []).map(i => i.url).filter(Boolean)
   };
  });
  const counts = new Map();
@@ -52,13 +53,14 @@ export function normalize(product){
   name: product.name,
   slug: product.slug || product.id,
   description: (product.description || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim(),
-  category: 'Gear',
+  category: product.category?.name || product.collection?.name || product.category || 'Gear',
   color: colors.join(', '),
   colors,
   sizes: sizes.length ? sizes : variants.map(v => v.label),
   image: product.images?.[0]?.url || variants.find(v => v.image)?.image || null,
   imagesByColor: Object.keys(imagesByColor).length ? imagesByColor : null,
   imageAlt: product.name,
+  images: [...new Set([...(product.images || []).map(i => i.url), ...variants.flatMap(v => v.images || [])].filter(Boolean))],
   price: cheapest?.price ?? 0,
   currencyCode: cheapest?.currencyCode || 'USD',
   available: variants.some(v => v.available),

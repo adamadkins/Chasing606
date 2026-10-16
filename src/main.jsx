@@ -175,6 +175,9 @@ function App() {
     )
     .sort((a, b) => (sort === 'low' ? a.price - b.price : sort === 'high' ? b.price - a.price : 0));
 
+  // Keep the homepage focused; the dedicated merch page displays the full catalog.
+  const displayedProducts = isHome ? visibleProducts.slice(0, 4) : visibleProducts;
+
   const totalCartCount = cart.items.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
@@ -285,7 +288,7 @@ function App() {
                   </button>
                 ))}
               </div>
-              <span className="shop-collection-count">{visibleProducts.length} {visibleProducts.length === 1 ? 'item' : 'items'}</span>
+              <span className="shop-collection-count">{displayedProducts.length} {displayedProducts.length === 1 ? 'item' : 'items'}</span>
             </div>
 
             {loading ? (
@@ -294,9 +297,9 @@ function App() {
               <p role="alert">We couldn’t load the collection. Please refresh to try again.</p>
             ) : (
               <ProductGrid
-                animationKey={`${filter}:${colorFilter}:${sizeFilter}:${stockOnly}:${priceLimit}:${search}:${sort}:${visibleProducts.map(p => p.id).join(',')}`}
+                animationKey={`${filter}:${colorFilter}:${sizeFilter}:${stockOnly}:${priceLimit}:${search}:${sort}:${displayedProducts.map(p => p.id).join(',')}`}
               >
-                {visibleProducts.map(p => <ProductTile key={p.id} product={p} onOpen={open} />)}             </ProductGrid>
+                {displayedProducts.map(p => <ProductTile key={p.id} product={p} onOpen={open} />)}             </ProductGrid>
             )}
 
             {!loading && !error && products.length === 0 && (

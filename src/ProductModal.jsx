@@ -61,7 +61,11 @@ export default function ProductModal({ product, onClose, onAddToCart, commerce }
   // Only use photos associated with the selected color; avoid mixing colorways.
   const matchingVariants = (product.variants || []).filter(v => !selectedColor || (v.color || '').toLowerCase() === selectedColor.toLowerCase());
   const colorImages = [...new Set(matchingVariants.flatMap(v => v.images?.length ? v.images : (v.image ? [v.image] : [])))];
-  const galleryImages = colorImages.slice(0, 4);
+  // Fourthwall's Comfort Colors tee provides four garment-only renders first,
+  // followed by model front/back. Skip the extra garment poses (including folded sleeve).
+  // Other products retain up to four photos until their layouts are explicitly mapped.
+  const preferredIndexes = product.slug === 'chasing-606-comfort-colors-tee' ? [0, 1, 4, 5] : [0, 1, 2, 3];
+  const galleryImages = preferredIndexes.map(index => colorImages[index]).filter(Boolean);
   const [galleryIndex, setGalleryIndex] = useState(0);
   const touchStartX = useRef(null);
   const displayedImage = galleryImages[galleryIndex] || galleryImages[0] || getImageForColor(product, selectedColor);

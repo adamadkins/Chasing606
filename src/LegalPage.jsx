@@ -48,7 +48,7 @@ export const legalPaths = Object.keys(pages);
 export default function LegalPage({ path }) {
   const page = pages[path];
   if (!page) return null;
-  return <main className="legal-page page-shell">
+  return <section className="legal-page page-shell">
     <div className="legal-page-inner">
       <div className="legal-page-heading">
         <p className="eyebrow">{page.eyebrow}</p>
@@ -61,5 +61,5 @@ export default function LegalPage({ path }) {
       </div>
       <aside className="legal-help">Questions? <a href={`mailto:${email}`}>Contact Chasing 606</a> or visit our <a href="/contact">contact page</a>.</aside>
     </div>
-  </main>;
+  </section>;
 }

@@ -10,7 +10,7 @@ import Contact from './Contact';
 import SocialLinks from './SocialLinks';
 import Cart, { useCart } from './Cart';
 import ProductGrid from './ProductGrid';
-import ProductModal from './ProductModal';
+import ProductModal, { getImageForColor } from './ProductModal';
 import CheckoutModal from './CheckoutModal';
 import Intro from './Intro';
 import About from './About';
@@ -73,6 +73,33 @@ function ProductArt({ product }) {
         </g>
       </svg>
       <span className="concept">OFFICIAL 606 GEAR</span>
+    </div>
+  );
+}
+
+const CARD_SWATCH_COLORS = { black:'#080808', white:'#ffffff', pepper:'#514f4c', moss:'#5d6748', oat:'#c5bbaa', stone:'#a3a297', navy:'#26364c', blue:'#456c91', gray:'#888888', grey:'#888888', red:'#a33b37', green:'#4d6949' };
+
+function ProductTile({ product, onOpen }) {
+  const colors = product.colors || [];
+  const [color, setColor] = useState(colors[0] || '');
+  const image = getImageForColor(product, color);
+  return (
+    <div className="merch-product-tile">
+      <button className="product" type="button" onClick={() => onOpen(product)}>
+        <div className="art-wrap">
+          <span className="product-badge">{product.available ? 'IN STOCK' : 'COMING SOON'}</span>
+          <ProductArt product={{...product, image}} />
+          <span className="product-arrow"><Icon /></span>
+        </div>
+        <div className="product-details"><h3>{product.name}</h3><span>{money(product.price, product.currencyCode)}</span></div>
+      </button>
+      {colors.length > 0 && (
+        <div className="merch-card-colors" aria-label={`Available colors for ${product.name}`}>
+          {colors.map(c => <button key={c} type="button" title={c} aria-label={`Preview ${c}`} aria-pressed={color === c} className={`merch-card-swatch ${color === c ? 'selected' : ''}`} onClick={() => setColor(c)} style={{'--swatch-color':CARD_SWATCH_COLORS[c.toLowerCase()] || '#777'}} />)}
+          <span className="merch-card-color-name">{color}</span>
+        </div>
+      )}
+      <p className="merch-card-category">{product.category || ''}</p>
     </div>
   );
 }
@@ -266,27 +293,7 @@ function App() {
               <ProductGrid
                 animationKey={`${filter}:${colorFilter}:${sizeFilter}:${stockOnly}:${priceLimit}:${search}:${sort}:${visibleProducts.map(p => p.id).join(',')}`}
               >
-                {visibleProducts.map(p => (
-                  <button className="product" key={p.id} onClick={() => open(p)}>
-                    <div className="art-wrap">
-                      <span className="product-badge">
-                        {p.available ? 'IN STOCK' : 'COMING SOON'}
-                      </span>
-                      <ProductArt product={p} />
-                      <span className="product-arrow">
-                        <Icon />
-                      </span>
-                    </div>
-                    <div className="product-details">
-                      <h3>{p.name}</h3>
-                      <span>{money(p.price, p.currencyCode)}</span>
-                    </div>
-                    <p>
-                      {p.color || ''} {p.category ? <span> / {p.category}</span> : null}
-                    </p>
-                  </button>
-                ))}
-              </ProductGrid>
+                {visibleProducts.map(p => <ProductTile key={p.id} product={p} onOpen={open} />)}             </ProductGrid>
             )}
 
             {!loading && !error && products.length === 0 && (

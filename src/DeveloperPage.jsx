@@ -1,47 +1,103 @@
-import React from 'react';
+import React, { useState } from 'react';
 
-// An unlisted credit page. It is intentionally absent from navigation and site menus.
+const destination = 'adkins.adam04@gmail.com';
+
 export default function DeveloperPage() {
-  return (
-    <section className="developer-page" aria-labelledby="developer-title">
-      <div className="developer-glow" aria-hidden="true" />
-      <div className="developer-shell">
-        <a className="developer-back" href="/">← BACK TO CHASING 606</a>
-        <div className="developer-card">
-          <div className="developer-card-top">
-            <p className="developer-kicker"><span className="developer-kicker-dot" /> BEHIND THE BUILD</p>
-            <span className="developer-edition">EST. 2026 / ONE OF ONE</span>
-          </div>
-          <div className="developer-hero">
-            <div className="developer-intro">
-              <span className="developer-overline">THE PERSON BEHIND THE PIXELS</span>
-              <h1 id="developer-title">Adam<br/><em>Adkins.</em></h1>
-              <p className="developer-role">WEBSITE DESIGNER &amp; DEVELOPER</p>
-              <p className="developer-lead">I build digital experiences that look good, feel intentional, and work the way people expect them to.</p>
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [project, setProject] = useState('Website design & development');
+  const [message, setMessage] = useState('');
+  const [honeypot, setHoneypot] = useState('');
+  const [status, setStatus] = useState('idle');
+  const [error, setError] = useState('');
+
+  async function send(event) {
+    event.preventDefault();
+    if (status === 'sending') return;
+    if (honeypot) return;
+    setStatus('sending');
+    setError('');
+    try {
+      const response = await fetch(`https://formsubmit.co/ajax/${destination}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          name: name.trim(),
+          email: email.trim(),
+          _replyto: email.trim(),
+          project,
+          message: message.trim(),
+          _subject: 'Website inquiry for Adam Adkins — Chasing 606',
+          _captcha: 'true',
+          _honey: honeypot,
+          _url: window.location.href
+        })
+      });
+      const data = await response.json();
+      if (!response.ok || data.success === false || data.success === 'false') throw new Error(data.message || 'The form could not be delivered.');
+      setStatus('sent');
+      setName('');
+      setEmail('');
+      setMessage('');
+    } catch (err) {
+      setError('Your message could not be sent. Please try again or use your email app.');
+      setStatus('error');
+    }
+  }
+
+  const mailto = `mailto:${destination}?subject=${encodeURIComponent('Website inquiry for Adam Adkins')}`;
+
+  return <section className="developer-page" aria-labelledby="developer-title">
+    <div className="developer-glow" aria-hidden="true" />
+    <div className="developer-shell">
+      <a className="developer-back" href="/">← BACK TO CHASING 606</a>
+      <div className="developer-card">
+        <div className="developer-card-top">
+          <p className="developer-kicker"><span className="developer-kicker-dot" /> BEHIND THE BUILD</p>
+          <span className="developer-edition">DESIGN / DEVELOPMENT</span>
+        </div>
+        <div className="developer-contact-grid">
+          <div className="developer-contact-intro">
+            <p className="developer-overline">MEET THE DEVELOPER</p>
+            <h1 id="developer-title">Adam<br/><em>Adkins.</em></h1>
+            <p className="developer-role">WEBSITE DESIGNER &amp; DEVELOPER</p>
+            <p className="developer-lead">Have a website idea, need help improving an existing one, or want to work together? Send me a message.</p>
+            <div className="developer-mini-bio">
+              <span>BASED IN KENTUCKY</span>
+              <p>I work in information technology and build thoughtful, functional web experiences. Chasing 606 is one of my projects.</p>
             </div>
-            <div className="developer-monogram" aria-label="Adam Adkins monogram"><span>A</span><span>A</span><small>DESIGN / DEVELOPMENT</small></div>
           </div>
-          <div className="developer-divider"><span>01 / THE STORY</span><span>CRAFT OVER CLUTTER</span></div>
-          <div className="developer-story-grid">
-            <div>
-              <h2>A little about me.</h2>
-              <p>I'm an information systems professional and developer based in Kentucky. My background in technology, troubleshooting, and business systems shapes the way I approach web design: make it useful first, then make every detail count.</p>
-              <p>Chasing 606 was an opportunity to bring that approach to a brand rooted in the outdoors. From the layout and mobile experience to the merchandise catalog and integrations, the goal was a website that feels like the brand it represents.</p>
-            </div>
-            <div className="developer-details">
-              <div><span>FOCUS</span><strong>Web design &amp; development</strong></div>
-              <div><span>BACKGROUND</span><strong>Information systems &amp; IT</strong></div>
-              <div><span>BASED IN</span><strong>Kentucky, USA</strong></div>
-              <div><span>FEATURED PROJECT</span><strong>Chasing 606</strong></div>
-            </div>
-          </div>
-          <div className="developer-signoff">
-            <p>Built with purpose.<br/><em>Down to the details.</em></p>
-            <a href="/">EXPLORE CHASING 606 <span aria-hidden="true">↗</span></a>
+          <div className="developer-contact-panel">
+            {status === 'sent' ? <div className="developer-form-success" role="status">
+              <span className="developer-success-icon" aria-hidden="true">✓</span>
+              <h2>Message submitted.</h2>
+              <p>Thanks for reaching out. If this is the first submission, email delivery may require the form owner's one-time activation.</p>
+              <button type="button" onClick={() => setStatus('idle')}>SEND ANOTHER MESSAGE →</button>
+            </div> : <form className="developer-contact-form" onSubmit={send}>
+              <p className="developer-form-kicker">LET'S CONNECT</p>
+              <h2>Tell me about your project.</h2>
+              <div className="developer-form-two">
+                <label>Your name<input name="name" autoComplete="name" required maxLength={100} value={name} onChange={e=>setName(e.target.value)} placeholder="Your name" /></label>
+                <label>Email address<input name="email" type="email" autoComplete="email" required maxLength={200} value={email} onChange={e=>setEmail(e.target.value)} placeholder="you@example.com" /></label>
+              </div>
+              <label>What can I help with?
+                <select name="project" value={project} onChange={e=>setProject(e.target.value)}>
+                  <option>Website design &amp; development</option>
+                  <option>Updating an existing website</option>
+                  <option>IT or technical question</option>
+                  <option>Something else</option>
+                </select>
+              </label>
+              <label>Your message<textarea name="message" rows={6} required minLength={10} maxLength={4000} value={message} onChange={e=>setMessage(e.target.value)} placeholder="Tell me a little about what you have in mind..." /></label>
+              <div className="developer-honey" aria-hidden="true"><label>Leave this blank<input tabIndex={-1} autoComplete="off" value={honeypot} onChange={e=>setHoneypot(e.target.value)} /></label></div>
+              {error && <p role="alert" className="developer-form-error">{error} <a href={mailto}>Email me instead</a>.</p>}
+              <button className="developer-send" type="submit" disabled={status === 'sending'}>{status === 'sending' ? 'SENDING…' : 'SEND MESSAGE'} <span aria-hidden="true">↗</span></button>
+              <p className="developer-form-note">Messages are sent to Adam using FormSubmit, a third-party form service. By sending a message, you agree to share the details you enter for a reply. No account is needed.</p>
+            </form>}
           </div>
         </div>
-        <p className="developer-footnote">A little hidden corner of the internet. Thanks for finding it.</p>
       </div>
-    </section>
-  );
+      <p className="developer-footnote">An unlisted page. Found via the website credit.</p>
+    </div>
+  </section>;
 }

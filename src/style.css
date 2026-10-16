@@ -2203,3 +2203,73 @@ html{scrollbar-gutter:stable}.brand-intro:focus{outline:none}
 }
 @media(max-width:420px){.merch-sidebar{padding-left:12px;padding-right:12px}.merch-sidebar.mobile-open{padding:12px}.merch-sidebar select{font-size:11px}}
 @media(prefers-reduced-motion:reduce){.merch-sidebar,.merch-sidebar.mobile-open,.mobile-filter-icon>span{transition:none!important}}
+
+/* CHASING606 / cinematic homepage — bundled real photography, no remote video dependency */
+.cinematic-home-hero{
+ isolation:isolate;overflow:hidden;
+ min-height:640px;height:min(84svh,860px);max-height:none;
+ background:#101b17!important;
+}
+.cinematic-hero-media,.cinematic-hero-shade{position:absolute;inset:0;pointer-events:none}
+.cinematic-hero-media{z-index:-2;overflow:hidden}
+.cinematic-hero-media img{
+ display:block;width:100%;height:100%;object-fit:cover;object-position:center 43%;
+ filter:brightness(.77) saturate(.78) contrast(1.1);
+ animation:chasingHeroDrift 24s ease-in-out infinite alternate;
+}
+.cinematic-hero-shade{
+ z-index:-1;
+ background:linear-gradient(90deg,rgba(7,18,14,.9) 0%,rgba(13,25,20,.69) 42%,rgba(11,23,18,.22) 100%),
+ linear-gradient(0deg,rgba(8,18,14,.63),transparent 26%,transparent 68%,rgba(8,18,14,.25));
+}
+.cinematic-home-hero .hero-content{z-index:1;max-width:1040px;animation:chasingHeroArrival .85s both ease-out}
+.cinematic-home-hero .hero-content h1{letter-spacing:-.035em;text-shadow:0 8px 42px rgba(0,0,0,.23)}
+.cinematic-home-hero .hero-mission{max-width:480px}
+.cinematic-home-hero .hero-bottom{z-index:2;align-items:center;gap:12px}
+.cinematic-hero-index{
+ position:absolute;right:6%;top:38px;z-index:2;display:flex;flex-direction:column;align-items:flex-end;
+ gap:6px;font-size:9px;font-weight:700;letter-spacing:.2em;color:#f0eee0b8
+}
+.cinematic-hero-index span:first-child{color:#dfcaa2}
+.cinematic-scroll-cue{display:inline-flex;align-items:center;gap:11px;color:#e6e5d7;text-decoration:none;font-size:9px;letter-spacing:1.5px}
+.cinematic-scroll-cue span{display:block;width:1px;height:27px;background:#d8cba9;position:relative;overflow:hidden}
+.cinematic-scroll-cue span::after{content:'';position:absolute;inset:0;background:#fff;animation:chasingScrollPulse 2.3s ease-in-out infinite}
+@keyframes chasingHeroDrift{from{transform:scale(1.01) translate3d(0,0,0)}to{transform:scale(1.095) translate3d(-1%,.5%,0)}}
+@keyframes chasingHeroArrival{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+@keyframes chasingScrollPulse{0%,100%{transform:translateY(-110%)}55%{transform:translateY(110%)}}
+
+/* Quiet topo-line finish on editorial panels; no added image downloads. */
+.shop.home-reveal,.story-hero.home-reveal{position:relative;isolation:isolate}
+.shop.home-reveal::before,.story-hero.home-reveal::before{
+ content:'';pointer-events:none;position:absolute;z-index:-1;inset:0;
+ opacity:.07;
+ background:
+ repeating-radial-gradient(ellipse at 96% 14%,transparent 0 17px,#596b53 18px 19px,transparent 20px 34px);
+ mask-image:linear-gradient(90deg,transparent 45%,#000 100%);
+}
+.shop.home-reveal .section-top{position:relative}
+.shop.home-reveal .section-top::after{content:'';display:block;width:34px;height:2px;background:#a38b61;margin-top:20px}
+@media(prefers-reduced-motion:no-preference){
+ .home-reveal{transition:opacity .75s ease,transform .75s cubic-bezier(.2,.7,.2,1)}
+ .home-reveal:not(.is-visible){opacity:.01;transform:translateY(20px)}
+ .home-reveal.is-visible{opacity:1;transform:none}
+}
+@media(max-width:780px){
+ .cinematic-home-hero{min-height:600px;height:78svh}
+ .cinematic-hero-media img{object-position:61% center}
+ .cinematic-hero-shade{background:linear-gradient(90deg,rgba(9,20,16,.86),rgba(9,20,16,.38)),linear-gradient(0deg,rgba(9,20,16,.65),transparent 35%)}
+ .cinematic-hero-index{top:18px;right:6%;font-size:8px}
+ .cinematic-home-hero .hero-content{padding-top:95px}
+ .cinematic-home-hero .hero-bottom{bottom:18px}
+ .cinematic-scroll-cue{font-size:8px}
+}
+@media(max-width:480px){
+ .cinematic-home-hero{min-height:540px;height:76svh}
+ .cinematic-home-hero .hero-content h1{font-size:clamp(56px,14.5vw,78px)}
+ .cinematic-home-hero .hero-bottom>span{max-width:190px;line-height:1.6}
+ .cinematic-hero-index span:last-child{display:none}
+}
+@media(prefers-reduced-motion:reduce){
+ .cinematic-hero-media img,.cinematic-home-hero .hero-content,.cinematic-scroll-cue span::after{animation:none!important}
+ .home-reveal,.home-reveal:not(.is-visible){opacity:1!important;transform:none!important;transition:none!important}
+}

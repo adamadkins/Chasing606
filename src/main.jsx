@@ -15,6 +15,7 @@ import CheckoutModal from './CheckoutModal';
 import Intro from './Intro';
 import About from './About';
 import StorySlideshow from './StorySlideshow';
+import { defaultStoryPhotos } from './StorySlideshow';
 
 const money = (amount, currency = 'USD') =>
   new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(amount);
@@ -104,7 +105,24 @@ function ProductTile({ product, onOpen }) {
   );
 }
 
+// Reveal homepage sections only when they enter view; no motion when reduced motion is requested.
+function useHomeReveals(enabled) {
+  useEffect(() => {
+    if (!enabled || typeof window === 'undefined' || !('IntersectionObserver' in window) || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const nodes = [...document.querySelectorAll('.home-reveal')];
+    const observer = new IntersectionObserver(entries => {
+      for (const entry of entries) if (entry.isIntersecting) {
+        entry.target.classList.add('is-visible');
+        observer.unobserve(entry.target);
+      }
+    }, { threshold: 0.08, rootMargin: '0px 0px 40px 0px' });
+    nodes.forEach(node => observer.observe(node));
+    return () => observer.disconnect();
+  }, [enabled]);
+}
+
 function App() {
+  useHomeReveals(location.pathname === '/');
   const cart = useCart();
   const [commerce, setCommerce] = useState(null);
   const [cartOpen, setCartOpen] = useState(false);
@@ -201,7 +219,12 @@ function App() {
         {isContact && <Contact />}
         {isAbout && <About />}
         {isHome && (
-          <section className="hero">
+          <section className="hero cinematic-home-hero" aria-label="Chasing 606 introduction">
+            <div className="cinematic-hero-media" aria-hidden="true">
+              <img src={defaultStoryPhotos[2].src} alt="" fetchPriority="high" decoding="async" />
+            </div>
+            <div className="cinematic-hero-shade" aria-hidden="true" />
+            <div className="cinematic-hero-index" aria-hidden="true"><span>FIELD NOTES / 001</span><span>EST. IN THE 606</span></div>
             <div className="hero-content">
               <p className="eyebrow">
                 <span /> OUT HERE IS WHERE WE BELONG
@@ -226,12 +249,13 @@ function App() {
             </div>
             <div className="hero-bottom">
               <span>GUIDED BY SIGN / SILENCE / HEAVY ANTLERS</span>
+              <a className="cinematic-scroll-cue" href="#shop" aria-label="Scroll to the collection"><span aria-hidden="true" /> SCROLL TO EXPLORE</a>
             </div>
           </section>
         )}
 
         {!isContact && !isAbout && (
-          <section id="shop" className={isMerch ? 'shop merch-page' : 'shop'}>
+          <section id="shop" className={isMerch ? 'shop merch-page' : 'shop home-reveal'}>
             <div className="section-top">
               <div>
                 <p className="eyebrow">WEAR THE STORY</p>
@@ -335,7 +359,7 @@ function App() {
         {isHome && (
           <>
             <LatestVideo />
-            <section id="story" className="story-hero" aria-labelledby="story-title">
+            <section id="story" className="story-hero home-reveal" aria-labelledby="story-title">
               <div className="story-hero-content">
                 <p className="eyebrow">
                   <span /> OUT HERE IS WHERE WE BELONG

@@ -2119,3 +2119,15 @@ html{scrollbar-gutter:stable}.brand-intro:focus{outline:none}
 }
 
 
+
+
+/* Dynamic Fourthwall merchandise filters */
+.merch-layout {display:grid;grid-template-columns:minmax(190px,245px) minmax(0,1fr);gap:28px;align-items:start}
+.merch-results {min-width:0}
+.merch-sidebar {background:#edeae0;border:1px solid #d3d0c4;padding:20px;display:flex;flex-direction:column;gap:16px;position:sticky;top:90px}
+.merch-sidebar h3 {font-size:13px;letter-spacing:1px;margin:0}
+.merch-sidebar label {display:flex;flex-direction:column;gap:7px;font-size:12px;font-weight:700}
+.merch-sidebar select {width:100%;padding:10px;background:#fff;border:1px solid #c9cebe;color:#242c21;font:inherit}
+.merch-sidebar .merch-stock-filter {flex-direction:row;align-items:center}
+.merch-sidebar button {background:transparent;border:1px solid #666d5d;padding:10px;cursor:pointer}
+@media(max-width:780px){.merch-layout{grid-template-columns:1fr}.merch-sidebar{position:static}.merch-results{width:100%}}

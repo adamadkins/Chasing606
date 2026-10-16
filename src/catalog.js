@@ -1,5 +1,3 @@
-import { fourthwallProducts } from './demoCatalog.js';
-
 async function read(response) {
   if (!response.ok) throw new Error('The store is temporarily unavailable.');
   return response.json();
@@ -11,6 +9,13 @@ export async function getCommerce() {
     if (res.ok) return await res.json();
   } catch {}
   return { mode: 'fourthwall', checkoutEnabled: false };
+}
+
+export async function getProducts() {
+  const res = await fetch('/api/products');
+  const data = await read(res);
+  if (!Array.isArray(data.products)) throw new Error('The collection could not be loaded.');
+  return data.products;
 }
 
 export async function getProducts() {

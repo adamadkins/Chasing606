@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import whitetailBuckImg from './assets/images/whitetail_buck_1792096498234.jpg';
 import wildTurkeyImg from './assets/images/wild_turkey_1792096499683.jpg';
 import timberBuckFrostImg from './assets/images/timber_buck_frost_1792096499267.jpg';
@@ -35,16 +35,7 @@ export const defaultStoryPhotos = [
   },
 ];
 
-export default function StorySlideshow({ photos = defaultStoryPhotos }) {
-  const [index, setIndex] = useState(0);
-
-  useEffect(() => {
-    if (photos.length <= 1) return;
-    const timer = setInterval(() => {
-      setIndex(prev => (prev + 1) % photos.length);
-    }, 5500);
-    return () => clearInterval(timer);
-  }, [photos.length]);
+export default function StorySlideshow({ photos = defaultStoryPhotos, index = 0, onSelect = () => {} }) {
 
   return (
     <div className="story-cinematic-stage" aria-roledescription="carousel" aria-label="Our Story photograph slideshow">
@@ -84,7 +75,7 @@ export default function StorySlideshow({ photos = defaultStoryPhotos }) {
               key={photo.id}
               type="button"
               className={`story-dot${i === index ? ' is-active' : ''}`}
-              onClick={() => setIndex(i)}
+              onClick={() => onSelect(i)}
               aria-label={`Go to slide ${i + 1}`}
               aria-current={i === index}
             />

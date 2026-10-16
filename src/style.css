@@ -2838,3 +2838,52 @@ html{scrollbar-gutter:stable}.brand-intro:focus{outline:none}
   }
   .hero-bottom{bottom:18px}
 }
+
+/* Homepage story: copy changes with each photograph (including dot navigation). */
+.story-copy-rotator{
+  min-height:190px;
+  position:relative;
+}
+.story-copy-slide{
+  width:100%;
+  transform-origin:left center;
+}
+@keyframes story-copy-reveal{
+  0%{opacity:0;transform:translate3d(0,18px,0);filter:blur(5px)}
+  65%{opacity:1;filter:blur(0)}
+  100%{opacity:1;transform:translate3d(0,0,0);filter:blur(0)}
+}
+.story-copy-enter{
+  animation:story-copy-reveal .82s cubic-bezier(.2,.75,.2,1) both;
+}
+@keyframes story-ending-reveal{
+  0%{opacity:0;transform:translate3d(0,.55em,0);filter:blur(4px)}
+  65%{opacity:1;filter:blur(0)}
+  100%{opacity:1;transform:translate3d(0,0,0);filter:blur(0)}
+}
+.story-hero-content .story-ending-enter{
+  animation:story-ending-reveal .8s cubic-bezier(.2,.75,.2,1) both;
+}
+.story-hero-content .story-ending-slot{
+  max-width:100%;
+  white-space:normal;
+}
+.story-hero-content .story-ending-slot em{
+  font-size:.82em;
+  line-height:1.1;
+}
+.story-copy-slide .story-hero-mission{
+  margin-top:0;
+}
+@media(max-width:850px){
+  .story-copy-rotator{min-height:160px}
+}
+@media(max-width:560px){
+  .story-copy-rotator{min-height:180px}
+  .story-hero-content .story-ending-slot em{font-size:.8em}
+}
+@media(prefers-reduced-motion:reduce){
+  .story-copy-enter,.story-hero-content .story-ending-enter{
+    animation:none!important;filter:none!important;transform:none!important;opacity:1!important;
+  }
+}

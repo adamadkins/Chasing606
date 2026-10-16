@@ -11,7 +11,7 @@ const stories = [
     detail: "There's nothing quite like seeing a good buck step into view."
   },
   {
-    ending: 'in the spring woods.',
+    ending: 'with a gobble.',
     lead: "When spring rolls around, we're listening for gobbles and watching the timber wake up.",
     detail: "Early mornings and a bird answering back are worth the alarm."
   },

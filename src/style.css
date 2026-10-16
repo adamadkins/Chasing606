@@ -2869,8 +2869,11 @@ html{scrollbar-gutter:stable}.brand-intro:focus{outline:none}
   white-space:normal;
 }
 .story-hero-content .story-ending-slot em{
-  font-size:.82em;
-  line-height:1.1;
+  font-size:1em;
+  line-height:inherit;
+  font-family:inherit;
+  font-weight:inherit;
+  letter-spacing:inherit;
 }
 .story-copy-slide .story-hero-mission{
   margin-top:0;
@@ -2880,7 +2883,6 @@ html{scrollbar-gutter:stable}.brand-intro:focus{outline:none}
 }
 @media(max-width:560px){
   .story-copy-rotator{min-height:180px}
-  .story-hero-content .story-ending-slot em{font-size:.8em}
 }
 @media(prefers-reduced-motion:reduce){
   .story-copy-enter,.story-hero-content .story-ending-enter{

@@ -27,7 +27,7 @@ export default function DeveloperPage() {
           _replyto: email.trim(),
           project,
           message: message.trim(),
-          _subject: 'Website inquiry for Adam Adkins — Chasing 606',
+          _subject: 'Website inquiry for Adam Adkins | Chasing 606',
           _captcha: 'true',
           _honey: honeypot,
           _url: window.location.href

@@ -2470,3 +2470,71 @@ html{scrollbar-gutter:stable}.brand-intro:focus{outline:none}
  .legal-page-sections{gap:23px}
  .legal-page-sections p{font-size:13px;line-height:1.85}
 }
+
+/* Discreet author credit in the global footer. */
+.site-footer .footer-copyright{display:flex;flex-direction:column;align-items:center;gap:7px}
+.site-footer .footer-developer-credit{font-size:11px;color:#b1b7a8;text-decoration:none;letter-spacing:.2px;font-weight:500;transition:color .18s ease}
+.site-footer .footer-developer-credit:hover,.site-footer .footer-developer-credit:focus-visible{color:#ead6a9;text-decoration:underline;text-underline-offset:4px}
+@media(max-width:600px){.site-footer .footer-copyright{align-items:flex-start}.site-footer .footer-developer-credit{font-size:10px;line-height:1.6}}
+
+/* Hidden credit destination: distinct but consistent with the Chasing606 palette. */
+.developer-page{position:relative;isolation:isolate;overflow:hidden;background:#111a14;min-height:calc(100svh - 80px);padding:55px 6% 75px;color:#f4f0e4}
+.developer-glow{position:absolute;inset:0;pointer-events:none;z-index:-1;background:radial-gradient(ellipse at 76% 10%,rgba(153,139,99,.13),transparent 51%),repeating-radial-gradient(ellipse at 0% 95%,transparent 0 28px,rgba(179,189,155,.038) 29px 30px,transparent 31px 55px)}
+.developer-shell{max-width:1120px;margin:0 auto}
+.developer-back{display:inline-flex;font-size:10px;letter-spacing:1.5px;color:#d5d5c4;text-decoration:none;font-weight:700;margin-bottom:29px}
+.developer-back:hover{color:#e3c896}
+.developer-card{background:#e9e7dd;color:#21291e;border:1px solid #8d9382;box-shadow:0 32px 90px rgba(0,0,0,.2);border-radius:5px;overflow:hidden}
+.developer-card-top{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:18px 30px;border-bottom:1px solid #d0d0c4}
+.developer-kicker,.developer-edition,.developer-overline,.developer-role,.developer-form-kicker{font-size:10px;font-weight:700;letter-spacing:1.6px}
+.developer-kicker{margin:0;display:flex;align-items:center;gap:9px}
+.developer-kicker-dot{width:7px;height:7px;border-radius:50%;background:#a37c4b;display:inline-block}
+.developer-edition{font-size:9px;color:#6b7866}
+.developer-contact-grid{display:grid;grid-template-columns:minmax(0,.93fr) minmax(0,1.07fr)}
+.developer-contact-intro{padding:clamp(30px,5vw,64px) clamp(28px,5vw,60px);border-right:1px solid #d6d6c9}
+.developer-overline{color:#697a61}
+.developer-contact-intro h1{font-family:'Saira',sans-serif;font-size:clamp(53px,6.5vw,93px);font-weight:700;text-transform:uppercase;line-height:.93;letter-spacing:-2px;margin:26px 0}
+.developer-contact-intro h1 em{font-style:normal;color:#8a6c4a}
+.developer-role{color:#485844}
+.developer-lead{font-size:16px;line-height:1.8;margin:27px 0 0;max-width:420px}
+.developer-mini-bio{margin-top:60px;border-top:1px solid #c8cabe;padding-top:21px}
+.developer-mini-bio span{font-size:10px;font-weight:700;letter-spacing:1.3px;color:#7d866f}
+.developer-mini-bio p{font-size:13px;line-height:1.85;color:#606a59;max-width:400px;margin:10px 0 0}
+.developer-contact-panel{padding:clamp(25px,4vw,50px);background:#f7f6ef}
+.developer-contact-form{display:flex;flex-direction:column;gap:18px}
+.developer-form-kicker{color:#788366;margin:0}
+.developer-contact-form h2,.developer-form-success h2{font-family:'Saira',sans-serif;font-size:clamp(25px,3vw,34px);line-height:1.18;font-weight:700;margin:0 0 3px;text-transform:none}
+.developer-form-two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.developer-contact-form label{display:flex;flex-direction:column;gap:8px;font-size:11px;font-weight:700;letter-spacing:.35px;color:#354332}
+.developer-contact-form input,.developer-contact-form select,.developer-contact-form textarea{display:block;box-sizing:border-box;width:100%;padding:12px 13px;background:#fff;border:1px solid #c9cec1;border-radius:4px;min-width:0;font:400 13px inherit;color:#252f23}
+.developer-contact-form input:focus,.developer-contact-form textarea:focus,.developer-contact-form select:focus{outline:2px solid #69805d;outline-offset:1px}
+.developer-contact-form textarea{resize:vertical;line-height:1.6}
+.developer-honey{position:absolute;left:-10000px;width:1px;height:1px;overflow:hidden}
+.developer-send{display:flex;align-items:center;justify-content:space-between;gap:20px;background:#283c2b;color:#f9f7eb;border:0;border-radius:3px;padding:17px 19px;font:700 11px 'Saira',sans-serif;letter-spacing:1.2px;cursor:pointer;transition:background .18s ease}
+.developer-send:hover:not(:disabled){background:#456046}
+.developer-send:disabled{opacity:.65;cursor:wait}
+.developer-send span{font-size:20px}
+.developer-form-note{font-size:11px;line-height:1.7;color:#70776c;margin:0}
+.developer-form-error{margin:0;color:#9b3d2d;font-size:12px;line-height:1.6}
+.developer-form-error a{color:inherit;text-decoration:underline}
+.developer-form-success{display:flex;align-items:flex-start;justify-content:center;flex-direction:column;height:100%;min-height:330px;gap:18px}
+.developer-form-success p{font-size:14px;line-height:1.8;color:#5a6856}
+.developer-form-success button{padding:15px 19px;background:#2a3b2a;color:#fff;border:0;cursor:pointer}
+.developer-success-icon{display:grid;place-items:center;width:48px;height:48px;background:#314c34;border-radius:50%;color:#fff;font-size:23px}
+.developer-footnote{font-size:10px;letter-spacing:.6px;color:#abb1a5;text-align:center;margin-top:25px}
+@media(max-width:850px){
+ .developer-contact-grid{grid-template-columns:1fr}
+ .developer-contact-intro{border-right:0;border-bottom:1px solid #d6d6c9}
+ .developer-contact-intro h1{font-size:clamp(55px,11vw,80px)}
+ .developer-mini-bio{margin-top:30px}
+ .developer-contact-panel{padding:30px}
+}
+@media(max-width:520px){
+ .developer-page{padding:33px 4% 56px}
+ .developer-card-top{padding:15px 20px}
+ .developer-edition{display:none}
+ .developer-contact-intro{padding:32px 22px}
+ .developer-contact-intro h1{font-size:clamp(53px,13vw,71px);margin:17px 0}
+ .developer-lead{font-size:14px}
+ .developer-contact-panel{padding:25px 20px}
+ .developer-form-two{grid-template-columns:1fr}
+}

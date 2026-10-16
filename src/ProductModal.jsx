@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import Icon from './Icon';
 import { variantFor, canAdd } from './catalog';
 
@@ -312,9 +313,9 @@ export default function ProductModal({ product, onClose, onAddToCart, commerce }
             )}
           </div>
         </div>
-        {zoomOpen && displayedImage && (
+        {zoomOpen && displayedImage && createPortal(
           <div className="product-photo-lightbox" role="dialog" aria-modal="true" aria-label={`Enlarged photos of ${product.name}`} onClick={event => { event.stopPropagation(); setZoomOpen(false); }}>
-            <button className="product-photo-lightbox-close" type="button" aria-label="Close enlarged photo" onClick={() => setZoomOpen(false)}>×</button>
+            <button className="product-photo-lightbox-close" type="button" aria-label="Close enlarged photo" onClick={() => setZoomOpen(false)}><span className="lightbox-close-mark" aria-hidden="true" /></button>
             <div className="product-photo-lightbox-content" onClick={event => event.stopPropagation()}>
               <img src={displayedImage} alt={`${product.name}, ${selectedColor}, photo ${galleryIndex + 1}`} />
               {galleryImages.length > 1 && <div className="product-photo-lightbox-controls">
@@ -323,7 +324,7 @@ export default function ProductModal({ product, onClose, onAddToCart, commerce }
                 <button type="button" onClick={() => changePhoto(1)} aria-label="Next photo">›</button>
               </div>}
             </div>
-          </div>
+          </div>, document.body
         )}
       </div>
     </div>

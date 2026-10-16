@@ -16,8 +16,7 @@ import ProductModal, { getImageForColor } from './ProductModal';
 import CheckoutModal from './CheckoutModal';
 import Intro from './Intro';
 import About from './About';
-import StorySlideshow from './StorySlideshow';
-import StoryHeadline from './StoryHeadline';
+import StorySection from './StorySection';
 
 const money = (amount, currency = 'USD') =>
   new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(amount);
@@ -364,31 +363,7 @@ function App() {
         {isHome && (
           <>
             <LatestVideo />
-            <section id="story" className="story-hero home-reveal" aria-labelledby="story-title">
-              <div className="story-hero-content">
-                <p className="eyebrow">
-                  <span /> OUT HERE IS WHERE WE BELONG
-                </p>
-                <StoryHeadline id="story-title" />
-                <p className="story-hero-mission">
-                  We spend the season scouting, checking sign, and hunting mature whitetails around the 606. Not every sit goes to plan, and that's part of it.
-                </p>
-                <p className="story-hero-sub">
-                  Early mornings, long sits, missed chances, and the occasional good buck. We film the hunts as they happen.
-                </p>
-                <div className="hero-actions">
-                  <a className="button story-watch" href="/about">
-                    ABOUT CHASING 606 <span><Icon /></span>
-                  </a>
-                </div>
-              </div>
-              <div className="story-hero-visual">
-                <StorySlideshow />
-              </div>
-              <div className="hero-bottom story-hero-bottom">
-                <span>GUIDED BY SIGN / SILENCE / HEAVY ANTLERS</span>
-              </div>
-            </section>
+            <StorySection />
           </>
         )}
       </main>

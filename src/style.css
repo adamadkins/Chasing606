@@ -2777,16 +2777,16 @@ html{scrollbar-gutter:stable}.brand-intro:focus{outline:none}
   .story-ending-slot em{animation:none!important}
 }
 
-/* Mobile header: restore the larger round logo that overlaps the photo. */
+/* Mobile header: subtle circular logo overhang above the hero photo. */
 @media(max-width:600px){
   header{
     overflow:visible;
   }
   header .header-brand{
-    top:calc(100% - 14px)!important;
-    transform:translate(-50%,-12%)!important;
-    width:108px!important;
-    height:108px!important;
+    top:calc(100% - 70px)!important;
+    transform:translateX(-50%)!important;
+    width:100px!important;
+    height:100px!important;
     border-radius:50%!important;
     box-shadow:0 7px 22px rgba(0,0,0,.45)!important;
     overflow:hidden;
@@ -2794,18 +2794,18 @@ html{scrollbar-gutter:stable}.brand-intro:focus{outline:none}
     z-index:35;
   }
   header .header-brand .brand.has-logo{
-    width:88px!important;
-    height:88px!important;
+    width:82px!important;
+    height:82px!important;
     overflow:hidden;
   }
   header .header-brand .brand-logo{
-    width:84px!important;
-    height:84px!important;
+    width:78px!important;
+    height:78px!important;
     transform:none!important;
     object-fit:contain!important;
   }
   header .header-brand:hover{
-    transform:translate(-50%,-12%)!important;
+    transform:translateX(-50%)!important;
   }
   .hero{
     padding-top:clamp(260px,79vw,330px);

@@ -2406,3 +2406,67 @@ html{scrollbar-gutter:stable}.brand-intro:focus{outline:none}
 /* Swipe left/right in the enlarged viewer without blocking vertical gestures. */
 .product-photo-lightbox-content{touch-action:pan-y}
 .product-photo-lightbox-content>img{-webkit-user-select:none;user-select:none;-webkit-user-drag:none}
+
+/* Site footer: concise navigation, help, and legal sections. */
+.site-footer{padding-top:55px}
+.site-footer .footer-container{
+ max-width:1230px;display:grid;grid-template-columns:minmax(220px,1.1fr) minmax(360px,1.65fr) auto;
+ grid-template-areas:"brand nav social" "copy copy copy";align-items:start;gap:36px;
+}
+.site-footer .footer-brand-section{align-items:flex-start}
+.site-footer .footer-nav{
+ display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:26px;
+ align-items:start;justify-content:stretch;text-align:left;
+}
+.site-footer .footer-link-group{display:flex;flex-direction:column;gap:13px;align-items:flex-start}
+.site-footer .footer-link-group h2{
+ margin:0 0 4px;font-family:'Saira',sans-serif;font-size:12px;
+ font-weight:700;letter-spacing:1.3px;color:#c5ad80;text-transform:uppercase;line-height:1.4;
+}
+.site-footer .footer-link-group a{
+ font-size:11px;line-height:1.5;letter-spacing:.4px;text-transform:none;
+ color:#e4e5db;text-decoration:none;font-weight:500;
+}
+.site-footer .footer-link-group a:hover,.site-footer .footer-link-group a:focus-visible{color:#e9c990;text-decoration:underline;text-underline-offset:4px}
+.site-footer .footer-social-section{align-self:start;padding-top:6px}
+.site-footer .footer-copyright{margin-top:8px;line-height:1.8}
+@media(max-width:1000px){
+ .site-footer .footer-container{grid-template-columns:1fr auto;grid-template-areas:"brand social" "nav nav" "copy copy";gap:30px}
+ .site-footer .footer-nav{width:100%;gap:20px;padding-top:8px!important}
+}
+@media(max-width:600px){
+ .site-footer .footer-container{display:flex;flex-direction:column;align-items:stretch;text-align:left;gap:24px}
+ .site-footer .footer-brand-section{flex-direction:row;align-items:center;justify-content:flex-start;text-align:left;gap:15px}
+ .site-footer .footer-brand-section .brand-logo{height:56px!important;width:56px!important}
+ .site-footer .footer-tagline{text-align:left;max-width:210px}
+ .site-footer .footer-nav{grid-template-columns:repeat(2,minmax(0,1fr));gap:25px 18px;padding:12px 0 4px!important}
+ .site-footer .footer-link-group{gap:12px}
+ .site-footer .footer-link-group h2{font-size:11px}
+ .site-footer .footer-link-group a{font-size:12px}
+ .site-footer .footer-social-section{justify-content:flex-start;margin:0;padding:4px 0}
+ .site-footer .footer-copyright{text-align:left;margin-top:0}
+}
+
+/* Reader-friendly legal and support pages, sharing the brand's visual language. */
+.legal-page{background:#f3f1e8;color:#222a20;padding:clamp(56px,7vw,105px) 6% clamp(65px,9vw,110px);min-height:65vh}
+.legal-page-inner{max-width:920px;margin:0 auto}
+.legal-page-heading{border-bottom:1px solid #cdd0c2;padding-bottom:32px;margin-bottom:35px}
+.legal-page-heading .eyebrow{color:#707b65;font-weight:700}
+.legal-page-heading h1{font-family:'Saira',sans-serif;font-size:clamp(36px,6vw,66px);line-height:1.04;text-transform:uppercase;margin:16px 0 20px}
+.legal-page-heading>p:not(.eyebrow){font-size:16px;line-height:1.7;max-width:680px;color:#535e4b}
+.legal-updated{display:block;color:#73806e;font-size:11px;letter-spacing:.4px;margin-top:19px}
+.legal-page-sections{display:grid;gap:30px}
+.legal-page-sections section{padding-bottom:24px;border-bottom:1px solid #e0e1d7}
+.legal-page-sections section:last-child{border-bottom:0}
+.legal-page-sections h2{font-family:'Saira',sans-serif;font-size:clamp(17px,2.1vw,22px);line-height:1.3;margin:0 0 12px;text-transform:none;letter-spacing:0;font-weight:700}
+.legal-page-sections p{margin:0;color:#454f40;font-size:14px;line-height:1.9;max-width:780px}
+.legal-page a{color:#354c32;text-decoration:underline;text-underline-offset:3px;overflow-wrap:anywhere}
+.legal-page a:focus-visible{outline:2px solid #354c32;outline-offset:3px}
+.legal-help{background:#e6e8dc;border-left:3px solid #758164;padding:20px;margin-top:30px;font-size:13px;line-height:1.8}
+@media(max-width:600px){
+ .legal-page{padding:50px 6% 70px}
+ .legal-page-heading{margin-bottom:28px}
+ .legal-page-heading>p:not(.eyebrow){font-size:14px}
+ .legal-page-sections{gap:23px}
+ .legal-page-sections p{font-size:13px;line-height:1.85}
+}

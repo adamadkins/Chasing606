@@ -71,10 +71,66 @@ export default function ProductModal({ product, onClose, onAddToCart, commerce }
   const touchStartX = useRef(null);
   const swipedGallery = useRef(false);
   const lightboxTouch = useRef(null);
+  const [photoZoom, setPhotoZoom] = useState({ scale: 1, x: 0, y: 0 });
+  const photoZoomRef = useRef({ scale: 1, x: 0, y: 0 });
+  const photoViewport = useRef(null);
+  const setPhotoView = next => { photoZoomRef.current = next; setPhotoZoom(next); };
+  const resetPhotoView = () => setPhotoView({ scale: 1, x: 0, y: 0 });
+  const touchDistance = (a, b) => Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
+  const keepInBounds = (scale, x, y) => {
+    const el = photoViewport.current;
+    if (!el || scale <= 1) return { scale: 1, x: 0, y: 0 };
+    const limitX = el.clientWidth * (scale - 1) / 2;
+    const limitY = el.clientHeight * (scale - 1) / 2;
+    return { scale, x: Math.max(-limitX, Math.min(limitX, x)), y: Math.max(-limitY, Math.min(limitY, y)) };
+  };
+  const startLightboxTouch = event => {
+    const touches = event.touches;
+    if (touches.length === 2) {
+      lightboxTouch.current = {
+        mode: 'pinch', distance: touchDistance(touches[0], touches[1]),
+        initial: { ...photoZoomRef.current }
+      };
+    } else if (touches.length === 1) {
+      lightboxTouch.current = {
+        mode: photoZoomRef.current.scale > 1 ? 'pan' : 'swipe',
+        x: touches[0].clientX, y: touches[0].clientY,
+        initial: { ...photoZoomRef.current }
+      };
+    }
+  };
+  const moveLightboxTouch = event => {
+    const gesture = lightboxTouch.current;
+    if (!gesture) return;
+    if (gesture.mode === 'pinch' && event.touches.length === 2) {
+      const nextScale = Math.max(1, Math.min(4, gesture.initial.scale * touchDistance(event.touches[0], event.touches[1]) / Math.max(1, gesture.distance)));
+      setPhotoView(keepInBounds(nextScale, gesture.initial.x, gesture.initial.y));
+    } else if (gesture.mode === 'pan' && event.touches.length === 1) {
+      const finger = event.touches[0];
+      setPhotoView(keepInBounds(gesture.initial.scale, gesture.initial.x + finger.clientX - gesture.x, gesture.initial.y + finger.clientY - gesture.y));
+    }
+  };
+  const endLightboxTouch = event => {
+    const gesture = lightboxTouch.current;
+    if (event.touches.length > 0) {
+      lightboxTouch.current = null;
+      return;
+    }
+    lightboxTouch.current = null;
+    if (gesture?.mode !== 'swipe' || photoZoomRef.current.scale > 1 || galleryImages.length < 2) return;
+    const finger = event.changedTouches[0];
+    if (!finger) return;
+    const dx = finger.clientX - gesture.x;
+    const dy = finger.clientY - gesture.y;
+    if (Math.abs(dx) >= 50 && Math.abs(dx) > Math.abs(dy) * 1.25) changePhoto(dx < 0 ? 1 : -1);
+  };
   const [zoomOpen, setZoomOpen] = useState(false);
   const displayedImage = galleryImages[galleryIndex] || galleryImages[0] || getImageForColor(product, selectedColor);
-  useEffect(() => { setGalleryIndex(0); }, [selectedColor, product.id]);
-  const changePhoto = direction => setGalleryIndex(index => (index + direction + galleryImages.length) % galleryImages.length);
+  useEffect(() => { setGalleryIndex(0); resetPhotoView(); }, [selectedColor, product.id]);
+  const changePhoto = direction => {
+    resetPhotoView();
+    setGalleryIndex(index => (index + direction + galleryImages.length) % galleryImages.length);
+  };
   useEffect(() => {
     if (!zoomOpen) return;
     const onKeyDown = event => {
@@ -315,27 +371,28 @@ export default function ProductModal({ product, onClose, onAddToCart, commerce }
           </div>
         </div>
         {zoomOpen && displayedImage && createPortal(
-          <div className="product-photo-lightbox" role="dialog" aria-modal="true" aria-label={`Enlarged photos of ${product.name}`} onClick={event => { event.stopPropagation(); setZoomOpen(false); }}>
-            <button className="product-photo-lightbox-close" type="button" aria-label="Close enlarged photo" onClick={() => setZoomOpen(false)}><span className="lightbox-close-mark" aria-hidden="true" /></button>
-            <div className="product-photo-lightbox-content"
-              onClick={event => event.stopPropagation()}
-              onTouchStart={event => {
-                const touch = event.touches[0];
-                if (touch) lightboxTouch.current = { x: touch.clientX, y: touch.clientY };
-              }}
-              onTouchEnd={event => {
-                const start = lightboxTouch.current;
-                lightboxTouch.current = null;
-                const touch = event.changedTouches[0];
-                if (!start || !touch || galleryImages.length < 2) return;
-                const dx = touch.clientX - start.x;
-                const dy = touch.clientY - start.y;
-                if (Math.abs(dx) >= 45 && Math.abs(dx) > Math.abs(dy) * 1.25) {
-                  changePhoto(dx < 0 ? 1 : -1);
-                }
-              }}
-              onTouchCancel={() => { lightboxTouch.current = null; }}>
-              <img src={displayedImage} alt={`${product.name}, ${selectedColor}, photo ${galleryIndex + 1}`} />
+          <div className="product-photo-lightbox" role="dialog" aria-modal="true" aria-label={`Enlarged photos of ${product.name}`} onClick={event => { event.stopPropagation(); resetPhotoView(); setZoomOpen(false); }}>
+            <button className="product-photo-lightbox-close" type="button" aria-label="Close enlarged photo" onClick={() => { resetPhotoView(); setZoomOpen(false); }}><span className="lightbox-close-mark" aria-hidden="true" /></button>
+            <div className="product-photo-lightbox-content" onClick={event => event.stopPropagation()}>
+              <div
+                className="product-photo-viewport"
+                ref={photoViewport}
+                onTouchStart={startLightboxTouch}
+                onTouchMove={moveLightboxTouch}
+                onTouchEnd={endLightboxTouch}
+                onTouchCancel={() => { lightboxTouch.current = null; }}
+                onDoubleClick={() => {
+                  if (photoZoomRef.current.scale > 1) resetPhotoView();
+                  else setPhotoView({ scale: 2, x: 0, y: 0 });
+                }}
+              >
+                <img
+                  src={displayedImage}
+                  alt={`${product.name}, ${selectedColor}, photo ${galleryIndex + 1}`}
+                  draggable="false"
+                  style={{ transform: `translate3d(${photoZoom.x}px, ${photoZoom.y}px, 0) scale(${photoZoom.scale})` }}
+                />
+              </div>
               {galleryImages.length > 1 && <div className="product-photo-lightbox-controls">
                 <button type="button" onClick={() => changePhoto(-1)} aria-label="Previous photo">‹</button>
                 <span>{galleryIndex + 1} / {galleryImages.length}</span>

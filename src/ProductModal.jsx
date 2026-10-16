@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Icon from './Icon';
 import { variantFor, canAdd } from './catalog';
 
@@ -57,11 +57,21 @@ export default function ProductModal({ product, onClose, onAddToCart, commerce }
   const currentCurrency = currentVariant?.currencyCode ?? product.currencyCode ?? 'USD';
   const isAvailable = Boolean(currentVariant?.available);
 
-  const galleryImages = [...new Set([...(product.variants || []).filter(v => !selectedColor || v.color === selectedColor).flatMap(v => v.images || (v.image ? [v.image] : [])), ...(product.images || []), ...(product.image ? [product.image] : [])])];
+  // Fourthwall typically orders images as garment front/back, then model poses.
+  // Only use photos associated with the selected color; avoid mixing colorways.
+  const matchingVariants = (product.variants || []).filter(v => !selectedColor || (v.color || '').toLowerCase() === selectedColor.toLowerCase());
+  const colorImages = [...new Set(matchingVariants.flatMap(v => v.images?.length ? v.images : (v.image ? [v.image] : [])))];
+  const galleryImages = colorImages.slice(0, 4);
+  const [galleryIndex, setGalleryIndex] = useState(0);
+  const touchStartX = useRef(null);
+  const displayedImage = galleryImages[galleryIndex] || galleryImages[0] || getImageForColor(product, selectedColor);
+  useEffect(() => { setGalleryIndex(0); }, [selectedColor, product.id]);
+  const changePhoto = direction => setGalleryIndex(index => (index + direction + galleryImages.length) % galleryImages.length);
+
 
   function handleAdd() {
     if (!isAvailable) return;
-    onAddToCart(product.id, selectedSize, selectedColor, quantity, activeImage);
+    onAddToCart(product.id, selectedSize, selectedColor, quantity, displayedImage);
     setAddedNotice(true);
     setTimeout(() => {
       setAddedNotice(false);
@@ -71,7 +81,7 @@ export default function ProductModal({ product, onClose, onAddToCart, commerce }
 
   function handleBuyNow() {
     if (!isAvailable) return;
-    onAddToCart(product.id, selectedSize, selectedColor, quantity, activeImage, true);
+    onAddToCart(product.id, selectedSize, selectedColor, quantity, displayedImage, true);
     onClose();
   }
 
@@ -95,10 +105,10 @@ export default function ProductModal({ product, onClose, onAddToCart, commerce }
         <div className="product-modal-grid">
           {/* Left Column: Visual Gallery */}
           <div className="product-modal-visuals">
-            <div className="product-modal-hero-frame">
-              {activeImage ? (
+            <div className="product-modal-hero-frame" onTouchStart={e => { touchStartX.current = e.touches[0]?.clientX ?? null; }} onTouchEnd={e => { if (touchStartX.current == null) return; const dx = e.changedTouches[0].clientX - touchStartX.current; if (Math.abs(dx) > 45 && galleryImages.length > 1) changePhoto(dx < 0 ? 1 : -1); touchStartX.current = null; }}>
+              {displayedImage ? (
                 <img
-                  src={activeImage}
+                  src={displayedImage}
                   alt={`${product.name} ${selectedColor}`}
                   className="product-modal-hero-img"
                   loading="eager"
@@ -111,36 +121,20 @@ export default function ProductModal({ product, onClose, onAddToCart, commerce }
                   <span className="concept">OFFICIAL 606 GEAR</span>
                 </div>
               )}
+              {galleryImages.length > 1 && <>
+                <button type="button" className="product-gallery-arrow prev" aria-label="Previous product photo" onClick={() => changePhoto(-1)}>‹</button>
+                <button type="button" className="product-gallery-arrow next" aria-label="Next product photo" onClick={() => changePhoto(1)}>›</button>
+                <span className="product-gallery-counter">{galleryIndex + 1} / {galleryImages.length}</span>
+              </>}
               <div className="product-modal-badge">
                 <span className="stock-indicator-dot" />
                 <span>{isAvailable ? 'IN STOCK' : 'OUT OF STOCK'}</span>
               </div>
             </div>
 
-            {/* Thumbnail switcher if multiple colorways / images exist */}
-            {galleryImages.length > 1 && (
-              <div className="product-modal-thumbnails">
-                {galleryImages.map((img, idx) => {
-                  const matchingColor = Object.entries(product.imagesByColor || {}).find(([, url]) => url === img)?.[0] ||
-                    colors.find(c => getImageForColor(product, c) === img);
-                  return (
-                    <button
-                      key={idx}
-                      type="button"
-                      className={`product-thumb-btn ${activeImage === img ? 'is-active' : ''}`}
-                      onClick={() => {
-                        setActiveImage(img);
-                        if (matchingColor) setSelectedColor(matchingColor);
-                      }}
-                      aria-label={`View photo ${idx + 1}`}
-                    >
-                      <img src={img} alt={`Thumbnail ${idx + 1}`} />
-                      {matchingColor && <span className="thumb-color-label">{matchingColor}</span>}
-                    </button>
-                  );
-                })}
-              </div>
-            )}
+            {galleryImages.length > 1 && <div className="product-modal-thumbnails">
+              {galleryImages.map((img, idx) => <button key={img} type="button" className={`product-thumb-btn ${galleryIndex === idx ? 'is-active' : ''}`} onClick={() => setGalleryIndex(idx)} aria-label={`View photo ${idx + 1}`} aria-pressed={galleryIndex === idx}><img src={img} alt={`${product.name} photo ${idx + 1}`} /></button>)}
+            </div>}
           </div>
 
           {/* Right Column: Buying Details */}

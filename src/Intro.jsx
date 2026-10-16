@@ -1,7 +1,8 @@
 import React, { useLayoutEffect, useRef, useState } from 'react';
 const seenKey = 'chasing606-intro-seen';
 function shouldPlay() {
-  if (matchMedia('(prefers-reduced-motion: reduce)').matches || location.hash) return false;
+  if (typeof window === 'undefined') return false;
+  if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches || window.location.hash) return false;
   try { return sessionStorage.getItem(seenKey) !== 'yes'; } catch { return true; }
 }
 export default function Intro() {
@@ -9,7 +10,7 @@ export default function Intro() {
   const layer = useRef(null), logo = useRef(null), backdrop = useRef(null), medallion = useRef(null);
   useLayoutEffect(() => {
     if (!active) return;
-    const target = document.querySelector('.header-brand') || document.querySelector('.header-brand .brand-logo');
+    const target = document.querySelector('.header-brand .brand-logo') || document.querySelector('.header-brand');
     if (!target) { setActive(false); return; }
     try { sessionStorage.setItem(seenKey, 'yes'); } catch { /* Private browsing may disable storage. */ }
     const oldVisibility = target.style.visibility;
@@ -24,11 +25,23 @@ export default function Intro() {
     let cancelled = false;
     const animations = [];
     const finish = () => { if (!cancelled) setActive(false); };
-    const timeout = setTimeout(finish, 4500);
-    const preference = matchMedia('(prefers-reduced-motion: reduce)');
+    const timeout = setTimeout(finish, 5200);
+    const preference = window.matchMedia?.('(prefers-reduced-motion: reduce)');
+    const orientation = window.screen?.orientation?.type || (window.innerWidth > window.innerHeight ? 'landscape' : 'portrait');
+    let priorWidth = window.innerWidth;
+    const onResize = () => {
+      const nextOrientation = window.screen?.orientation?.type || (window.innerWidth > window.innerHeight ? 'landscape' : 'portrait');
+      if (Math.abs(window.innerWidth - priorWidth) > 90 || nextOrientation !== orientation) finish();
+      priorWidth = window.innerWidth;
+    };
+    const listenMotion = (handler, add) => {
+      if (!preference) return;
+      if (preference.addEventListener) preference[add ? 'addEventListener' : 'removeEventListener']('change', handler);
+      else if (preference.addListener) preference[add ? 'addListener' : 'removeListener'](handler);
+    };
     const keydown = event => { if (event.key === 'Escape') finish(); if (event.key === 'Tab') { event.preventDefault(); layer.current?.focus(); } };
-    window.addEventListener('resize', finish);
-    preference.addEventListener('change', finish);
+    window.addEventListener('resize', onResize);
+    listenMotion(finish, true);
     document.addEventListener('keydown', keydown);
     async function animate() {
       try {
@@ -40,6 +53,7 @@ export default function Intro() {
           /* Continue even if decode is not supported or rejected */
         }
         if (cancelled) return;
+        if (!medallion.current?.animate || !backdrop.current?.animate) { finish(); return; }
         const start = medallion.current.getBoundingClientRect();
         const end = target.getBoundingClientRect();
         if (!start.width || !end.width) {
@@ -74,8 +88,8 @@ export default function Intro() {
       target.style.visibility = oldVisibility;
       document.body.style.overflow = oldOverflow;
       siblings.forEach((node,index) => { node.inert = oldInert[index]; });
-      window.removeEventListener('resize', finish);
-      preference.removeEventListener('change', finish);
+      window.removeEventListener('resize', onResize);
+      listenMotion(finish, false);
       document.removeEventListener('keydown', keydown);
       if (oldFocus instanceof HTMLElement && oldFocus !== document.body) oldFocus.focus({ preventScroll:true });
     };

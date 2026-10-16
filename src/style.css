@@ -2776,3 +2776,61 @@ html{scrollbar-gutter:stable}.brand-intro:focus{outline:none}
   .brand-intro{display:none}
   .story-ending-slot em{animation:none!important}
 }
+
+/* Mobile header and homepage hero: keep the logo fully inside the navigation bar. */
+@media(max-width:600px){
+  header .header-brand{
+    top:50%!important;
+    transform:translate(-50%,-50%)!important;
+    width:68px!important;
+    height:68px!important;
+    border-radius:50%!important;
+    box-shadow:0 2px 9px rgba(0,0,0,.22)!important;
+    overflow:hidden;
+    padding:0!important;
+  }
+  header .header-brand .brand.has-logo{
+    width:57px!important;
+    height:57px!important;
+    overflow:hidden;
+  }
+  header .header-brand .brand-logo{
+    width:54px!important;
+    height:54px!important;
+    transform:none!important;
+    object-fit:contain!important;
+  }
+  header .header-brand:hover{
+    transform:translate(-50%,-50%)!important;
+  }
+  .hero{
+    padding-top:clamp(260px,79vw,330px);
+    min-height:0;
+  }
+  .hero::before{
+    height:clamp(260px,79vw,330px);
+    background-position:center,center 73%;
+  }
+  .hero-content{
+    padding:26px 7% 75px;
+  }
+  .hero h1{
+    font-size:clamp(35px,10.4vw,46px);
+    line-height:1.04;
+    letter-spacing:-.8px;
+    margin:22px 0 24px;
+  }
+  .hero-content .hero-mission{
+    font-size:12px!important;
+    line-height:1.65;
+  }
+  .hero-content .hero-scripture{
+    margin-top:17px;
+  }
+  .hero-actions{
+    flex-wrap:wrap;
+    gap:16px;
+    margin-top:22px;
+  }
+  .hero-bottom{bottom:18px}
+}

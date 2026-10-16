@@ -2615,3 +2615,28 @@ html{scrollbar-gutter:stable}.brand-intro:focus{outline:none}
  .developer-profile-header .developer-role{font-size:8px;letter-spacing:.7px}
  .developer-profile-header .developer-portrait-frame{border-width:3px;border-radius:9px}
 }
+
+/* Chasing 606 Connect: polished direct-submission form. */
+.contact-form-panel{background:#e9e8df;min-width:0}
+.contact-form-panel .contact-form{padding:clamp(25px,3.5vw,40px);display:flex;flex-direction:column}
+.contact-form-eyebrow{font-size:10px;font-weight:700;letter-spacing:1.6px;color:#66775d;margin:0 0 12px}
+.contact-form-panel .contact-form h2{font-family:'Saira',sans-serif;margin:0 0 25px;line-height:1.2;font-size:clamp(24px,3vw,30px)}
+.contact-form-two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+.contact-form-panel .contact-form label{font-size:12px;line-height:1.5;font-weight:600;color:#374532}
+.contact-form-panel .contact-form input,.contact-form-panel .contact-form select,.contact-form-panel .contact-form textarea{
+ box-sizing:border-box;min-width:0;border-radius:3px;border:1px solid #bbc2b3;background:#fffefb;
+ font-family:inherit;font-size:13px;font-weight:400;line-height:1.5;padding:13px 14px;
+}
+.contact-form-panel .contact-form input:focus-visible,.contact-form-panel .contact-form select:focus-visible,.contact-form-panel .contact-form textarea:focus-visible{outline:2px solid #58704c;outline-offset:2px}
+.contact-form-panel .contact-form textarea{min-height:145px}
+.contact-form-panel .contact-form button:disabled{opacity:.6;cursor:wait}
+.contact-form-panel .contact-form-honeypot{position:absolute;left:-10000px;width:1px;height:1px;overflow:hidden}
+.contact-form-panel .contact-form-error{font-size:12px;line-height:1.6;color:#993b2e;margin:0 0 14px}
+.contact-form-panel .contact-form-error a{color:inherit;text-decoration:underline}
+.contact-form-panel .form-help a{color:#394e36;text-decoration:underline;text-underline-offset:2px}
+.contact-form-success{padding:clamp(30px,4vw,45px);min-height:350px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:18px}
+.contact-form-success h2{margin:0;font-family:'Saira',sans-serif;font-size:clamp(25px,3vw,32px)}
+.contact-form-success p{font-size:14px;line-height:1.7;color:#53604e;margin:0}
+.contact-form-success-icon{display:grid;place-items:center;width:49px;height:49px;border-radius:50%;background:#354e38;color:white;font-size:22px}
+@media(max-width:700px){.contact-form-two{grid-template-columns:1fr;gap:0}}
+@media(max-width:560px){.contact-form-panel .contact-form{padding:25px 21px}}

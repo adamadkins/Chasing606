@@ -18,19 +18,6 @@ export async function getProducts() {
   return data.products;
 }
 
-export async function getProducts() {
-  try {
-    const res = await fetch('/api/products');
-    if (res.ok) {
-      const data = await res.json();
-      if (Array.isArray(data.products) && data.products.length > 0) {
-        return data.products;
-      }
-    }
-  } catch {}
-  return fourthwallProducts;
-}
-
 export async function getProduct(id) {
   return (await getProducts()).find(product => product.id === id) ?? null;
 }

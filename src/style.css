@@ -2674,3 +2674,62 @@ html{scrollbar-gutter:stable}.brand-intro:focus{outline:none}
 @media(prefers-reduced-motion:reduce){
   .story-ending-enter{animation:none}
 }
+
+/* Full-screen product photos: the viewport handles gestures instead of Safari's page zoom. */
+.product-photo-lightbox{
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:auto;
+}
+.product-photo-lightbox-content{
+  overflow:hidden;
+  min-height:0;
+}
+.product-photo-viewport{
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:100%;
+  height:calc(100% - 64px);
+  max-height:calc(100dvh - 130px);
+  min-height:0;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.2);
+  border-radius:12px;
+  box-shadow:0 10px 55px rgba(0,0,0,.26);
+  background:linear-gradient(145deg,#bbb9b1 0%,#a6a69f 52%,#b4b2ab 100%);
+  touch-action:none;
+  overscroll-behavior:contain;
+  -webkit-user-select:none;
+  user-select:none;
+}
+.product-photo-viewport>img{
+  display:block;
+  box-sizing:border-box;
+  width:100%;
+  height:100%;
+  padding:clamp(18px,4vw,54px);
+  object-fit:contain;
+  object-position:center;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  box-shadow:none;
+  transform-origin:center center;
+  will-change:transform;
+  -webkit-user-select:none;
+  user-select:none;
+  -webkit-user-drag:none;
+  pointer-events:none;
+}
+@media(max-width:850px){
+  .product-photo-viewport{
+    height:calc(100% - 70px);
+    max-height:calc(100dvh - 165px);
+    border-radius:9px;
+  }
+  .product-photo-viewport>img{padding:clamp(12px,4vw,24px)}
+}
+@media(prefers-reduced-motion:reduce){
+  .product-photo-viewport>img{transition:none}
+}

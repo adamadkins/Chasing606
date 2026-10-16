@@ -16,6 +16,7 @@ export default function Intro() {
     const oldVisibility = target.style.visibility;
     const oldOpacity = target.style.opacity;
     const oldTransition = target.style.transition;
+    const oldBoxShadow = target.style.boxShadow;
     const oldOverflow = document.body.style.overflow;
     const oldFocus = document.activeElement;
     target.style.visibility = 'hidden';
@@ -66,6 +67,8 @@ export default function Intro() {
         const dx = (end.left + end.width / 2) - (start.left + start.width / 2);
         const dy = (end.top + end.height / 2) - (start.top + start.height / 2);
         const scale = end.width / start.width;
+        // Match the final badge's shadow before the handoff to avoid a visible flash.
+        const finalShadow = getComputedStyle(target).boxShadow;
         animations.push(medallion.current.animate([
           { opacity: 0, transform: 'translate(-50%, -50%) scale(0.9)' },
           { opacity: 1, transform: 'translate(-50%, -50%) scale(1)' },
@@ -86,6 +89,7 @@ export default function Intro() {
         // Fading both at once exposed the hero photo through the lower edge
         // for a frame on mobile browsers.
         target.style.opacity = '1';
+        target.style.boxShadow = 'none';
         target.style.visibility = 'visible';
         const handoff = medallion.current.animate(
           [{ opacity: 1 }, { opacity: 0 }],
@@ -93,7 +97,10 @@ export default function Intro() {
         );
         animations.push(handoff);
         await handoff.finished;
-        if (!cancelled) finish();
+        if (!cancelled) {
+          target.style.boxShadow = finalShadow;
+          finish();
+        }
       } catch { finish(); }
     }
     animate();
@@ -104,6 +111,7 @@ export default function Intro() {
       // a compositor frame can never reveal the hero through the badge.
       target.style.visibility = oldVisibility;
       target.style.opacity = oldOpacity;
+      target.style.boxShadow = oldBoxShadow;
       animations.forEach(animation => animation.cancel());
       target.style.transition = oldTransition;
       document.body.style.overflow = oldOverflow;

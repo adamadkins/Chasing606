@@ -1,29 +1,237 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Icon from './Icon';
 import { createCheckout, variantFor } from './catalog';
-const storageKey='chasing606-fourthwall-cart-v1';
+
+const storageKey = 'chasing606-fourthwall-cart-v2';
+
 export function useCart() {
- const [items,setItems]=useState(()=>{try {const value=JSON.parse(localStorage.getItem(storageKey)||'[]');return Array.isArray(value)?value.filter(i=>typeof i.id==='string'&&typeof i.size==='string'&&Number.isInteger(i.quantity)&&i.quantity>0&&i.quantity<=10):[];}catch{return [];}});
- useEffect(()=>{try{localStorage.setItem(storageKey,JSON.stringify(items));}catch{/* Cart remains usable for this visit if storage is unavailable. */}},[items]);
- function add(id,size){setItems(previous=>{const match=previous.find(i=>i.id===id&&i.size===size);return match?previous.map(i=>i===match?{...i,quantity:Math.min(i.quantity+1,10)}:i):[...previous,{id,size,quantity:1}];});}
- function quantity(id,size,next){setItems(previous=>next<=0?previous.filter(i=>!(i.id===id&&i.size===size)):previous.map(i=>i.id===id&&i.size===size?{...i,quantity:Math.min(next,10)}:i));}
- return {items,add,quantity};
+  const [items, setItems] = useState(() => {
+    try {
+      const value = JSON.parse(localStorage.getItem(storageKey) || '[]');
+      return Array.isArray(value)
+        ? value.filter(i => typeof i.id === 'string' && typeof i.size === 'string' && Number.isInteger(i.quantity) && i.quantity > 0 && i.quantity <= 10)
+        : [];
+    } catch {
+      return [];
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(storageKey, JSON.stringify(items));
+    } catch {
+      /* Cart remains usable in memory */
+    }
+  }, [items]);
+
+  function add(id, size, color = '', qty = 1, image = null) {
+    const validQty = Math.max(1, Math.min(qty || 1, 10));
+    setItems(previous => {
+      const match = previous.find(i => i.id === id && i.size === size && (i.color || '') === (color || ''));
+      if (match) {
+        return previous.map(i => i === match ? { ...i, quantity: Math.min(i.quantity + validQty, 10), image: image || i.image } : i);
+      }
+      return [...previous, { id, size, color: color || '', quantity: validQty, image }];
+    });
+  }
+
+  function quantity(id, size, color, next) {
+    setItems(previous =>
+      next <= 0
+        ? previous.filter(i => !(i.id === id && i.size === size && (i.color || '') === (color || '')))
+        : previous.map(i => (i.id === id && i.size === size && (i.color || '') === (color || '')) ? { ...i, quantity: Math.min(next, 10) } : i)
+    );
+  }
+
+  function clear() {
+    setItems([]);
+  }
+
+  return { items, add, quantity, clear };
 }
-export default function Cart({open,onClose,cart,products,commerce}) {
- const dialog=useRef(null);
- useEffect(()=>{if(open)setCheckoutError('');},[open]);
- const [busy,setBusy]=useState(false),[checkoutError,setCheckoutError]=useState('');
- useEffect(()=>{if(open){dialog.current.showModal();const old=document.body.style.overflow;document.body.style.overflow='hidden';return()=>{dialog.current.close();document.body.style.overflow=old;};}},[open]);
- const lines=cart.items.map(item=>({...item,product:products.find(p=>p.id===item.id)})).filter(item=>item.product&&item.product.sizes.includes(item.size));
- const price=line=>variantFor(line.product,line.size)?.price??line.product.price;
- const currency=line=>variantFor(line.product,line.size)?.currencyCode??line.product.currencyCode??'USD';
- const subtotal=lines.reduce((total,line)=>total+price(line)*line.quantity,0);
- const currencies=new Set(lines.map(currency));
- const invalidItems=lines.length!==cart.items.length||lines.some(line=>!line.product.available||(line.product.variants&&!variantFor(line.product,line.size)?.available));
- async function proceed(){setBusy(true);setCheckoutError('');try{const checkoutUrl=await createCheckout(lines.map(line=>({merchandiseId:variantFor(line.product,line.size)?.id,quantity:line.quantity})));window.location.assign(checkoutUrl);}catch(error){setCheckoutError(error.message);setBusy(false);}}
- const money=(amount,code='USD')=>new Intl.NumberFormat('en-US',{style:'currency',currency:code}).format(amount);
- return <dialog ref={dialog} className="cart-drawer" aria-labelledby="cart-title" onCancel={onClose} onClick={event=>{if(event.target===dialog.current){const rect=dialog.current.getBoundingClientRect();if(event.clientX<rect.left||event.clientX>rect.right||event.clientY<rect.top||event.clientY>rect.bottom)onClose();}}}>
- <div className="cart-heading"><h2 id="cart-title">Your cart.</h2><button onClick={onClose} aria-label="Close cart"><Icon name="close"/></button></div>{commerce?.mode==='demo' && <p className="cart-preview">Collection preview — sample products. Orders aren’t open yet.</p>}{invalidItems && <p role="alert" className="cart-error">Some options are no longer available. Remove them before checkout. <button onClick={()=>cart.items.filter(item=>!lines.some(line=>line.id===item.id&&line.size===item.size)).forEach(item=>cart.quantity(item.id,item.size,0))}>Remove missing items</button></p>}
- {lines.length?<><div className="cart-lines">{lines.map(line=><article className="cart-line" key={`${line.id}-${line.size}`}><div className="cart-swatch">{line.product.image?<img src={line.product.image} alt={line.product.name}/>:<Icon name="bag"/>}</div><div className="cart-line-info"><h3>{line.product.name}</h3><p>{line.product.color} / {line.size}</p>{(!line.product.available||(line.product.variants&&!variantFor(line.product,line.size)?.available))&&<p>Out of stock</p>}<div className="quantity-control"><button aria-label={`Decrease ${line.product.name} ${line.size} quantity`} onClick={()=>cart.quantity(line.id,line.size,line.quantity-1)}>−</button><span aria-live="polite">{line.quantity}</span><button disabled={line.quantity>=10} aria-label={`Increase ${line.product.name} ${line.size} quantity`} onClick={()=>cart.quantity(line.id,line.size,line.quantity+1)}>+</button></div><button className="remove-item" onClick={()=>cart.quantity(line.id,line.size,0)}>Remove<span className="sr-only"> {line.product.name} {line.size}</span></button></div><span className="line-price">{money(price(line)*line.quantity,currency(line))}</span></article>)}</div><div className="cart-summary"><p><span>Subtotal</span><strong>{currencies.size>1?'Shown at checkout':money(subtotal,lines[0]?currency(lines[0]):'USD')}</strong></p><p className="cart-disclaimer">{commerce?.mode==='demo'?'Sample pricing. Shipping and tax are not calculated.':'Shipping, tax, discounts, and final availability are confirmed at checkout.'}</p>{checkoutError && <p className="cart-error" role="alert">{checkoutError}</p>}<button className={`button ${commerce?.checkoutEnabled&&!invalidItems?'story-watch':'unavailable'}`} disabled={!commerce?.checkoutEnabled||invalidItems||busy} onClick={proceed}>{busy?'OPENING CHECKOUT…':commerce?.checkoutEnabled?'SECURE CHECKOUT':'CHECKOUT OPENS AT LAUNCH'}</button><a href="/merch" className="cart-continue">Continue browsing</a></div></>:<div className="empty-cart"><Icon name="bag"/><h3>Your next adventure starts here.</h3><p>Your cart is empty. Explore the collection and find your gear.</p><a className="button story-watch" href="/merch">BROWSE THE MERCH <Icon/></a></div>}
- </dialog>;
+
+export default function Cart({ open, onClose, cart, products, commerce, onOpenCheckout }) {
+  const dialog = useRef(null);
+
+  useEffect(() => {
+    if (open) {
+      dialog.current?.showModal();
+      const old = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        dialog.current?.close();
+        document.body.style.overflow = old;
+      };
+    }
+  }, [open]);
+
+  const money = (amount, code = 'USD') =>
+    new Intl.NumberFormat('en-US', { style: 'currency', currency: code }).format(amount);
+
+  const lines = cart.items.map(item => {
+    const product = products.find(p => p.id === item.id);
+    const variant = variantFor(product, item.size, item.color);
+    const displayImg = item.image || (item.color && product?.imagesByColor?.[item.color]) || variant?.image || product?.image;
+    return {
+      ...item,
+      product,
+      variant,
+      displayImg,
+      unitPrice: variant?.price ?? product?.price ?? 0,
+      currencyCode: variant?.currencyCode ?? product?.currencyCode ?? 'USD'
+    };
+  }).filter(line => line.product);
+
+  const subtotal = lines.reduce((total, line) => total + line.unitPrice * line.quantity, 0);
+  const freeShippingThreshold = 75;
+  const progressPercent = Math.min(100, Math.round((subtotal / freeShippingThreshold) * 100));
+  const diffToFreeShipping = Math.max(0, freeShippingThreshold - subtotal);
+
+  function proceed() {
+    onClose();
+    if (onOpenCheckout) {
+      onOpenCheckout(lines, subtotal);
+    }
+  }
+
+  return (
+    <dialog
+      ref={dialog}
+      className="cart-drawer"
+      aria-labelledby="cart-title"
+      onCancel={onClose}
+      onClick={event => {
+        if (event.target === dialog.current) {
+          const rect = dialog.current.getBoundingClientRect();
+          if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) {
+            onClose();
+          }
+        }
+      }}
+    >
+      <div className="cart-header">
+        <div className="cart-header-title">
+          <span className="cart-badge-dot" />
+          <h2 id="cart-title">YOUR BAG</h2>
+          <span className="cart-count">({cart.items.reduce((sum, item) => sum + item.quantity, 0)})</span>
+        </div>
+        <button className="cart-close-btn" onClick={onClose} aria-label="Close cart">
+          <Icon name="close" />
+        </button>
+      </div>
+
+      {subtotal > 0 && (
+        <div className="free-shipping-bar">
+          <div className="shipping-text">
+            {diffToFreeShipping === 0 ? (
+              <span><strong>✓ You qualify for Free US Shipping!</strong></span>
+            ) : (
+              <span>Add <strong>{money(diffToFreeShipping)}</strong> more for <strong>Free US Shipping</strong></span>
+            )}
+          </div>
+          <div className="shipping-progress-track">
+            <div className="shipping-progress-fill" style={{ width: `${progressPercent}%` }} />
+          </div>
+        </div>
+      )}
+
+      {lines.length > 0 ? (
+        <>
+          <div className="cart-lines">
+            {lines.map(line => (
+              <article className="cart-line-card" key={`${line.id}-${line.color}-${line.size}`}>
+                <div className="cart-line-thumb">
+                  {line.displayImg ? (
+                    <img src={line.displayImg} alt={line.product.name} />
+                  ) : (
+                    <div className="cart-fallback-art">
+                      <Icon name="bag" />
+                    </div>
+                  )}
+                </div>
+                <div className="cart-line-main">
+                  <div className="cart-line-header">
+                    <h3 className="cart-line-name">{line.product.name}</h3>
+                    <span className="cart-line-price">{money(line.unitPrice * line.quantity, line.currencyCode)}</span>
+                  </div>
+                  <div className="cart-line-options">
+                    {line.color && <span className="option-tag">Color: {line.color}</span>}
+                    {line.size && <span className="option-tag">Size: {line.size}</span>}
+                  </div>
+                  <div className="cart-line-actions">
+                    <div className="cart-stepper">
+                      <button
+                        type="button"
+                        aria-label="Decrease quantity"
+                        onClick={() => cart.quantity(line.id, line.size, line.color, line.quantity - 1)}
+                      >
+                        −
+                      </button>
+                      <span aria-live="polite">{line.quantity}</span>
+                      <button
+                        type="button"
+                        aria-label="Increase quantity"
+                        disabled={line.quantity >= 10}
+                        onClick={() => cart.quantity(line.id, line.size, line.color, line.quantity + 1)}
+                      >
+                        +
+                      </button>
+                    </div>
+                    <button
+                      type="button"
+                      className="cart-remove-btn"
+                      onClick={() => cart.quantity(line.id, line.size, line.color, 0)}
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+
+          <div className="cart-footer">
+            <div className="cart-subtotal-row">
+              <span className="label">Subtotal</span>
+              <span className="value">{money(subtotal, lines[0]?.currencyCode || 'USD')}</span>
+            </div>
+            <p className="cart-tax-notice">
+              Taxes and shipping calculated at checkout. Free shipping over $75.
+            </p>
+
+            <button
+              type="button"
+              className="button story-watch cart-checkout-cta"
+              onClick={proceed}
+            >
+              PROCEED TO SECURE CHECKOUT ➔
+            </button>
+
+            <div className="cart-trust-badges">
+              <span>🔒 100% On-Site Checkout</span>
+              <span>•</span>
+              <span>256-Bit SSL Encrypted</span>
+              <span>•</span>
+              <span>Fast Tracked Shipping</span>
+            </div>
+
+            <button type="button" className="cart-continue-link" onClick={onClose}>
+              ← Continue shopping
+            </button>
+          </div>
+        </>
+      ) : (
+        <div className="empty-cart-view">
+          <div className="empty-cart-icon">
+            <Icon name="bag" />
+          </div>
+          <h3>Your bag is empty</h3>
+          <p>Out here, you only carry what matters. Explore the official Chasing 606 collection and gear up for the season.</p>
+          <a className="button story-watch" href="/merch" onClick={onClose}>
+            EXPLORE THE GEAR <Icon />
+          </a>
+        </div>
+      )}
+    </dialog>
+  );
 }

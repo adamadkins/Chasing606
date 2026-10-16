@@ -9,12 +9,61 @@ async function api(env,path,options={},fetcher=fetch){
  return response.json();
 }
 export function normalize(product){
- const variants=(product.variants||[]).map(v=>({id:v.id,label:v.attributes?.description||v.name||v.id,price:Number(v.unitPrice.value),currencyCode:v.unitPrice.currency,available:product.state?.type==='AVAILABLE'&&(v.stock?.type==='UNLIMITED'||v.stock?.inStock>0),image:v.images?.[0]?.url||null}));
- // Distinct options must remain selectable even if the provider repeats labels.
- const counts=new Map();for(const v of variants)counts.set(v.label,(counts.get(v.label)||0)+1);
- for(const v of variants)if(counts.get(v.label)>1)v.label+=` (${v.id})`;
- const cheapest=variants.reduce((a,v)=>!a||v.price<a.price?v:a,null);
- return {id:product.id,name:product.name,description:(product.description||'').replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim(),category:'Gear',color:'',image:product.images?.[0]?.url||variants.find(v=>v.image)?.image||null,imageAlt:product.name,price:cheapest?.price??0,currencyCode:cheapest?.currencyCode||'USD',available:variants.some(v=>v.available),sizes:variants.map(v=>v.label),variants};
+ const variants = (product.variants || []).map(v => {
+  const label = v.attributes?.description || v.name || v.id;
+  let color = '';
+  let size = '';
+  if (label.includes(',')) {
+   const parts = label.split(',').map(s => s.trim());
+   color = parts[0];
+   size = parts[1];
+  } else if (label.includes('/')) {
+   const parts = label.split('/').map(s => s.trim());
+   color = parts[0];
+   size = parts[1];
+  } else {
+   size = label;
+  }
+  return {
+   id: v.id,
+   label,
+   color,
+   size,
+   price: Number(v.unitPrice.value),
+   currencyCode: v.unitPrice.currency,
+   available: product.state?.type==='AVAILABLE' && (v.stock?.type==='UNLIMITED' || v.stock?.inStock>0),
+   image: v.images?.[0]?.url || null
+  };
+ });
+ const counts = new Map();
+ for (const v of variants) counts.set(v.label, (counts.get(v.label) || 0) + 1);
+ for (const v of variants) if (counts.get(v.label) > 1) v.label += ` (${v.id})`;
+ const cheapest = variants.reduce((a, v) => !a || v.price < a.price ? v : a, null);
+ const colors = [...new Set(variants.map(v => v.color).filter(Boolean))];
+ const sizes = [...new Set(variants.map(v => v.size || v.label).filter(Boolean))];
+ const imagesByColor = {};
+ for (const v of variants) {
+  if (v.color && v.image && !imagesByColor[v.color]) {
+   imagesByColor[v.color] = v.image;
+  }
+ }
+ return {
+  id: product.id,
+  name: product.name,
+  slug: product.slug || product.id,
+  description: (product.description || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim(),
+  category: 'Gear',
+  color: colors.join(', '),
+  colors,
+  sizes: sizes.length ? sizes : variants.map(v => v.label),
+  image: product.images?.[0]?.url || variants.find(v => v.image)?.image || null,
+  imagesByColor: Object.keys(imagesByColor).length ? imagesByColor : null,
+  imageAlt: product.name,
+  price: cheapest?.price ?? 0,
+  currencyCode: cheapest?.currencyCode || 'USD',
+  available: variants.some(v => v.available),
+  variants
+ };
 }
 export async function products(env,fetcher=fetch){
  const items=[];

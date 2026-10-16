@@ -1,16 +1,21 @@
-# Fourthwall storefront
+# Fourthwall Storefront & Checkout
 
-Austin manages products in Fourthwall. Public regular products from its built-in `all` collection appear in the Chasing606 catalog automatically, with images, prices, color/size options and availability. The website fetches on page load and window focus; refresh an already-open tab to see changes. Hidden, private and archived items are excluded. Bundles are not supported by this initial integration.
+Austin manages all merchandise directly in Fourthwall at https://chasing-606-shop.fourthwall.com. Public products from its catalog appear in the Chasing 606 shop automatically, with photography, prices, colors, sizes, and live inventory.
 
-Set `FOURTHWALL_STOREFRONT_TOKEN` as a Cloudflare Worker runtime **Secret**. For development it may be placed in gitignored `.env.local`. Never commit it or use a VITE_ variable. No Shopify settings are needed. `server/fourthwall.js` calls the Storefront API; errors do not expose upstream URLs or tokens.
+## Configuration
+Set `FOURTHWALL_STOREFRONT_TOKEN` as a Cloudflare Worker runtime **Secret** (or in `.env.local` for local development). Never prefix with `VITE_` and never commit tokens. All communication is routed securely via `server/fourthwall.js`.
 
-The `/merch` page, product options and persistent shopping bag are on Chasing606. Checkout rechecks the current public catalog, creates a Fourthwall cart from variant IDs and quantities only, verifies the returned items, and redirects to https://chasing-606-shop.fourthwall.com/checkout/ for shipping, taxes and payment. Fourthwall sets final prices and availability. No card details are collected by this site. Refresh and review the bag if stock changes.
-
-The account page links to Fourthwall; no custom customer login or Shop sign-in is implemented. Use order confirmation emails for order-specific links. The older Shopify adapter remains inactive.
+## Customizing the Fourthwall Checkout Screen
+Fourthwall hosts the final checkout page (e.g. `https://chasing-606-shop.fourthwall.com/checkout/...`). To make the checkout page look fully branded and cohesive with the Chasing 606 design:
+1. Log in to the Fourthwall Dashboard: https://admin.fourthwall.com
+2. Navigate to **Design & Theme** (or **Settings > Branding**).
+3. **Upload Logo**: Upload the official Chasing 606 logo (`public/header-logo.png` or `public/logo.png`) to display prominently at the top of checkout.
+4. **Set Brand Colors**:
+   - Primary Accent: `#c2ad84` (warm gold) or `#303b2b` (dark pine)
+   - Background: Dark (`#181d16`) or Cream (`#f8f7f2`)
+5. Save changes. The checkout screen will instantly adopt the custom Chasing 606 identity.
 
 Official references:
 - https://docs.fourthwall.com/storefront/products
 - https://docs.fourthwall.com/storefront/cart-checkout-tutorial
 - https://docs.fourthwall.com/storefront/checkout
-
-Before launch, verify shipping settings, checkout branding, return policies and a complete test purchase in Fourthwall. Creating a checkout cart does not place an order or charge a customer.

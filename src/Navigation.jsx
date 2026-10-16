@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Icon from './Icon';
 import SocialLinks from './SocialLinks';
-const links = [{ href:'/merch', label:'Merch' }, { href:'/#watch', label:'Watch the hunts' }, { href:'/about', label:'Our story' }, { href:'/contact', label:'Connect' }, { href:'/account', label:'Account' }];
+const links = [{ href:'/merch', label:'Merch' }, { href:'/#watch', label:'Watch the hunts' }, { href:'/about', label:'Our story' }, { href:'/contact', label:'Connect' }];
 export default function Navigation() {
   const [open, setOpen] = useState(false);
   const trigger = useRef(null);
@@ -12,7 +12,7 @@ export default function Navigation() {
     document.body.style.overflow = 'hidden';
     trigger.current.focus();
     // Prevent keyboard and screen-reader interaction with content behind the menu.
-    const background = [...document.querySelectorAll('#root > main, #root > footer, .header-brand, .cart-toggle, .account-toggle')];
+    const background = [...document.querySelectorAll('#root > main, #root > footer, .header-brand, .cart-toggle')];
     const previousInert = background.map(node => node.inert);
     background.forEach(node => { node.inert = true; });
     const keydown = event => {
@@ -36,7 +36,7 @@ export default function Navigation() {
     };
   }, [open]);
   return <>
-    <nav className="desktop-nav" aria-label="Main navigation"><div className="nav-group">{links.slice(0,4).map(link => <a key={link.href} href={link.href}>{link.label}</a>)}</div></nav>
+    <nav className="desktop-nav" aria-label="Main navigation"><div className="nav-group">{links.map(link => <a key={link.href} href={link.href}>{link.label}</a>)}</div></nav>
     <button ref={trigger} className={`menu-button${open ? ' is-open' : ''}`} aria-label={open ? 'Close menu' : 'Open menu'} aria-expanded={open} aria-controls="mobile-navigation" onClick={() => setOpen(value => !value)}><span>{open ? 'CLOSE' : 'MENU'}</span><span className="menu-morph" aria-hidden="true"><span/><span/><span/></span></button>
     <div ref={panel} id="mobile-navigation" className={`mobile-menu${open ? ' is-open' : ''}`} role="region" aria-label="Navigation menu" aria-hidden={!open} inert={!open}>
 

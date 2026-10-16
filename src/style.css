@@ -2889,3 +2889,8 @@ html{scrollbar-gutter:stable}.brand-intro:focus{outline:none}
     animation:none!important;filter:none!important;transform:none!important;opacity:1!important;
   }
 }
+
+/* Mobile navigation labels use consistent uppercase typography. */
+@media (max-width: 850px) {
+  .mobile-nav a { text-transform: uppercase; }
+}

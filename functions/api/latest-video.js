@@ -2,16 +2,28 @@ const channelUrl = 'https://www.youtube.com/@Chasing606';
 const channelPattern = /^UC[\w-]{22}$/;
 const decode = value => value.replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1').replace(/&#(x[\da-f]+|\d+);/gi, (_, n) => String.fromCodePoint(n[0].toLowerCase() === 'x' ? parseInt(n.slice(1), 16) : Number(n))).replace(/&quot;/g, '"').replace(/&apos;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
 async function read(url, fetcher) {
-  const response = await fetcher(url, { signal: AbortSignal.timeout(8000), headers: { Accept: 'application/atom+xml,text/html' } });
+  const response = await fetcher(url, { signal: AbortSignal.timeout(10000), headers: { Accept: 'application/atom+xml,text/html,application/xml' } });
   if (!response.ok) throw new Error('YouTube is unavailable');
   return response.text();
+}
+function findChannelId(html) {
+  // YouTube has used several metadata formats. Check them without relying on
+  // a single object/property ordering or a fragile page-renderer regex.
+  const patterns = [
+    /<meta[^>]+itemprop=["']channelId["'][^>]+content=["'](UC[\\w-]{22})["']/i,
+    /<meta[^>]+content=["'](UC[\\w-]{22})["'][^>]+itemprop=["']channelId["']/i,
+    /"externalId"\\s*:\\s*"(UC[\\w-]{22})"/,
+    /"channelId"\\s*:\\s*"(UC[\\w-]{22})"/,
+    /"browseId"\\s*:\\s*"(UC[\\w-]{22})"/,
+    /https:\\/\\/www\\.youtube\\.com\\/channel\\/(UC[\\w-]{22})/
+  ];
+  return patterns.map(pattern => html.match(pattern)?.[1]).find(Boolean);
 }
 export async function loadLatestVideo({ fetcher = fetch, channelId } = {}) {
   if (!channelPattern.test(channelId ?? '')) {
     const html = await read(channelUrl, fetcher);
-    channelId = html.match(/"channelMetadataRenderer"\s*:\s*\{[\s\S]*?"externalId"\s*:\s*"(UC[\w-]{22})"/)?.[1]
-      ?? html.match(/<link[^>]+href="https:\/\/www.youtube.com\/channel\/(UC[\w-]{22})"/)?.[1];
-    if (!channelId) throw new Error('Channel ID not available');
+    channelId = findChannelId(html);
+    if (!channelId) throw new Error('YouTube channel ID not available; set YOUTUBE_CHANNEL_ID in Worker runtime settings');
   }
   const feed = await read(`https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`, fetcher);
   const entries = [...feed.matchAll(/<entry>([\s\S]*?)<\/entry>/g)].map(([, entry]) => {

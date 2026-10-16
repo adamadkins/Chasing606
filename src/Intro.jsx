@@ -87,16 +87,21 @@ export default function Intro() {
         await flight.finished;
         if (cancelled) return;
 
-        // The final badge remains hidden until the overlay has finished fading.
+        // Crossfade the two badges in the same compositor timeline.
+        // Never let both reach zero opacity, which causes a visible blink.
         target.style.boxShadow = 'none';
-        target.style.visibility = 'visible';
         target.style.opacity = '0';
-        const handoff = medallion.current.animate(
-          [{ opacity: 1 }, { opacity: 0 }],
-          { duration: 220, easing: 'ease-in-out', fill: 'forwards' }
+        target.style.visibility = 'visible';
+        const incoming = target.animate(
+          [{ opacity: 0 }, { opacity: 1 }],
+          { duration: 260, easing: 'linear', fill: 'forwards' }
         );
-        animations.push(handoff);
-        await handoff.finished;
+        const outgoing = medallion.current.animate(
+          [{ opacity: 1 }, { opacity: 0 }],
+          { duration: 260, easing: 'linear', fill: 'forwards' }
+        );
+        animations.push(incoming, outgoing);
+        await Promise.all([incoming.finished, outgoing.finished]);
         if (!cancelled) {
           target.style.opacity = '1';
           target.style.boxShadow = finalShadow;

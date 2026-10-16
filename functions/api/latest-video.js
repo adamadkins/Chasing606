@@ -10,12 +10,12 @@ function findChannelId(html) {
   // YouTube has used several metadata formats. Check them without relying on
   // a single object/property ordering or a fragile page-renderer regex.
   const patterns = [
-    /<meta[^>]+itemprop=["']channelId["'][^>]+content=["'](UC[\\w-]{22})["']/i,
-    /<meta[^>]+content=["'](UC[\\w-]{22})["'][^>]+itemprop=["']channelId["']/i,
-    /"externalId"\\s*:\\s*"(UC[\\w-]{22})"/,
-    /"channelId"\\s*:\\s*"(UC[\\w-]{22})"/,
-    /"browseId"\\s*:\\s*"(UC[\\w-]{22})"/,
-    /https:\\/\\/www\\.youtube\\.com\\/channel\\/(UC[\\w-]{22})/
+    /<meta[^>]+itemprop=["']channelId["'][^>]+content=["'](UC[\w-]{22})["']/i,
+    /<meta[^>]+content=["'](UC[\w-]{22})["'][^>]+itemprop=["']channelId["']/i,
+    /"externalId"\s*:\s*"(UC[\w-]{22})"/,
+    /"channelId"\s*:\s*"(UC[\w-]{22})"/,
+    /"browseId"\s*:\s*"(UC[\w-]{22})"/,
+    /https:\/\/www\.youtube\.com\/channel\/(UC[\w-]{22})/
   ];
   return patterns.map(pattern => html.match(pattern)?.[1]).find(Boolean);
 }

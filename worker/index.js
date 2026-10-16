@@ -1,4 +1,4 @@
-import { handleCommerce } from '../server/commerce.js';
+import { handleCommerce } from '../server/fourthwall.js';
 import { onRequestGet } from '../functions/api/latest-video.js';
 export default {
   async fetch(request, env) {

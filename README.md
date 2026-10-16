@@ -15,7 +15,7 @@ Production: `npm run build`. Serve the build with `npm run preview`.
 
 ## Catalog and commerce
 
-The website links to the official [Fourthwall shop](https://chasing-606-shop.fourthwall.com) for merchandise, checkout and account options. See [Commerce setup](docs/COMMERCE.md). No commerce credentials are required.
+The website reads published products from Fourthwall and provides on-site product selection and a shopping bag. Fourthwall handles hosted checkout. Set the runtime secret `FOURTHWALL_STOREFRONT_TOKEN`; see [Commerce setup](docs/COMMERCE.md).
 
 ## Brand assets
 
@@ -44,7 +44,7 @@ The current address is https://chasing606.adkins-adam04.workers.dev/. `wrangler.
 
 ## Pages, contact, and preview cart
 
-- `/` is the channel homepage; `/merch` links visitors to the hosted Fourthwall shop; `/contact` contains contact details and an email-draft composer. The Workers SPA fallback supports direct visits to each path.
+- `/` is the channel homepage; `/merch` displays the live Fourthwall catalog; `/contact` contains contact details and an email-draft composer. The Workers SPA fallback supports direct visits to each path.
 - The contact form opens a `mailto:` draft addressed to `chasingbucks606@gmail.com`. The visitor reviews and sends it in their email app. It does not send mail from a server or show a false delivery confirmation. Server-side form delivery would require an email service and its credentials.
-- The bag icon opens Fourthwall. The previous local preview cart is no longer used; cart contents and checkout are managed in the hosted shop.
+- The bag icon opens the on-site cart. Selected real products persist locally; checkout creates a validated Fourthwall cart and redirects for payment.
 - The centered header uses `public/logo.png` (the original logo), with a modest overhang below the dark sticky header. The alternative upload is retained as `public/header-logo.png`. The original image files are preserved without editing. The landing photograph is framed around the deer with less enlargement; higher-resolution source photography would be needed for more actual detail.

@@ -1,4 +1,3 @@
-import { SHOP_URL } from './shop';
 import React, { useEffect } from 'react';
 import Icon from './Icon';
 import SocialLinks from './SocialLinks';
@@ -23,7 +22,7 @@ export default function About() {
             <span className="scripture-text">"The lazy do not roast any game, but the diligent prize their possession."</span>
           </div>
           <div className="about-hero-actions">
-            <a href={SHOP_URL} className="button cream">
+            <a href="/merch" className="button cream">
               EXPLORE THE GEAR <Icon/>
             </a>
             <a href="https://www.youtube.com/@Chasing606" target="_blank" rel="noreferrer" className="button story-watch">
@@ -128,7 +127,7 @@ export default function About() {
         <h2>Join the chase.</h2>
         <p>Follow along on YouTube, check out our upcoming collection, or send us a story from your own field.</p>
         <div className="about-cta-buttons">
-          <a href={SHOP_URL} className="button story-watch">
+          <a href="/merch" className="button story-watch">
             EXPLORE MERCHANDISE <Icon/>
           </a>
           <a href="/contact" className="button cream">

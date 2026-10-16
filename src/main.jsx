@@ -261,7 +261,7 @@ function App() {
               </div>
             )}
 
-            {isMerch && <button type="button" className="mobile-filter-toggle" aria-expanded={mobileFiltersOpen} aria-controls="merch-filter-panel" onClick={() => setMobileFiltersOpen(open => !open)}><span>Filters{[filter !== 'All gear', colorFilter, sizeFilter, stockOnly, priceLimit].filter(Boolean).length ? ` · ${[filter !== 'All gear', colorFilter, sizeFilter, stockOnly, priceLimit].filter(Boolean).length} active` : ''}</span><span aria-hidden="true">{mobileFiltersOpen ? '−' : '+'}</span></button>}
+            {isMerch && <button type="button" className="mobile-filter-toggle" aria-expanded={mobileFiltersOpen} aria-controls="merch-filter-panel" onClick={() => setMobileFiltersOpen(open => !open)}><span>Filters{[filter !== 'All gear', colorFilter, sizeFilter, stockOnly, priceLimit].filter(Boolean).length ? ` · ${[filter !== 'All gear', colorFilter, sizeFilter, stockOnly, priceLimit].filter(Boolean).length} active` : ''}</span><span className="mobile-filter-icon" aria-hidden="true"><span /><span /><span /></span></button>}
             <div className={isMerch ? 'merch-layout' : 'merch-layout-home'}>{isMerch && <aside id="merch-filter-panel" className={`merch-sidebar ${mobileFiltersOpen ? 'mobile-open' : ''}`} aria-label="Shop filters">
               <h3>FILTER THE COLLECTION</h3>
               <label>Category<select value={filter} onChange={e => setFilter(e.target.value)}><option>All gear</option>{[...new Set(products.map(p => p.category).filter(Boolean))].map(c => <option key={c}>{c}</option>)}</select></label>

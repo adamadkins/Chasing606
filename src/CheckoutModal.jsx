@@ -42,18 +42,16 @@ export default function CheckoutModal({ open, onClose, lines = [] }) {
     }
   }, [open]);
 
-  if (!open) return null;
+  // Keep the current page visible while the checkout request completes.
+  // Only show a dialog if something prevents the redirect.
+  if (!open || !error) return null;
   return (
     <div className="product-modal-backdrop" onClick={busy ? undefined : onClose}>
       <section className="product-modal-dialog" role="dialog" aria-modal="true" aria-label="Checkout" onClick={event => event.stopPropagation()} style={{maxWidth:'28rem',padding:'2rem'}}>
-        {error ? (
-          <>
-            <h2>Checkout unavailable</h2>
-            <p role="alert" className="cart-error">{error}</p>
-            <button className="button story-watch" type="button" onClick={redirectToCheckout}>TRY AGAIN</button>
-            <button type="button" onClick={onClose} className="modal-buy-now-btn">BACK TO BAG</button>
-          </>
-        ) : <p role="status" style={{margin:0}}>Opening checkout…</p>}
+        <h2>Checkout unavailable</h2>
+        <p role="alert" className="cart-error">{error}</p>
+        <button className="button story-watch" type="button" onClick={redirectToCheckout}>TRY AGAIN</button>
+        <button type="button" onClick={onClose} className="modal-buy-now-btn">BACK TO CART</button>
       </section>
     </div>
   );

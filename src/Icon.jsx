@@ -1,6 +1,7 @@
 import React from 'react';
 export default function Icon({ name = 'arrow', className = '' }) {
   const paths = {
+    account: <><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></>,
     bag: <><path d="M5 7h14l1 14H4Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></>,
     arrow: <path d="M5 19 19 5M5 5h14v14"/>,
     down: <path d="M12 3v18m-7-7 7 7 7-7"/>,

@@ -1,0 +1,6 @@
+import React from 'react';
+import Icon from './Icon';
+export default function Account({commerce,error}){
+ const ready=Boolean(commerce?.accountUrl);
+ return <section className="account-page page-shell"><div className="page-heading"><p className="eyebrow">YOUR CHASING 606 ACCOUNT</p><h1>Welcome back.</h1><p>Your orders, delivery details, and next adventure. All in one place.</p></div><div className="account-card"><Icon name="account"/><h2>{ready?'Your gear. Your account.':'Accounts are coming soon.'}</h2><p>{ready?'Continue to our secure account page to sign in, view your orders, and manage your details.':'Customer accounts will open with the store. In the meantime, explore the collection or get in touch.'}</p>{ready?<><a className="button story-watch" href={commerce.accountUrl}>CONTINUE TO SIGN IN <Icon/></a><p className="account-help">Use your email to sign in. If offered on the next screen, you can also sign in with your Shop account.</p></>:<><button className="button unavailable" disabled>{error?'SIGN-IN TEMPORARILY UNAVAILABLE':'SIGN-IN OPENS AT LAUNCH'}</button><p className="account-help">No account is needed to browse.</p></>}<div className="account-links"><a href="/merch">Explore the merch</a><a href="/contact">Need a hand?</a></div></div></section>;
+}

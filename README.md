@@ -15,9 +15,9 @@ Production: `npm run build`. Serve the build with `npm run preview`.
 
 ## Catalog and commerce
 
-`src/catalog.js` provides an asynchronous catalog adapter with illustrative products, prices, categories, sizes, and availability. Nothing is purchasable yet. The storefront renders these records; product details and category filters work, and unavailable products are labelled out of stock.
+The optional Shopify connector is implemented in `server/commerce.js` and exposed by the Cloudflare Worker. Without connection settings, the site uses its labelled demo catalog. With valid settings, Shopify provides product images, categories, options, prices and availability. Checkout remains disabled until explicitly enabled. `/account` provides a hosted customer-account entry point, with Shop sign-in supplied by Shopify when enabled there.
 
-For launch, replace the adapter with Shopify Storefront API reads. Shopify Admin will manage products, variants, images, pricing, and inventory. Connect Printify to Shopify for fulfillment. Use Shopify-hosted checkout via a Storefront cart checkout URL; keep private Admin credentials on a server, never in browser code. Do not maintain a second hardcoded catalog after connecting Shopify. Configure token permissions and inventory/availability semantics before enabling checkout.
+See [Commerce and fulfillment setup](docs/COMMERCE.md) for provider choices, secure configuration, account requirements and launch checks. No subscriptions, payment credentials or fulfillment accounts are created by this code.
 
 ## Brand assets
 

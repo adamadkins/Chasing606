@@ -30,3 +30,23 @@ test('Worker routes API requests and serves the static site through assets', asy
  const denied = await worker.fetch(new Request('https://example.com/api/latest-video', { method:'POST' }), {});
  assert.equal(denied.status, 405);
 });
+
+test('discovers channel ID from current metadata markup', async () => {
+ const requested = [];
+ const video = await loadLatestVideo({ fetcher: async url => {
+   requested.push(url);
+   return new Response(requested.length === 1
+     ? `<html><meta itemprop="channelId" content="${channelId}"></html>`
+     : `<feed>${entry('ddddddddddd', 'Current episode', '2026-10-16T00:00:00Z')}</feed>`);
+ }});
+ assert.equal(requested.length, 2);
+ assert.equal(video.id, 'ddddddddddd');
+});
+test('discovers channel ID from YouTube channelId JSON metadata', async () => {
+ let calls = 0;
+ const video = await loadLatestVideo({ fetcher: async () => {
+   calls++;
+   return new Response(calls === 1 ? `{"channelId":"${channelId}"}` : `<feed>${entry('eeeeeeeeeee', 'New episode', '2026-10-16T00:00:00Z')}</feed>`);
+ }});
+ assert.equal(video.id, 'eeeeeeeeeee');
+});

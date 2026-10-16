@@ -95,7 +95,7 @@ export default function ProductModal({ product, onClose, onAddToCart, commerce }
         className="product-modal-dialog"
         role="dialog"
         aria-modal="true"
-        aria-labelledby="modal-product-title"
+        aria-label={product.name}
         onClick={e => e.stopPropagation()}
       >
         <button
@@ -107,6 +107,14 @@ export default function ProductModal({ product, onClose, onAddToCart, commerce }
         </button>
 
         <div className="product-modal-grid">
+          <div className="product-modal-mobile-heading">
+            <p className="modal-eyebrow">CHASING 606 · THE COLLECTION</p>
+            <h2 className="modal-title" id="modal-product-title-mobile">{product.name}</h2>
+            <div className="modal-price-row">
+              <span className="modal-price-amount">{money(currentPrice, currentCurrency)}</span>
+              <span className="modal-currency-tag">{currentCurrency}</span>
+            </div>
+          </div>
           {/* Left Column: Visual Gallery */}
           <div className="product-modal-visuals">
             <div className="product-modal-hero-frame" onTouchStart={e => { touchStartX.current = e.touches[0]?.clientX ?? null; }} onTouchEnd={e => { if (touchStartX.current == null) return; const dx = e.changedTouches[0].clientX - touchStartX.current; if (Math.abs(dx) > 45 && galleryImages.length > 1) changePhoto(dx < 0 ? 1 : -1); touchStartX.current = null; }}>

@@ -68,9 +68,21 @@ export default function ProductModal({ product, onClose, onAddToCart, commerce }
   const galleryImages = preferredIndexes.map(index => colorImages[index]).filter(Boolean);
   const [galleryIndex, setGalleryIndex] = useState(0);
   const touchStartX = useRef(null);
+  const swipedGallery = useRef(false);
+  const [zoomOpen, setZoomOpen] = useState(false);
   const displayedImage = galleryImages[galleryIndex] || galleryImages[0] || getImageForColor(product, selectedColor);
   useEffect(() => { setGalleryIndex(0); }, [selectedColor, product.id]);
   const changePhoto = direction => setGalleryIndex(index => (index + direction + galleryImages.length) % galleryImages.length);
+  useEffect(() => {
+    if (!zoomOpen) return;
+    const onKeyDown = event => {
+      if (event.key === 'Escape') setZoomOpen(false);
+      if (event.key === 'ArrowRight' && galleryImages.length > 1) changePhoto(1);
+      if (event.key === 'ArrowLeft' && galleryImages.length > 1) changePhoto(-1);
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [zoomOpen, galleryImages.length]);
 
 
   function handleAdd() {
@@ -117,14 +129,16 @@ export default function ProductModal({ product, onClose, onAddToCart, commerce }
           </div>
           {/* Left Column: Visual Gallery */}
           <div className="product-modal-visuals">
-            <div className="product-modal-hero-frame" onTouchStart={e => { touchStartX.current = e.touches[0]?.clientX ?? null; }} onTouchEnd={e => { if (touchStartX.current == null) return; const dx = e.changedTouches[0].clientX - touchStartX.current; if (Math.abs(dx) > 45 && galleryImages.length > 1) changePhoto(dx < 0 ? 1 : -1); touchStartX.current = null; }}>
+            <div className="product-modal-hero-frame" onTouchStart={e => { touchStartX.current = e.touches[0]?.clientX ?? null; }} onTouchEnd={e => { if (touchStartX.current == null) return; const dx = e.changedTouches[0].clientX - touchStartX.current; if (Math.abs(dx) > 45 && galleryImages.length > 1) { swipedGallery.current = true; changePhoto(dx < 0 ? 1 : -1); } touchStartX.current = null; }}>
               {displayedImage ? (
-                <img
-                  src={displayedImage}
-                  alt={`${product.name} ${selectedColor}`}
-                  className="product-modal-hero-img"
-                  loading="eager"
-                />
+                <button type="button" className="product-modal-image-open" aria-label={`Enlarge photo ${galleryIndex + 1} of ${product.name}`} title="Tap to enlarge" onClick={() => { if (swipedGallery.current) { swipedGallery.current = false; return; } setZoomOpen(true); }}>
+                  <img
+                    src={displayedImage}
+                    alt={`${product.name} ${selectedColor}`}
+                    className="product-modal-hero-img"
+                    loading="eager"
+                  />
+                </button>
               ) : (
                 <div className={`product-art ${product.type || 'tee'}`} style={{ '--garment': product.tone || '#5d6748' }}>
                   <svg viewBox="0 0 320 280" aria-hidden="true">
@@ -298,6 +312,19 @@ export default function ProductModal({ product, onClose, onAddToCart, commerce }
             )}
           </div>
         </div>
+        {zoomOpen && displayedImage && (
+          <div className="product-photo-lightbox" role="dialog" aria-modal="true" aria-label={`Enlarged photos of ${product.name}`} onClick={event => { event.stopPropagation(); setZoomOpen(false); }}>
+            <button className="product-photo-lightbox-close" type="button" aria-label="Close enlarged photo" onClick={() => setZoomOpen(false)}>×</button>
+            <div className="product-photo-lightbox-content" onClick={event => event.stopPropagation()}>
+              <img src={displayedImage} alt={`${product.name}, ${selectedColor}, photo ${galleryIndex + 1}`} />
+              {galleryImages.length > 1 && <div className="product-photo-lightbox-controls">
+                <button type="button" onClick={() => changePhoto(-1)} aria-label="Previous photo">‹</button>
+                <span>{galleryIndex + 1} / {galleryImages.length}</span>
+                <button type="button" onClick={() => changePhoto(1)} aria-label="Next photo">›</button>
+              </div>}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

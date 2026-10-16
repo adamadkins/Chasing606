@@ -17,6 +17,7 @@ import CheckoutModal from './CheckoutModal';
 import Intro from './Intro';
 import About from './About';
 import StorySlideshow from './StorySlideshow';
+import StoryHeadline from './StoryHeadline';
 
 const money = (amount, currency = 'USD') =>
   new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(amount);
@@ -368,13 +369,9 @@ function App() {
                 <p className="eyebrow">
                   <span /> OUT HERE IS WHERE WE BELONG
                 </p>
-                <h2 id="story-title">
-                  The work starts
-                  <br />
-                  <em>before daylight.</em>
-                </h2>
+                <StoryHeadline id="story-title" />
                 <p className="story-hero-mission">
-                  Austin spends his season scouting, checking sign, and hunting mature whitetails around the 606. Not every sit goes to plan, and that's part of it.
+                  We spend the season scouting, checking sign, and hunting mature whitetails around the 606. Not every sit goes to plan, and that's part of it.
                 </p>
                 <p className="story-hero-sub">
                   Early mornings, long sits, missed chances, and the occasional good buck. We film the hunts as they happen.

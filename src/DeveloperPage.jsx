@@ -58,18 +58,22 @@ export default function DeveloperPage() {
         </div>
         <div className="developer-contact-grid">
           <div className="developer-contact-intro">
-            <div className="developer-portrait-frame">
-              <img
-                src="/413CF16B-E711-4E8C-BC53-C57C789371F6.png"
-                alt="Portrait of Adam Adkins"
-                className="developer-portrait"
-                loading="eager"
-                decoding="async"
-              />
+            <div className="developer-profile-header">
+              <div className="developer-profile-copy">
+                <p className="developer-overline">MEET THE DEVELOPER</p>
+                <h1 id="developer-title">Adam<br/><em>Adkins.</em></h1>
+                <p className="developer-role">WEBSITE DESIGNER &amp; DEVELOPER</p>
+              </div>
+              <div className="developer-portrait-frame">
+                <img
+                  src="/413CF16B-E711-4E8C-BC53-C57C789371F6.png"
+                  alt="Portrait of Adam Adkins"
+                  className="developer-portrait"
+                  loading="eager"
+                  decoding="async"
+                />
+              </div>
             </div>
-            <p className="developer-overline">MEET THE DEVELOPER</p>
-            <h1 id="developer-title">Adam<br/><em>Adkins.</em></h1>
-            <p className="developer-role">WEBSITE DESIGNER &amp; DEVELOPER</p>
             <p className="developer-lead">Have a website idea, need help improving an existing one, or want to work together? Send me a message.</p>
             <div className="developer-mini-bio">
               <span>BASED IN KENTUCKY</span>

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {products,checkout,handleCommerce} from '../server/fourthwall.js';
+import {products,checkout,handleCommerce,normalize} from '../server/fourthwall.js';
 const id='000009c2-0c75-0024-0000-09c20c750024';
 const product={type:'PRODUCT',access:{type:'PUBLIC'},state:{type:'AVAILABLE'},id:'p',name:'Hoodie',description:'<p>Warm</p>',images:[{url:'https://example.com/hoodie.png'}],variants:[{id,name:'Black / L',attributes:{description:'Black / L'},unitPrice:{value:42,currency:'USD'},stock:{type:'UNLIMITED'}}]};
 const env={FOURTHWALL_STOREFRONT_TOKEN:'test-secret'};
@@ -17,4 +17,11 @@ test('missing connection fails without sample products, cross-origin checkout re
  const r=await handleCommerce(new Request('https://site.test/api/products'),{});assert.equal(r.status,503);
  const c=await handleCommerce(new Request('https://site.test/api/commerce'),env);const text=await c.text();assert(!text.includes('test-secret'));assert(JSON.parse(text).checkoutEnabled);
  const x=await handleCommerce(new Request('https://site.test/api/checkout',{method:'POST',headers:{Origin:'https://other.test'}}),env);assert.equal(x.status,403);
+});
+
+test('decodes escaped apostrophes and punctuation from Fourthwall safely',()=> {
+ const item=normalize({...product,name:'Hunter&amp;#39;s Tee',description:'<p>It&amp;#39;s built for the outdoors &mdash; you&#x27;ll love it &amp; wear it.</p>',category:{name:'Men&amp;#39;s Gear'}});
+ assert.equal(item.name,"Hunter's Tee");
+ assert.equal(item.description,"It's built for the outdoors — you'll love it & wear it.");
+ assert.equal(item.category,"Men's Gear");
 });

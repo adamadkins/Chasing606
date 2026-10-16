@@ -10,7 +10,7 @@ import Contact from './Contact';
 import SocialLinks from './SocialLinks';
 import Cart, { useCart } from './Cart';
 import ProductGrid from './ProductGrid';
-import ProductModal from './ProductModal';
+import ProductModal, { getImageForColor } from './ProductModal';
 import CheckoutModal from './CheckoutModal';
 import Intro from './Intro';
 import About from './About';
@@ -77,7 +77,51 @@ function ProductArt({ product }) {
   );
 }
 
+const CARD_SWATCH_COLORS = { black:'#080808', white:'#ffffff', pepper:'#514f4c', moss:'#5d6748', oat:'#c5bbaa', stone:'#a3a297', navy:'#26364c', blue:'#456c91', gray:'#888888', grey:'#888888', red:'#a33b37', green:'#4d6949' };
+
+function ProductTile({ product, onOpen }) {
+  const colors = product.colors || [];
+  const [color, setColor] = useState(colors[0] || '');
+  const image = getImageForColor(product, color);
+  return (
+    <div className="merch-product-tile">
+      <button className="product" type="button" onClick={() => onOpen(product)}>
+        <div className="art-wrap">
+          <span className="product-badge">{product.available ? 'IN STOCK' : 'COMING SOON'}</span>
+          <ProductArt product={{...product, image}} />
+          <span className="product-arrow"><Icon /></span>
+        </div>
+        <div className="product-details"><h3>{product.name}</h3><span>{money(product.price, product.currencyCode)}</span></div>
+      </button>
+      {colors.length > 0 && (
+        <div className="merch-card-colors" aria-label={`Available colors for ${product.name}`}>
+          {colors.map(c => <button key={c} type="button" title={c} aria-label={`Preview ${c}`} aria-pressed={color === c} className={`merch-card-swatch ${color === c ? 'selected' : ''}`} onClick={() => setColor(c)} style={{'--swatch-color':CARD_SWATCH_COLORS[c.toLowerCase()] || '#777'}} />)}
+          <span className="merch-card-color-name">{color}</span>
+        </div>
+      )}
+      <p className="merch-card-category">{product.category || ''}</p>
+    </div>
+  );
+}
+
+// Reveal homepage sections only when they enter view; no motion when reduced motion is requested.
+function useHomeReveals(enabled) {
+  useEffect(() => {
+    if (!enabled || typeof window === 'undefined' || !('IntersectionObserver' in window) || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const nodes = [...document.querySelectorAll('.home-reveal')];
+    const observer = new IntersectionObserver(entries => {
+      for (const entry of entries) if (entry.isIntersecting) {
+        entry.target.classList.add('is-visible');
+        observer.unobserve(entry.target);
+      }
+    }, { threshold: 0.08, rootMargin: '0px 0px 40px 0px' });
+    nodes.forEach(node => observer.observe(node));
+    return () => observer.disconnect();
+  }, [enabled]);
+}
+
 function App() {
+  useHomeReveals(location.pathname === '/');
   const cart = useCart();
   const [commerce, setCommerce] = useState(null);
   const [cartOpen, setCartOpen] = useState(false);
@@ -96,6 +140,11 @@ function App() {
   const [products, setProducts] = useState([]);
   const [error, setError] = useState(false);
   const [filter, setFilter] = useState('All gear');
+  const [colorFilter, setColorFilter] = useState('');
+  const [sizeFilter, setSizeFilter] = useState('');
+  const [stockOnly, setStockOnly] = useState(false);
+  const [priceLimit, setPriceLimit] = useState('');
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [selected, setSelected] = useState(null);
 
   useEffect(() => {
@@ -128,12 +177,23 @@ function App() {
     setSelected(p);
   };
 
+  const availableCollections = [...new Set(products.flatMap(p => p.collections || []))];
+  const availableColors = [...new Set(products.flatMap(p => p.colors || []).filter(Boolean))].sort();
+  const availableSizes = [...new Set(products.flatMap(p => p.sizes || []).filter(Boolean))].sort();
+  const maxCatalogPrice = Math.ceil(Math.max(0, ...products.map(p => Math.max(p.price || 0, ...(p.variants || []).map(v => v.price || 0)))));
   const visibleProducts = products
     .filter(p =>
-      (filter === 'All gear' || p.category === filter) &&
-      `${p.name} ${p.color || ''} ${p.category || ''}`.toLowerCase().includes(search.toLowerCase())
+      (filter === 'All gear' || p.collections?.includes(filter)) &&
+      (!colorFilter || p.colors?.includes(colorFilter)) &&
+      (!sizeFilter || p.sizes?.includes(sizeFilter)) &&
+      (!stockOnly || p.variants?.some(v => v.available && (!colorFilter || v.color === colorFilter) && (!sizeFilter || v.size === sizeFilter))) &&
+      (!priceLimit || p.price <= Number(priceLimit)) &&
+      `${p.name} ${p.color || ''} ${(p.collections || []).join(' ')}`.toLowerCase().includes(search.toLowerCase())
     )
     .sort((a, b) => (sort === 'low' ? a.price - b.price : sort === 'high' ? b.price - a.price : 0));
+
+  // Keep the homepage focused; the dedicated merch page displays the full catalog.
+  const displayedProducts = isHome ? visibleProducts.slice(0, 4) : visibleProducts;
 
   const totalCartCount = cart.items.reduce((sum, item) => sum + item.quantity, 0);
 
@@ -188,7 +248,7 @@ function App() {
         )}
 
         {!isContact && !isAbout && (
-          <section id="shop" className={isMerch ? 'shop merch-page' : 'shop'}>
+          <section id="shop" className={isMerch ? 'shop merch-page' : 'shop home-reveal'}>
             <div className="section-top">
               <div>
                 <p className="eyebrow">WEAR THE STORY</p>
@@ -222,9 +282,19 @@ function App() {
               </div>
             )}
 
+            {isMerch && <button type="button" className="mobile-filter-toggle" aria-expanded={mobileFiltersOpen} aria-controls="merch-filter-panel" onClick={() => setMobileFiltersOpen(open => !open)}><span>Filters{[filter !== 'All gear', colorFilter, sizeFilter, stockOnly, priceLimit].filter(Boolean).length ? ` · ${[filter !== 'All gear', colorFilter, sizeFilter, stockOnly, priceLimit].filter(Boolean).length} active` : ''}</span><span className="mobile-filter-icon" aria-hidden="true"><span /><span /><span /></span></button>}
+            <div className={isMerch ? 'merch-layout' : 'merch-layout-home'}>{isMerch && <aside id="merch-filter-panel" className={`merch-sidebar ${mobileFiltersOpen ? 'mobile-open' : ''}`} aria-label="Shop filters">
+              <h3>FILTER THE COLLECTION</h3>
+              <label>Category<select value={filter} onChange={e => setFilter(e.target.value)}><option>All gear</option>{availableCollections.map(c => <option key={c}>{c}</option>)}</select></label>
+              <label>Color<select value={colorFilter} onChange={e => setColorFilter(e.target.value)}><option value="">All colors</option>{availableColors.map(c => <option key={c}>{c}</option>)}</select></label>
+              <label>Size<select value={sizeFilter} onChange={e => setSizeFilter(e.target.value)}><option value="">All sizes</option>{availableSizes.map(sz => <option key={sz}>{sz}</option>)}</select></label>
+              <label>Maximum price<select value={priceLimit} onChange={e => setPriceLimit(e.target.value)}><option value="">Any price</option>{[25,50,75,100,150,200,250,500].filter(n => n <= maxCatalogPrice || n === 25).map(n => <option value={n} key={n}>Under {money(n)}</option>)}</select></label>
+              <label className="merch-stock-filter"><input type="checkbox" checked={stockOnly} onChange={e => setStockOnly(e.target.checked)}/> In stock only</label>
+              <button type="button" onClick={() => {setFilter('All gear');setColorFilter('');setSizeFilter('');setStockOnly(false);setPriceLimit('');setSearch('');}}>Clear all filters</button>
+            </aside>}<div className="merch-results">
             <div className="shop-toolbar">
               <div className="filters" aria-label="Filter products">
-                {['All gear', ...new Set(products.map(p => p.category).filter(Boolean))].map(f => (
+                {['All gear', ...availableCollections].map(f => (
                   <button
                     key={f}
                     className={f === filter ? 'active' : ''}
@@ -235,7 +305,7 @@ function App() {
                   </button>
                 ))}
               </div>
-              <span className="shop-collection-count">{visibleProducts.length} {visibleProducts.length === 1 ? 'item' : 'items'}</span>
+              <span className="shop-collection-count">{displayedProducts.length} {displayedProducts.length === 1 ? 'item' : 'items'}</span>
             </div>
 
             {loading ? (
@@ -244,29 +314,9 @@ function App() {
               <p role="alert">We couldn’t load the collection. Please refresh to try again.</p>
             ) : (
               <ProductGrid
-                animationKey={`${filter}:${search}:${sort}:${visibleProducts.map(p => p.id).join(',')}`}
+                animationKey={`${filter}:${colorFilter}:${sizeFilter}:${stockOnly}:${priceLimit}:${search}:${sort}:${displayedProducts.map(p => p.id).join(',')}`}
               >
-                {visibleProducts.map(p => (
-                  <button className="product" key={p.id} onClick={() => open(p)}>
-                    <div className="art-wrap">
-                      <span className="product-badge">
-                        {p.available ? 'IN STOCK' : 'COMING SOON'}
-                      </span>
-                      <ProductArt product={p} />
-                      <span className="product-arrow">
-                        <Icon />
-                      </span>
-                    </div>
-                    <div className="product-details">
-                      <h3>{p.name}</h3>
-                      <span>{money(p.price, p.currencyCode)}</span>
-                    </div>
-                    <p>
-                      {p.color || ''} {p.category ? <span> / {p.category}</span> : null}
-                    </p>
-                  </button>
-                ))}
-              </ProductGrid>
+                {displayedProducts.map(p => <ProductTile key={p.id} product={p} onOpen={open} />)}             </ProductGrid>
             )}
 
             {!loading && !error && products.length === 0 && (
@@ -280,6 +330,7 @@ function App() {
                   onClick={() => {
                     setSearch('');
                     setFilter('All gear');
+                    setColorFilter(''); setSizeFilter(''); setStockOnly(false); setPriceLimit('');
                   }}
                 >
                   Clear filters
@@ -287,6 +338,7 @@ function App() {
               </p>
             )}
 
+            </div></div>
             {isHome && (
               <div className="collection-link">
                 <a href="/merch" className="button story-watch">
@@ -300,7 +352,7 @@ function App() {
         {isHome && (
           <>
             <LatestVideo />
-            <section id="story" className="story-hero" aria-labelledby="story-title">
+            <section id="story" className="story-hero home-reveal" aria-labelledby="story-title">
               <div className="story-hero-content">
                 <p className="eyebrow">
                   <span /> OUT HERE IS WHERE WE BELONG

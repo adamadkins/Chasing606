@@ -8,6 +8,33 @@ async function api(env,path,options={},fetcher=fetch){
  if(!response.ok)throw new StoreError(response.status===400||response.status===409?'Availability changed. Refresh the collection and review your bag.':'The shop is temporarily unavailable. Please try again.',response.status===400||response.status===409?409:502);
  return response.json();
 }
+// Fourthwall descriptions contain HTML entities even after tags are removed.
+// Decode as plain text; never insert merchant HTML into the page.
+const namedEntities = {
+ amp:'&', apos:"'", quot:'"', nbsp:' ', lt:'<', gt:'>',
+ rsquo:'’', lsquo:'‘', ldquo:'“', rdquo:'”', ndash:'–', mdash:'—', hellip:'…',
+ bull:'•', copy:'©', reg:'®', trade:'™'
+};
+function decodeEntities(value) {
+ let text = String(value ?? '');
+ for (let pass = 0; pass < 2; pass++) {
+  const next = text.replace(/&(#x[0-9a-f]+|#\d+|[a-z]+);/gi, (match, entity) => {
+   if (entity.startsWith('#')) {
+    const hex = entity[1]?.toLowerCase() === 'x';
+    const number = Number.parseInt(entity.slice(hex ? 2 : 1), hex ? 16 : 10);
+    return Number.isInteger(number) && number > 0 && number <= 0x10ffff && !(number >= 0xd800 && number <= 0xdfff)
+      ? String.fromCodePoint(number) : match;
+   }
+   return namedEntities[entity.toLowerCase()] ?? match;
+  });
+  if (next === text) break;
+  text = next;
+ }
+ return text;
+}
+function plainDescription(value) {
+ return decodeEntities(String(value ?? '').replace(/<[^>]*>/g, ' ')).replace(/\s+/g, ' ').trim();
+}
 export function normalize(product){
  const variants = (product.variants || []).map(v => {
   const label = v.attributes?.description || v.name || v.id;
@@ -32,7 +59,8 @@ export function normalize(product){
    price: Number(v.unitPrice.value),
    currencyCode: v.unitPrice.currency,
    available: product.state?.type==='AVAILABLE' && (v.stock?.type==='UNLIMITED' || v.stock?.inStock>0),
-   image: v.images?.[0]?.url || null
+   image: v.images?.[0]?.url || null,
+   images: (v.images || []).map(i => i.url).filter(Boolean)
   };
  });
  const counts = new Map();
@@ -49,31 +77,61 @@ export function normalize(product){
  }
  return {
   id: product.id,
-  name: product.name,
+  name: decodeEntities(product.name),
   slug: product.slug || product.id,
-  description: (product.description || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim(),
-  category: 'Gear',
+  description: plainDescription(product.description),
+  category: decodeEntities(product.category?.name || product.collection?.name || (typeof product.category === 'string' ? product.category : '') || 'Gear'),
   color: colors.join(', '),
   colors,
   sizes: sizes.length ? sizes : variants.map(v => v.label),
   image: product.images?.[0]?.url || variants.find(v => v.image)?.image || null,
   imagesByColor: Object.keys(imagesByColor).length ? imagesByColor : null,
   imageAlt: product.name,
+  images: [...new Set([...(product.images || []).map(i => i.url), ...variants.flatMap(v => v.images || [])].filter(Boolean))],
   price: cheapest?.price ?? 0,
   currencyCode: cheapest?.currencyCode || 'USD',
   available: variants.some(v => v.available),
   variants
  };
 }
-export async function products(env,fetcher=fetch){
- const items=[];
+async function pagedResults(env, path, fetcher) {
+ const results=[];
  for(let page=0;page<100;page++){
-  const data=await api(env,`collections/all/products?page=${page}&size=50&currency=USD`,{},fetcher);
-  if(!Array.isArray(data.results))throw new StoreError('The collection could not be loaded.');
-  items.push(...data.results.filter(p=>p.access?.type==='PUBLIC'&&p.type==='PRODUCT').map(normalize));
-  if(!data.paging?.hasNextPage)return {mode:'fourthwall',products:items};
+  const separator=path.includes('?')?'&':'?';
+  const data=await api(env,`${path}${separator}page=${page}&size=50`,{},fetcher);
+  if(!Array.isArray(data.results))throw new StoreError('The Fourthwall collection could not be loaded.');
+  results.push(...data.results);
+  if(!data.paging?.hasNextPage)return results;
  }
- throw new StoreError('The collection could not be loaded completely.');
+ throw new StoreError('The Fourthwall collection could not be loaded completely.');
+}
+export async function products(env,fetcher=fetch){
+ const [allProducts, allCollections]=await Promise.all([
+  pagedResults(env,'collections/all/products?currency=USD',fetcher),
+  pagedResults(env,'collections',fetcher)
+ ]);
+ const publicProducts=allProducts.filter(p=>p.access?.type==='PUBLIC'&&p.type==='PRODUCT');
+ const normalized=publicProducts.map(normalize);
+ const byId=new Map(normalized.map(p=>[p.id,p]));
+ const collections=allCollections.filter(c=>c.slug&&c.slug!=='all'&&c.name);
+ // Fourthwall's product data doesn't include collection memberships. Look up
+ // each collection's products so a product may belong to multiple collections.
+ for(const collection of collections){
+  const members=await pagedResults(env,`collections/${encodeURIComponent(collection.slug)}/products?currency=USD`,fetcher);
+  for(const member of members){
+   const product=byId.get(member.id);
+   if(product){
+    product.collections ||= [];
+    const collectionName=decodeEntities(collection.name);
+    if(!product.collections.includes(collectionName))product.collections.push(collectionName);
+   }
+  }
+ }
+ for(const product of normalized){
+  product.collections ||= [];
+  product.category=product.collections[0] || '';
+ }
+ return {mode:'fourthwall',collections:collections.map(c=>({name:decodeEntities(c.name),slug:c.slug})),products:normalized};
 }
 export async function checkout(env,input,fetcher=fetch){
  if(!Array.isArray(input?.lines)||!input.lines.length||input.lines.length>50)throw new StoreError('Choose between 1 and 50 items.',400);
@@ -82,7 +140,7 @@ export async function checkout(env,input,fetcher=fetch){
   if(!line||typeof line.merchandiseId!=='string'||!/^[-a-f0-9]{36}$/i.test(line.merchandiseId)||!Number.isInteger(line.quantity)||line.quantity<1||line.quantity>10)throw new StoreError('An item or quantity is invalid.',400);
   const q=(merged.get(line.merchandiseId)||0)+line.quantity;if(q>10)throw new StoreError('A maximum of 10 of each option can be ordered.',400);merged.set(line.merchandiseId,q);
  }
- const catalog=await products(env,fetcher);const available=new Map(catalog.products.flatMap(p=>p.variants).map(v=>[v.id,v]));
+ const currentProducts=await pagedResults(env,'collections/all/products?currency=USD',fetcher);const available=new Map(currentProducts.filter(p=>p.access?.type==='PUBLIC'&&p.type==='PRODUCT').map(normalize).flatMap(p=>p.variants).map(v=>[v.id,v]));
  if([...merged.keys()].some(id=>!available.get(id)?.available))throw new StoreError('An item is no longer available. Refresh the collection and review your bag.',409);
  const cart=await api(env,'carts',{method:'POST',body:JSON.stringify({currency:'USD',items:[...merged].map(([variantId,quantity])=>({variantId,quantity}))})},fetcher);
  const actual=new Map((cart.items||[]).map(i=>[i.variant?.id,i.quantity]));

@@ -67,15 +67,43 @@ export function normalize(product){
   variants
  };
 }
-export async function products(env,fetcher=fetch){
- const items=[];
+async function pagedResults(env, path, fetcher) {
+ const results=[];
  for(let page=0;page<100;page++){
-  const data=await api(env,`collections/all/products?page=${page}&size=50&currency=USD`,{},fetcher);
-  if(!Array.isArray(data.results))throw new StoreError('The collection could not be loaded.');
-  items.push(...data.results.filter(p=>p.access?.type==='PUBLIC'&&p.type==='PRODUCT').map(normalize));
-  if(!data.paging?.hasNextPage)return {mode:'fourthwall',products:items};
+  const separator=path.includes('?')?'&':'?';
+  const data=await api(env,`${path}${separator}page=${page}&size=50`,{},fetcher);
+  if(!Array.isArray(data.results))throw new StoreError('The Fourthwall collection could not be loaded.');
+  results.push(...data.results);
+  if(!data.paging?.hasNextPage)return results;
  }
- throw new StoreError('The collection could not be loaded completely.');
+ throw new StoreError('The Fourthwall collection could not be loaded completely.');
+}
+export async function products(env,fetcher=fetch){
+ const [allProducts, allCollections]=await Promise.all([
+  pagedResults(env,'collections/all/products?currency=USD',fetcher),
+  pagedResults(env,'collections',fetcher)
+ ]);
+ const publicProducts=allProducts.filter(p=>p.access?.type==='PUBLIC'&&p.type==='PRODUCT');
+ const normalized=publicProducts.map(normalize);
+ const byId=new Map(normalized.map(p=>[p.id,p]));
+ const collections=allCollections.filter(c=>c.slug&&c.slug!=='all'&&c.name);
+ // Fourthwall's product data doesn't include collection memberships. Look up
+ // each collection's products so a product may belong to multiple collections.
+ for(const collection of collections){
+  const members=await pagedResults(env,`collections/${encodeURIComponent(collection.slug)}/products?currency=USD`,fetcher);
+  for(const member of members){
+   const product=byId.get(member.id);
+   if(product){
+    product.collections ||= [];
+    if(!product.collections.includes(collection.name))product.collections.push(collection.name);
+   }
+  }
+ }
+ for(const product of normalized){
+  product.collections ||= [];
+  product.category=product.collections[0] || '';
+ }
+ return {mode:'fourthwall',collections:collections.map(c=>({name:c.name,slug:c.slug})),products:normalized};
 }
 export async function checkout(env,input,fetcher=fetch){
  if(!Array.isArray(input?.lines)||!input.lines.length||input.lines.length>50)throw new StoreError('Choose between 1 and 50 items.',400);

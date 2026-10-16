@@ -574,6 +574,6 @@ html{scrollbar-gutter:stable}.brand-intro:focus{outline:none}
 
 .cart-swatch img{width:100%;height:100%;object-fit:contain}.product-modal .product-photo img{object-fit:contain}
 
-@media(min-width:851px){.desktop-nav{width:calc(50% - 85px);flex:0 1 auto;margin-right:auto;justify-content:flex-start;gap:0}.desktop-nav .nav-group{display:flex;gap:clamp(12px,1.6vw,28px);white-space:nowrap}.desktop-nav a{font-size:clamp(9px,.75vw,12px);letter-spacing:.7px}}
+@media(min-width:851px){.desktop-nav{width:calc(50% - 85px);flex:0 1 auto;margin-right:auto;justify-content:flex-start;gap:0}.desktop-nav .nav-group{display:flex;margin-left:0;gap:clamp(12px,1.6vw,28px);white-space:nowrap}.desktop-nav a{font-size:clamp(9px,.75vw,12px);letter-spacing:.7px}}
 .account-toggle{right:calc(5% + 43px)}
 @media(max-width:850px){.account-toggle{right:calc(5% + 40px)}}

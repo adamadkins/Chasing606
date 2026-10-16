@@ -54,7 +54,7 @@ export default function Contact() {
       <div className="page-heading">
         <p className="eyebrow">LET’S TALK</p>
         <h1>Contact us.</h1>
-        <p>A question about the gear, a story from the field, or a chance to work together. We’d like to hear from you.</p>
+        <p>Questions about merch, our videos, or working together? Send us a message.</p>
       </div>
       <div className="contact-grid">
         <div className="contact-info">
@@ -71,7 +71,7 @@ export default function Contact() {
             <div className="contact-form-success" role="status">
               <span className="contact-form-success-icon" aria-hidden="true">✓</span>
               <h2>Message submitted.</h2>
-              <p>Thanks for reaching out to Chasing 606. We’ll get back to you when we can.</p>
+              <p>Thanks for the message. We'll reply as soon as we can.</p>
               <button type="button" className="button story-watch" onClick={() => setStatus('idle')}>
                 SEND ANOTHER MESSAGE <Icon />
               </button>
@@ -79,7 +79,7 @@ export default function Contact() {
           ) : (
             <form className="contact-form" onSubmit={submit}>
               <p className="contact-form-eyebrow">SEND US A MESSAGE</p>
-              <h2>Start a conversation.</h2>
+              <h2>Send us a message.</h2>
               <div className="contact-form-two">
                 <label>Your name
                   <input name="name" type="text" autoComplete="name" placeholder="Your name" required maxLength={100} value={name} onChange={e => setName(e.target.value)} />

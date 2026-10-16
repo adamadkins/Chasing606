@@ -87,23 +87,19 @@ export default function Intro() {
         await flight.finished;
         if (cancelled) return;
 
-        // Crossfade the two badges in the same compositor timeline.
-        // Never let both reach zero opacity, which causes a visible blink.
-        target.style.boxShadow = 'none';
-        target.style.opacity = '0';
+        // Keep the destination badge fully opaque for the entire handoff.
+        // Only the flying badge fades, so there is no opacity gap or
+        // incoming animation that can be cancelled during React unmount.
+        target.style.opacity = '1';
         target.style.visibility = 'visible';
-        const incoming = target.animate(
-          [{ opacity: 0 }, { opacity: 1 }],
-          { duration: 260, easing: 'linear', fill: 'forwards' }
-        );
+        target.style.boxShadow = 'none';
         const outgoing = medallion.current.animate(
           [{ opacity: 1 }, { opacity: 0 }],
-          { duration: 260, easing: 'linear', fill: 'forwards' }
+          { duration: 320, easing: 'ease-out', fill: 'forwards' }
         );
-        animations.push(incoming, outgoing);
-        await Promise.all([incoming.finished, outgoing.finished]);
+        animations.push(outgoing);
+        await outgoing.finished;
         if (!cancelled) {
-          target.style.opacity = '1';
           target.style.boxShadow = finalShadow;
           finish();
         }

@@ -112,7 +112,7 @@ export async function checkout(env,input,fetcher=fetch){
   if(!line||typeof line.merchandiseId!=='string'||!/^[-a-f0-9]{36}$/i.test(line.merchandiseId)||!Number.isInteger(line.quantity)||line.quantity<1||line.quantity>10)throw new StoreError('An item or quantity is invalid.',400);
   const q=(merged.get(line.merchandiseId)||0)+line.quantity;if(q>10)throw new StoreError('A maximum of 10 of each option can be ordered.',400);merged.set(line.merchandiseId,q);
  }
- const catalog=await products(env,fetcher);const available=new Map(catalog.products.flatMap(p=>p.variants).map(v=>[v.id,v]));
+ const currentProducts=await pagedResults(env,'collections/all/products?currency=USD',fetcher);const available=new Map(currentProducts.filter(p=>p.access?.type==='PUBLIC'&&p.type==='PRODUCT').map(normalize).flatMap(p=>p.variants).map(v=>[v.id,v]));
  if([...merged.keys()].some(id=>!available.get(id)?.available))throw new StoreError('An item is no longer available. Refresh the collection and review your bag.',409);
  const cart=await api(env,'carts',{method:'POST',body:JSON.stringify({currency:'USD',items:[...merged].map(([variantId,quantity])=>({variantId,quantity}))})},fetcher);
  const actual=new Map((cart.items||[]).map(i=>[i.variant?.id,i.quantity]));

@@ -163,7 +163,7 @@ function App() {
       ? 'Contact us | Chasing 606'
       : isAbout
       ? 'Our Story | Chasing 606'
-      : 'Chasing 606 — From the heart of 606.';
+      : 'Chasing 606 | Kentucky Hunting Videos & Gear';
   }, [isMerch, isContact, isAbout, isLegal, isDeveloper, currentPath]);
 
   useEffect(() => {
@@ -240,7 +240,7 @@ function App() {
                 of <em>606.</em>
               </h1>
               <p className="hero-mission">
-                We follow the trail of suburban giants — guided by sign, silence, and the rare promise of heavy antlers.
+                We're after mature bucks in the hills and woodlots of eastern Kentucky. Follow our hunts, scouting, and time in the woods.
               </p>
               <p className="hero-scripture">Proverbs 12:27</p>
               <div className="hero-actions">
@@ -262,12 +262,12 @@ function App() {
           <section id="shop" className={isMerch ? 'shop merch-page' : 'shop home-reveal'}>
             <div className="section-top">
               <div>
-                <p className="eyebrow">WEAR THE STORY</p>
+                <p className="eyebrow">CHASING 606 GEAR</p>
                 {isMerch ? <h1>The 606 collection.</h1> : <h2>The 606 collection.</h2>}
               </div>
               <p>
-                Heavyweight apparel and field gear built for pursuit.<br />
-                Crafted for comfort in the stand and around camp.
+                Shirts, hats, and other Chasing 606 gear.<br />
+                Good for the woods or wherever the day takes you.
               </p>
             </div>
 
@@ -369,19 +369,19 @@ function App() {
                   <span /> OUT HERE IS WHERE WE BELONG
                 </p>
                 <h2 id="story-title">
-                  Every good story
+                  The work starts
                   <br />
-                  starts <em>outdoors.</em>
+                  <em>before daylight.</em>
                 </h2>
                 <p className="story-hero-mission">
-                  From the heart of 606, Austin follows the sign and puts in the hours. This is the pursuit of suburban giants — where tight timber meets patience, discipline, and the quiet chase.
+                  Austin spends his season scouting, checking sign, and hunting mature whitetails around the 606. Not every sit goes to plan, and that's part of it.
                 </p>
                 <p className="story-hero-sub">
-                  It’s the anticipation before first light. The patience between sightings. And the stories that stay with you long after the hunt.
+                  Early mornings, long sits, missed chances, and the occasional good buck. We film the hunts as they happen.
                 </p>
                 <div className="hero-actions">
                   <a className="button story-watch" href="/about">
-                    READ OUR STORY <span><Icon /></span>
+                    ABOUT CHASING 606 <span><Icon /></span>
                   </a>
                 </div>
               </div>

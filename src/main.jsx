@@ -7,6 +7,7 @@ import Icon from './Icon';
 import Navigation from './Navigation';
 import Brand from './Brand';
 import Contact from './Contact';
+import DeveloperPage from './DeveloperPage';
 import LegalPage, { legalPaths } from './LegalPage';
 import SocialLinks from './SocialLinks';
 import Cart, { useCart } from './Cart';
@@ -132,10 +133,11 @@ function App() {
 
   const currentPath = location.pathname.replace(/\/$/, '') || '/';
   const isLegal = legalPaths.includes(currentPath);
+  const isDeveloper = currentPath === '/behind-the-build';
   const isMerch = currentPath === '/merch';
   const isContact = location.pathname.replace(/\/$/, '') === '/contact';
   const isAbout = location.pathname.replace(/\/$/, '') === '/about' || location.pathname.replace(/\/$/, '') === '/story';
-  const isHome = !isMerch && !isContact && !isAbout && !isLegal;
+  const isHome = !isMerch && !isContact && !isAbout && !isLegal && !isDeveloper;
 
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState('featured');
@@ -151,7 +153,9 @@ function App() {
   const [selected, setSelected] = useState(null);
 
   useEffect(() => {
-    document.title = isLegal
+    document.title = isDeveloper
+      ? 'Contact the Developer | Adam Adkins'
+      : isLegal
       ? ({'/privacy':'Privacy policy','/terms':'Terms of use','/shipping-returns':'Shipping & returns'}[currentPath] + ' | Chasing 606')
       : isMerch
       ? 'Merch | Chasing 606'
@@ -160,7 +164,7 @@ function App() {
       : isAbout
       ? 'Our Story | Chasing 606'
       : 'Chasing 606 — From the heart of 606.';
-  }, [isMerch, isContact, isAbout, isLegal, currentPath]);
+  }, [isMerch, isContact, isAbout, isLegal, isDeveloper, currentPath]);
 
   useEffect(() => {
     const refresh = () =>
@@ -220,6 +224,7 @@ function App() {
       </header>
 
       <main>
+        {isDeveloper && <DeveloperPage />}
         {isLegal && <LegalPage path={currentPath} />}
         {isContact && <Contact />}
         {isAbout && <About />}
@@ -253,7 +258,7 @@ function App() {
           </section>
         )}
 
-        {!isContact && !isAbout && !isLegal && (
+        {!isContact && !isAbout && !isLegal && !isDeveloper && (
           <section id="shop" className={isMerch ? 'shop merch-page' : 'shop home-reveal'}>
             <div className="section-top">
               <div>
@@ -422,6 +427,7 @@ function App() {
           </div>
           <div className="footer-copyright">
             <span>© {new Date().getFullYear()} Chasing 606</span>
+            <a className="footer-developer-credit" href="/behind-the-build">Website Designed &amp; Developed by Adam Adkins</a>
           </div>
         </div>
       </footer>

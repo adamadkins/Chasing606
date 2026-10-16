@@ -2152,3 +2152,12 @@ html{scrollbar-gutter:stable}.brand-intro:focus{outline:none}
 .merch-card-swatch:focus-visible{outline:3px solid #526f42;outline-offset:3px}
 .merch-card-color-name{font-size:11px;color:#525b4a;margin-left:3px}
 .merch-card-category{font-size:11px;color:#6c7366;margin:5px 0 0}
+
+/* Four-image product gallery navigation */
+.product-modal-hero-frame{touch-action:pan-y}
+.product-gallery-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:3;width:38px;height:44px;border:1px solid #d4d1c6;background:rgba(248,246,240,.92);color:#20251b;font-size:31px;line-height:1;display:grid;place-items:center;cursor:pointer;border-radius:3px}
+.product-gallery-arrow.prev{left:10px}.product-gallery-arrow.next{right:10px}
+.product-gallery-arrow:hover{background:#fff}
+.product-gallery-counter{position:absolute;right:12px;bottom:10px;background:rgba(248,246,240,.9);color:#283020;padding:4px 8px;border-radius:3px;font-size:11px;font-weight:700}
+.product-modal-thumbnails{overflow-x:hidden;justify-content:center;flex-wrap:nowrap}
+@media(max-width:600px){.product-gallery-arrow{width:30px;height:36px;font-size:25px}.product-modal-thumbnails{gap:6px}.product-thumb-btn{width:58px;min-width:0;flex:1;max-width:66px}.product-thumb-btn img{width:100%;height:auto;aspect-ratio:1/1}}

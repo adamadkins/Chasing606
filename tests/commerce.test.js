@@ -24,8 +24,15 @@ test('checkout sends only variant IDs and quantities; verifies Shopify returned 
  const input=JSON.parse(options.body).variables.input;assert.deepEqual(input.lines,[{merchandiseId:variant.id,quantity:2}]);return Response.json({data:{cartCreate:{cart:{checkoutUrl:'https://example.myshopify.com/checkouts/test',lines:{nodes:[{quantity:2,merchandise:{id:variant.id}}]}},userErrors:[],warnings:[]}}});});assert(url.checkoutUrl.startsWith('https://'));
  await assert.rejects(checkout(env,{lines:[{merchandiseId:variant.id,quantity:2}]},async()=>Response.json({data:{cartCreate:{cart:{checkoutUrl:'https://example.myshopify.com',lines:{nodes:[]}},userErrors:[],warnings:[]}}})),/Availability changed/);
 });
-test('stock errors prevent checkout and upstream errors do not reveal secrets',async()=>{
+test('legacy stock validation and retired API do not expose secrets',async()=>{
  await assert.rejects(checkout(env,{lines:[{merchandiseId:variant.id,quantity:1}]},async()=>Response.json({data:{cartCreate:{cart:null,userErrors:[{message:'Sold out'}],warnings:[]}}})),/Sold out/);
- const response=await handleCommerce(new Request('https://site.test/api/commerce'),{...env,SHOPIFY_STORE_DOMAIN:'invalid'});assert.equal(response.status,503);assert(!(await response.text()).includes(env.SHOPIFY_STOREFRONT_ACCESS_TOKEN));
- const cross=await handleCommerce(new Request('https://site.test/api/checkout',{method:'POST',headers:{Origin:'https://other.test'},body:'{}'}),env);assert.equal(cross.status,403);
+ const response=await handleCommerce(new Request('https://site.test/api/commerce'),{...env,SHOPIFY_STORE_DOMAIN:'invalid'});assert.equal(response.status,200);assert(!(await response.text()).includes(env.SHOPIFY_STOREFRONT_ACCESS_TOKEN));
+ const cross=await handleCommerce(new Request('https://site.test/api/checkout',{method:'POST',headers:{Origin:'https://other.test'},body:'{}'}),env);assert.equal(cross.status,410);
+});
+
+test('hosted shop disables local checkout even with Shopify enabled',async()=>{
+ const config=await handleCommerce(new Request('https://site.test/api/commerce'),env);
+ assert.deepEqual(await config.json(),{mode:'fourthwall',checkoutEnabled:false,accountUrl:null,shopUrl:'https://chasing-606-shop.fourthwall.com'});
+ const response=await handleCommerce(new Request('https://site.test/api/checkout',{method:'POST',body:JSON.stringify({lines:[{merchandiseId:variant.id,quantity:1}]})}),env);
+ assert.equal(response.status,410);
 });

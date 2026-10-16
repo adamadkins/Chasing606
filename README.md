@@ -15,9 +15,7 @@ Production: `npm run build`. Serve the build with `npm run preview`.
 
 ## Catalog and commerce
 
-The optional Shopify connector is implemented in `server/commerce.js` and exposed by the Cloudflare Worker. Without connection settings, the site uses its labelled demo catalog. With valid settings, Shopify provides product images, categories, options, prices and availability. Checkout remains disabled until explicitly enabled. `/account` provides a hosted customer-account entry point, with Shop sign-in supplied by Shopify when enabled there.
-
-See [Commerce and fulfillment setup](docs/COMMERCE.md) for provider choices, secure configuration, account requirements and launch checks. No subscriptions, payment credentials or fulfillment accounts are created by this code.
+The website links to the official [Fourthwall shop](https://chasing-606-shop.fourthwall.com) for merchandise, checkout and account options. See [Commerce setup](docs/COMMERCE.md). No commerce credentials are required.
 
 ## Brand assets
 
@@ -25,7 +23,7 @@ The wordmark, garment illustrations, and product details are temporary concepts.
 
 ## Before launch
 
-Connect and test Shopify/Printify with real variants, shipping, taxes, inventory states, checkout, and a test order. Supply approved branding, product photography, contact details, shipping/returns/privacy policies, and domain. This foundation does not collect payments or customer details.
+Publish the Fourthwall shop and verify products, shipping, taxes, checkout, and a test order. Supply approved branding, product photography, contact details, shipping/returns/privacy policies, and domain. This foundation does not collect payments or customer details.
 
 ## Automatic Cloudflare Pages previews
 
@@ -46,7 +44,7 @@ The current address is https://chasing606.adkins-adam04.workers.dev/. `wrangler.
 
 ## Pages, contact, and preview cart
 
-- `/` is the channel homepage; `/merch` is the dedicated catalog with search, category filters, and price sorting; `/contact` contains contact details and an email-draft composer. The Workers SPA fallback supports direct visits to each path.
+- `/` is the channel homepage; `/merch` links visitors to the hosted Fourthwall shop; `/contact` contains contact details and an email-draft composer. The Workers SPA fallback supports direct visits to each path.
 - The contact form opens a `mailto:` draft addressed to `chasingbucks606@gmail.com`. The visitor reviews and sends it in their email app. It does not send mail from a server or show a false delivery confirmation. Server-side form delivery would require an email service and its credentials.
-- The preview cart persists selected product IDs, sizes, and quantities in local browser storage. It supports add/remove, quantity updates, and subtotals. Checkout remains disabled until real Shopify commerce is connected; sample amounts exclude shipping and tax.
+- The bag icon opens Fourthwall. The previous local preview cart is no longer used; cart contents and checkout are managed in the hosted shop.
 - The centered header uses `public/logo.png` (the original logo), with a modest overhang below the dark sticky header. The alternative upload is retained as `public/header-logo.png`. The original image files are preserved without editing. The landing photograph is framed around the deer with less enlargement; higher-resolution source photography would be needed for more actual detail.

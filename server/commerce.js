@@ -68,17 +68,12 @@ export async function checkout(env,input,fetcher=fetch,buyerIp){
  if(url.protocol!=='https:'||url.username||url.password)throw new CommerceError('Checkout is temporarily unavailable.');
  return {checkoutUrl:url.href};
 }
-export async function handleCommerce(request,env){
+// Retire local checkout even if old Shopify environment values remain configured.
+export async function handleCommerce(request){
  const path=new URL(request.url).pathname;
- try{
-  if(path==='/api/commerce'&&request.method==='GET')return Response.json(publicConfiguration(env),{headers:{'Cache-Control':'no-store'}});
-  if(path==='/api/products'&&request.method==='GET')return Response.json(await products(env),{headers:{'Cache-Control':'no-store'}});
-  if(path==='/api/checkout'&&request.method==='POST'){
-   const origin=request.headers.get('Origin');if(origin&&origin!==new URL(request.url).origin)throw new CommerceError('Request origin is invalid.',403);
-   const text=await request.text();if(text.length>20000)throw new CommerceError('Cart is too large.',413);
-   let input;try{input=JSON.parse(text);}catch{throw new CommerceError('Cart data is invalid.',400);}
-   return Response.json(await checkout(env,input,fetch,request.headers.get('CF-Connecting-IP')),{headers:{'Cache-Control':'no-store'}});
-  }
-  return Response.json({error:'Method not allowed.'},{status:405});
- }catch(error){return Response.json({error:error instanceof CommerceError?error.message:'The store is temporarily unavailable.'},{status:error instanceof CommerceError?error.status:502,headers:{'Cache-Control':'no-store'}});}
+ const shopUrl='https://chasing-606-shop.fourthwall.com';
+ const headers={'Cache-Control':'no-store'};
+ if(path==='/api/commerce'&&request.method==='GET')return Response.json({mode:'fourthwall',checkoutEnabled:false,accountUrl:null,shopUrl},{headers});
+ if(path==='/api/products'&&request.method==='GET')return Response.json({mode:'fourthwall',products:[],shopUrl},{headers});
+ return Response.json({error:'Please use our Fourthwall shop for checkout.',shopUrl},{status:410,headers});
 }

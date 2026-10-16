@@ -1,7 +1,8 @@
+import { SHOP_URL } from './shop';
 import React, { useEffect, useRef, useState } from 'react';
 import Icon from './Icon';
 import SocialLinks from './SocialLinks';
-const links = [{ href:'/merch', label:'Merch' }, { href:'/#watch', label:'Watch the hunts' }, { href:'/about', label:'Our story' }, { href:'/contact', label:'Contact us' }, { href:'/account', label:'Account' }];
+const links = [{ href:SHOP_URL, label:'Merch' }, { href:'/#watch', label:'Watch the hunts' }, { href:'/about', label:'Our story' }, { href:'/contact', label:'Contact us' }, { href:'/account', label:'Account' }];
 export default function Navigation() {
   const [open, setOpen] = useState(false);
   const trigger = useRef(null);

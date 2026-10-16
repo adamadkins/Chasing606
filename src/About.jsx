@@ -13,9 +13,9 @@ export default function About() {
       <section className="about-hero">
         <div className="about-hero-content">
           <p className="eyebrow"><span className="eyebrow-dot"/> OUR STORY · CHASING 606</p>
-          <h1>Every good story<br/>starts <em>outdoors.</em></h1>
+          <h1>We'd rather be<br/><em>in the woods.</em></h1>
           <p className="about-hero-lead">
-            From the heart of 606, we follow the trail of suburban giants. Guided by sign, silence, and the patient pursuit of heavy antlers.
+            We're a hunting channel based in eastern Kentucky. We spend our time scouting and hunting mature bucks, and we bring a camera along.
           </p>
           <div className="about-scripture-badge">
             <span className="scripture-ref">Proverbs 12:27</span>
@@ -60,43 +60,43 @@ export default function About() {
             <span className="card-num">01</span>
             <h2>Hunting Suburban Giants</h2>
             <p>
-              The 606 area code is unique hunting ground. Here, mature whitetail bucks thrive in the tight timber pockets, drainage corridors, and woodlots bordering suburban neighborhoods.
+              Around eastern Kentucky, you can find mature bucks in small timber lots, creek bottoms, and the woods along neighborhoods. That's where a lot of our hunting happens.
             </p>
             <p>
-              These deer are veterans. They know the sounds of car doors, the shift of human wind patterns, and every safe route through the timber. Harvesting a suburban giant demands next-level patience, pinpoint scent control, and relentless scouting.
+              Deer living close to people still know how to stay out of sight. We spend plenty of time watching trails, checking wind, and figuring out where they travel.
             </p>
           </div>
 
           <div className="about-card">
             <span className="card-num">02</span>
-            <h2>Sign, Silence & The Long Hours</h2>
+            <h2>Long Sits & Fresh Sign</h2>
             <p>
-              Success isn't measured in quick hunts; it's earned in frosty treestands before sunrise, countless miles glassing field edges, and reading the subtle story told by fresh rubs and scrapes.
+              Most hunts start before daylight. Some mornings we see deer, and some we don't. Either way, we're checking scrapes, watching field edges, and learning something for next time.
             </p>
             <p>
-              We honor the animal and respect the outdoors. When you spend enough time in the timber, you realize that the hunt is less about the shot and more about the discipline and stories forged along the way.
+              We believe in taking ethical shots, respecting the land, and putting in the time. The hunt doesn't always end with a deer, but we're glad to be out there.
             </p>
           </div>
 
           <div className="about-card">
             <span className="card-num">03</span>
-            <h2>Captured On Film</h2>
+            <h2>Our Hunting Videos</h2>
             <p>
-              Chasing 606 was created to document the real, unscripted reality of archery hunting. On our YouTube channel, we bring you along for the true highs and lows of each season.
+              We started Chasing 606 to share our hunts on YouTube. You'll see the scouting, the setups, and what actually happens when we're in the stand.
             </p>
             <p>
-              The cold mornings where nothing moves, the close encounters where a branch deflected an arrow, and the unforgettable moments when preparation and timing align into a hunt of a lifetime.
+              Some videos are packed with action. Others are slow mornings, close calls, and lessons we'll remember next season.
             </p>
           </div>
 
           <div className="about-card">
             <span className="card-num">04</span>
-            <h2>Gear For The Journey</h2>
+            <h2>Chasing 606 Gear</h2>
             <p>
-              Our upcoming apparel collection is built with the same grounded mindset. Premium materials, comfortable cuts, and understated outdoor designs made for early mornings in the stand, scouting trails, and everyday life.
+              We've got Chasing 606 shirts, hats, and other gear for anyone who follows the channel or just likes being outdoors.
             </p>
             <p>
-              Wear the story wherever the next adventure takes you.
+              Check out the collection and find something you like.
             </p>
           </div>
         </div>
@@ -125,7 +125,7 @@ export default function About() {
 
       <section className="about-cta-section">
         <h2>Join the chase.</h2>
-        <p>Follow along on YouTube, check out our upcoming collection, or send us a story from your own field.</p>
+        <p>Watch our hunts on YouTube, shop the merch, or get in touch.</p>
         <div className="about-cta-buttons">
           <a href="/merch" className="button story-watch">
             EXPLORE MERCHANDISE <Icon/>

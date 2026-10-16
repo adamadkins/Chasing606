@@ -74,21 +74,21 @@ export default function DeveloperPage() {
                 />
               </div>
             </div>
-            <p className="developer-lead">Have a website idea, need help improving an existing one, or want to work together? Send me a message.</p>
+            <p className="developer-lead">Need a website or help fixing one you've already got? Tell me what you're working on.</p>
             <div className="developer-mini-bio">
               <span>BASED IN KENTUCKY</span>
-              <p>I work in information technology and build thoughtful, functional web experiences. Chasing 606 is one of my projects.</p>
+              <p>I work in IT and build websites. I designed and developed the Chasing 606 site.</p>
             </div>
           </div>
           <div className="developer-contact-panel">
             {status === 'sent' ? <div className="developer-form-success" role="status">
               <span className="developer-success-icon" aria-hidden="true">✓</span>
               <h2>Message submitted.</h2>
-              <p>Thanks for reaching out. If this is the first submission, email delivery may require the form owner's one-time activation.</p>
+              <p>Thanks for the message. The first submission may need email activation before it can be delivered.</p>
               <button type="button" onClick={() => setStatus('idle')}>SEND ANOTHER MESSAGE →</button>
             </div> : <form className="developer-contact-form" onSubmit={send}>
               <p className="developer-form-kicker">LET'S CONNECT</p>
-              <h2>Tell me about your project.</h2>
+              <h2>What do you need help with?</h2>
               <div className="developer-form-two">
                 <label>Your name<input name="name" autoComplete="name" required maxLength={100} value={name} onChange={e=>setName(e.target.value)} placeholder="Your name" /></label>
                 <label>Email address<input name="email" type="email" autoComplete="email" required maxLength={200} value={email} onChange={e=>setEmail(e.target.value)} placeholder="you@example.com" /></label>
@@ -110,7 +110,7 @@ export default function DeveloperPage() {
           </div>
         </div>
       </div>
-      <p className="developer-footnote">An unlisted page. Found via the website credit.</p>
+      <p className="developer-footnote">You found my contact page.</p>
     </div>
   </section>;
 }

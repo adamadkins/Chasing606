@@ -13,7 +13,7 @@ export default function About() {
       <section className="about-hero">
         <div className="about-hero-content">
           <p className="eyebrow"><span className="eyebrow-dot"/> OUR STORY · CHASING 606</p>
-          <h1>We'd rather be<br/><em>in the woods.</em></h1>
+          <h1>Every good story<br/>starts <em>outdoors.</em></h1>
           <p className="about-hero-lead">
             We're a hunting channel based in eastern Kentucky. We spend our time scouting and hunting mature bucks, and we bring a camera along.
           </p>

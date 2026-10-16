@@ -29,7 +29,7 @@ export default function Contact() {
           _replyto: email.trim(),
           topic,
           message: message.trim(),
-          _subject: `Chasing 606 — ${topic}`,
+          _subject: `Chasing 606 | ${topic}`,
           _captcha: 'true',
           _honey: website
         })

@@ -69,6 +69,8 @@ export default function Intro() {
         const scale = end.width / start.width;
         // Match the final badge's shadow before the handoff to avoid a visible flash.
         const finalShadow = getComputedStyle(target).boxShadow;
+        // The flying circle and the real header badge have different clipping edges.
+        // Keep the flying badge above the real one until it is fully gone.
         animations.push(medallion.current.animate([
           { opacity: 0, transform: 'translate(-50%, -50%) scale(0.9)' },
           { opacity: 1, transform: 'translate(-50%, -50%) scale(1)' },
@@ -85,12 +87,10 @@ export default function Intro() {
         await flight.finished;
         if (cancelled) return;
 
-        // Keep the actual header badge opaque under the flying badge.
-        // Fading both at once exposed the hero photo through the lower edge
-        // for a frame on mobile browsers.
-        target.style.opacity = '1';
+        // The final badge remains hidden until the overlay has finished fading.
         target.style.boxShadow = 'none';
         target.style.visibility = 'visible';
+        target.style.opacity = '0';
         const handoff = medallion.current.animate(
           [{ opacity: 1 }, { opacity: 0 }],
           { duration: 220, easing: 'ease-in-out', fill: 'forwards' }
@@ -98,6 +98,7 @@ export default function Intro() {
         animations.push(handoff);
         await handoff.finished;
         if (!cancelled) {
+          target.style.opacity = '1';
           target.style.boxShadow = finalShadow;
           finish();
         }

@@ -160,17 +160,18 @@ function App() {
     setSelected(p);
   };
 
+  const availableCollections = [...new Set(products.flatMap(p => p.collections || []))];
   const availableColors = [...new Set(products.flatMap(p => p.colors || []).filter(Boolean))].sort();
   const availableSizes = [...new Set(products.flatMap(p => p.sizes || []).filter(Boolean))].sort();
   const maxCatalogPrice = Math.ceil(Math.max(0, ...products.map(p => Math.max(p.price || 0, ...(p.variants || []).map(v => v.price || 0)))));
   const visibleProducts = products
     .filter(p =>
-      (filter === 'All gear' || p.category === filter) &&
+      (filter === 'All gear' || p.collections?.includes(filter)) &&
       (!colorFilter || p.colors?.includes(colorFilter)) &&
       (!sizeFilter || p.sizes?.includes(sizeFilter)) &&
       (!stockOnly || p.variants?.some(v => v.available && (!colorFilter || v.color === colorFilter) && (!sizeFilter || v.size === sizeFilter))) &&
       (!priceLimit || p.price <= Number(priceLimit)) &&
-      `${p.name} ${p.color || ''} ${p.category || ''}`.toLowerCase().includes(search.toLowerCase())
+      `${p.name} ${p.color || ''} ${(p.collections || []).join(' ')}`.toLowerCase().includes(search.toLowerCase())
     )
     .sort((a, b) => (sort === 'low' ? a.price - b.price : sort === 'high' ? b.price - a.price : 0));
 
@@ -264,7 +265,7 @@ function App() {
             {isMerch && <button type="button" className="mobile-filter-toggle" aria-expanded={mobileFiltersOpen} aria-controls="merch-filter-panel" onClick={() => setMobileFiltersOpen(open => !open)}><span>Filters{[filter !== 'All gear', colorFilter, sizeFilter, stockOnly, priceLimit].filter(Boolean).length ? ` · ${[filter !== 'All gear', colorFilter, sizeFilter, stockOnly, priceLimit].filter(Boolean).length} active` : ''}</span><span className="mobile-filter-icon" aria-hidden="true"><span /><span /><span /></span></button>}
             <div className={isMerch ? 'merch-layout' : 'merch-layout-home'}>{isMerch && <aside id="merch-filter-panel" className={`merch-sidebar ${mobileFiltersOpen ? 'mobile-open' : ''}`} aria-label="Shop filters">
               <h3>FILTER THE COLLECTION</h3>
-              <label>Category<select value={filter} onChange={e => setFilter(e.target.value)}><option>All gear</option>{[...new Set(products.map(p => p.category).filter(Boolean))].map(c => <option key={c}>{c}</option>)}</select></label>
+              <label>Category<select value={filter} onChange={e => setFilter(e.target.value)}><option>All gear</option>{availableCollections.map(c => <option key={c}>{c}</option>)}</select></label>
               <label>Color<select value={colorFilter} onChange={e => setColorFilter(e.target.value)}><option value="">All colors</option>{availableColors.map(c => <option key={c}>{c}</option>)}</select></label>
               <label>Size<select value={sizeFilter} onChange={e => setSizeFilter(e.target.value)}><option value="">All sizes</option>{availableSizes.map(sz => <option key={sz}>{sz}</option>)}</select></label>
               <label>Maximum price<select value={priceLimit} onChange={e => setPriceLimit(e.target.value)}><option value="">Any price</option>{[25,50,75,100,150,200,250,500].filter(n => n <= maxCatalogPrice || n === 25).map(n => <option value={n} key={n}>Under {money(n)}</option>)}</select></label>
@@ -273,7 +274,7 @@ function App() {
             </aside>}<div className="merch-results">
             <div className="shop-toolbar">
               <div className="filters" aria-label="Filter products">
-                {['All gear', ...new Set(products.map(p => p.category).filter(Boolean))].map(f => (
+                {['All gear', ...availableCollections].map(f => (
                   <button
                     key={f}
                     className={f === filter ? 'active' : ''}

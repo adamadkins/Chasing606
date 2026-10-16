@@ -70,6 +70,7 @@ export default function ProductModal({ product, onClose, onAddToCart, commerce }
   const [galleryIndex, setGalleryIndex] = useState(0);
   const touchStartX = useRef(null);
   const swipedGallery = useRef(false);
+  const lightboxTouch = useRef(null);
   const [zoomOpen, setZoomOpen] = useState(false);
   const displayedImage = galleryImages[galleryIndex] || galleryImages[0] || getImageForColor(product, selectedColor);
   useEffect(() => { setGalleryIndex(0); }, [selectedColor, product.id]);
@@ -316,7 +317,24 @@ export default function ProductModal({ product, onClose, onAddToCart, commerce }
         {zoomOpen && displayedImage && createPortal(
           <div className="product-photo-lightbox" role="dialog" aria-modal="true" aria-label={`Enlarged photos of ${product.name}`} onClick={event => { event.stopPropagation(); setZoomOpen(false); }}>
             <button className="product-photo-lightbox-close" type="button" aria-label="Close enlarged photo" onClick={() => setZoomOpen(false)}><span className="lightbox-close-mark" aria-hidden="true" /></button>
-            <div className="product-photo-lightbox-content" onClick={event => event.stopPropagation()}>
+            <div className="product-photo-lightbox-content"
+              onClick={event => event.stopPropagation()}
+              onTouchStart={event => {
+                const touch = event.touches[0];
+                if (touch) lightboxTouch.current = { x: touch.clientX, y: touch.clientY };
+              }}
+              onTouchEnd={event => {
+                const start = lightboxTouch.current;
+                lightboxTouch.current = null;
+                const touch = event.changedTouches[0];
+                if (!start || !touch || galleryImages.length < 2) return;
+                const dx = touch.clientX - start.x;
+                const dy = touch.clientY - start.y;
+                if (Math.abs(dx) >= 45 && Math.abs(dx) > Math.abs(dy) * 1.25) {
+                  changePhoto(dx < 0 ? 1 : -1);
+                }
+              }}
+              onTouchCancel={() => { lightboxTouch.current = null; }}>
               <img src={displayedImage} alt={`${product.name}, ${selectedColor}, photo ${galleryIndex + 1}`} />
               {galleryImages.length > 1 && <div className="product-photo-lightbox-controls">
                 <button type="button" onClick={() => changePhoto(-1)} aria-label="Previous photo">‹</button>

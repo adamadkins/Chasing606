@@ -7,6 +7,7 @@ import Icon from './Icon';
 import Navigation from './Navigation';
 import Brand from './Brand';
 import Contact from './Contact';
+import LegalPage, { legalPaths } from './LegalPage';
 import SocialLinks from './SocialLinks';
 import Cart, { useCart } from './Cart';
 import ProductGrid from './ProductGrid';
@@ -129,10 +130,12 @@ function App() {
   const [checkoutLines, setCheckoutLines] = useState([]);
   const [checkoutSubtotal, setCheckoutSubtotal] = useState(0);
 
-  const isMerch = location.pathname.replace(/\/$/, '') === '/merch';
+  const currentPath = location.pathname.replace(/\/$/, '') || '/';
+  const isLegal = legalPaths.includes(currentPath);
+  const isMerch = currentPath === '/merch';
   const isContact = location.pathname.replace(/\/$/, '') === '/contact';
   const isAbout = location.pathname.replace(/\/$/, '') === '/about' || location.pathname.replace(/\/$/, '') === '/story';
-  const isHome = !isMerch && !isContact && !isAbout;
+  const isHome = !isMerch && !isContact && !isAbout && !isLegal;
 
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState('featured');
@@ -148,14 +151,16 @@ function App() {
   const [selected, setSelected] = useState(null);
 
   useEffect(() => {
-    document.title = isMerch
+    document.title = isLegal
+      ? ({'/privacy':'Privacy policy','/terms':'Terms of use','/shipping-returns':'Shipping & returns'}[currentPath] + ' | Chasing 606')
+      : isMerch
       ? 'Merch | Chasing 606'
       : isContact
       ? 'Contact us | Chasing 606'
       : isAbout
       ? 'Our Story | Chasing 606'
       : 'Chasing 606 — From the heart of 606.';
-  }, [isMerch, isContact, isAbout]);
+  }, [isMerch, isContact, isAbout, isLegal, currentPath]);
 
   useEffect(() => {
     const refresh = () =>
@@ -215,6 +220,7 @@ function App() {
       </header>
 
       <main>
+        {isLegal && <LegalPage path={currentPath} />}
         {isContact && <Contact />}
         {isAbout && <About />}
         {isHome && (
@@ -247,7 +253,7 @@ function App() {
           </section>
         )}
 
-        {!isContact && !isAbout && (
+        {!isContact && !isAbout && !isLegal && (
           <section id="shop" className={isMerch ? 'shop merch-page' : 'shop home-reveal'}>
             <div className="section-top">
               <div>
@@ -394,9 +400,22 @@ function App() {
             <p className="footer-tagline">Hunting. Patience. Chasing what matters.</p>
           </div>
           <div className="footer-nav" role="navigation" aria-label="Footer navigation">
-            <a href="/merch">Merch</a>
-            <a href="/about">Our story</a>
-            <a href="/contact">Connect</a>
+            <div className="footer-link-group">
+              <h2>Explore</h2>
+              <a href="/merch">Merch</a>
+              <a href="/about">Our story</a>
+              <a href="/contact">Contact</a>
+            </div>
+            <div className="footer-link-group">
+              <h2>Shop help</h2>
+              <a href="/shipping-returns">Shipping &amp; returns</a>
+              <a href="/contact">Order questions</a>
+            </div>
+            <div className="footer-link-group">
+              <h2>Legal</h2>
+              <a href="/privacy">Privacy policy</a>
+              <a href="/terms">Terms of use</a>
+            </div>
           </div>
           <div className="footer-social-section">
             <SocialLinks />

@@ -2640,3 +2640,37 @@ html{scrollbar-gutter:stable}.brand-intro:focus{outline:none}
 .contact-form-success-icon{display:grid;place-items:center;width:49px;height:49px;border-radius:50%;background:#354e38;color:white;font-size:22px}
 @media(max-width:700px){.contact-form-two{grid-template-columns:1fr;gap:0}}
 @media(max-width:560px){.contact-form-panel .contact-form{padding:25px 21px}}
+
+/* Original Chasing 606 tagline with a restrained rotating ending. */
+.story-hero-content .story-rotating-headline{
+  max-width:100%;
+  line-height:1.14;
+}
+.story-ending-slot{
+  display:inline-grid;
+  vertical-align:baseline;
+  white-space:nowrap;
+}
+.story-ending-slot em{
+  display:block;
+  grid-area:1/1;
+  font-style:normal;
+  color:#8c6847;
+}
+@keyframes story-ending-appear{
+  from{opacity:0;transform:translateY(.22em)}
+  to{opacity:1;transform:translateY(0)}
+}
+.story-ending-enter{
+  animation:story-ending-appear .55s ease-out both;
+}
+@media(max-width:560px){
+  .story-hero-content .story-rotating-headline{
+    font-size:clamp(27px,7.1vw,40px);
+    line-height:1.16;
+    letter-spacing:-1px;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .story-ending-enter{animation:none}
+}

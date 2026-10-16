@@ -233,7 +233,7 @@ function App() {
               </div>
             )}
 
-            {isMerch && <div className="merch-layout"><aside className="merch-sidebar" aria-label="Shop filters">
+            <div className={isMerch ? 'merch-layout' : 'merch-layout-home'}>{isMerch && <aside className="merch-sidebar" aria-label="Shop filters">
               <h3>FILTER THE COLLECTION</h3>
               <label>Category<select value={filter} onChange={e => setFilter(e.target.value)}><option>All gear</option>{[...new Set(products.map(p => p.category).filter(Boolean))].map(c => <option key={c}>{c}</option>)}</select></label>
               <label>Color<select value={colorFilter} onChange={e => setColorFilter(e.target.value)}><option value="">All colors</option>{availableColors.map(c => <option key={c}>{c}</option>)}</select></label>
@@ -241,8 +241,7 @@ function App() {
               <label>Maximum price<select value={priceLimit} onChange={e => setPriceLimit(e.target.value)}><option value="">Any price</option>{[25,50,75,100,150,200,250,500].filter(n => n <= maxCatalogPrice || n === 25).map(n => <option value={n} key={n}>Under {money(n)}</option>)}</select></label>
               <label className="merch-stock-filter"><input type="checkbox" checked={stockOnly} onChange={e => setStockOnly(e.target.checked)}/> In stock only</label>
               <button type="button" onClick={() => {setFilter('All gear');setColorFilter('');setSizeFilter('');setStockOnly(false);setPriceLimit('');setSearch('');}}>Clear all filters</button>
-            </aside><div className="merch-results">
-            }
+            </aside>}<div className="merch-results">
             <div className="shop-toolbar">
               <div className="filters" aria-label="Filter products">
                 {['All gear', ...new Set(products.map(p => p.category).filter(Boolean))].map(f => (
@@ -309,7 +308,7 @@ function App() {
               </p>
             )}
 
-            {isMerch && </div></div>}
+            </div></div>
             {isHome && (
               <div className="collection-link">
                 <a href="/merch" className="button story-watch">

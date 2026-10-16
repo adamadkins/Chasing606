@@ -2161,3 +2161,8 @@ html{scrollbar-gutter:stable}.brand-intro:focus{outline:none}
 .product-gallery-counter{position:absolute;right:12px;bottom:10px;background:rgba(248,246,240,.9);color:#283020;padding:4px 8px;border-radius:3px;font-size:11px;font-weight:700}
 .product-modal-thumbnails{overflow-x:hidden;justify-content:center;flex-wrap:nowrap}
 @media(max-width:600px){.product-gallery-arrow{width:30px;height:36px;font-size:25px}.product-modal-thumbnails{gap:6px}.product-thumb-btn{width:58px;min-width:0;flex:1;max-width:66px}.product-thumb-btn img{width:100%;height:auto;aspect-ratio:1/1}}
+
+/* Show complete merchandise mockups without clipping the garment. */
+.product-modal-hero-frame{aspect-ratio:1/1;max-height:none;overflow:hidden;min-height:0}
+.product-modal-hero-img{width:100%;height:100%;object-fit:contain!important;object-position:center;transform:none!important}
+.product-modal-hero-frame:hover .product-modal-hero-img{transform:none!important}

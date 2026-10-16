@@ -127,6 +127,7 @@ function App() {
   const [sizeFilter, setSizeFilter] = useState('');
   const [stockOnly, setStockOnly] = useState(false);
   const [priceLimit, setPriceLimit] = useState('');
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [selected, setSelected] = useState(null);
 
   useEffect(() => {
@@ -260,7 +261,8 @@ function App() {
               </div>
             )}
 
-            <div className={isMerch ? 'merch-layout' : 'merch-layout-home'}>{isMerch && <aside className="merch-sidebar" aria-label="Shop filters">
+            {isMerch && <button type="button" className="mobile-filter-toggle" aria-expanded={mobileFiltersOpen} aria-controls="merch-filter-panel" onClick={() => setMobileFiltersOpen(open => !open)}><span>Filters{[filter !== 'All gear', colorFilter, sizeFilter, stockOnly, priceLimit].filter(Boolean).length ? ` · ${[filter !== 'All gear', colorFilter, sizeFilter, stockOnly, priceLimit].filter(Boolean).length} active` : ''}</span><span aria-hidden="true">{mobileFiltersOpen ? '−' : '+'}</span></button>}
+            <div className={isMerch ? 'merch-layout' : 'merch-layout-home'}>{isMerch && <aside id="merch-filter-panel" className={`merch-sidebar ${mobileFiltersOpen ? 'mobile-open' : ''}`} aria-label="Shop filters">
               <h3>FILTER THE COLLECTION</h3>
               <label>Category<select value={filter} onChange={e => setFilter(e.target.value)}><option>All gear</option>{[...new Set(products.map(p => p.category).filter(Boolean))].map(c => <option key={c}>{c}</option>)}</select></label>
               <label>Color<select value={colorFilter} onChange={e => setColorFilter(e.target.value)}><option value="">All colors</option>{availableColors.map(c => <option key={c}>{c}</option>)}</select></label>

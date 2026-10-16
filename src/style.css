@@ -2402,3 +2402,7 @@ html{scrollbar-gutter:stable}.brand-intro:focus{outline:none}
 @media(max-width:850px){
  .product-modal-image-open{padding:13% 12% 17%!important}
 }
+
+/* Swipe left/right in the enlarged viewer without blocking vertical gestures. */
+.product-photo-lightbox-content{touch-action:pan-y}
+.product-photo-lightbox-content>img{-webkit-user-select:none;user-select:none;-webkit-user-drag:none}

@@ -10,7 +10,7 @@ export default function Intro() {
   const layer = useRef(null), logo = useRef(null), backdrop = useRef(null), medallion = useRef(null);
   useLayoutEffect(() => {
     if (!active) return;
-    const target = document.querySelector('.header-brand .brand-logo') || document.querySelector('.header-brand');
+    const target = document.querySelector('.header-brand');
     if (!target) { setActive(false); return; }
     try { sessionStorage.setItem(seenKey, 'yes'); } catch { /* Private browsing may disable storage. */ }
     const oldVisibility = target.style.visibility;
@@ -24,8 +24,8 @@ export default function Intro() {
     layer.current.focus({ preventScroll:true });
     let cancelled = false;
     const animations = [];
-    const finish = () => { if (!cancelled) setActive(false); };
-    const timeout = setTimeout(finish, 5200);
+    const finish = () => { if (!cancelled) { medallion.current?.style.setProperty('opacity', '0'); setActive(false); } };
+    const timeout = setTimeout(finish, 4500);
     const preference = window.matchMedia?.('(prefers-reduced-motion: reduce)');
     const orientation = window.screen?.orientation?.type || (window.innerWidth > window.innerHeight ? 'landscape' : 'portrait');
     let priorWidth = window.innerWidth;

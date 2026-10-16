@@ -2505,7 +2505,7 @@ html{scrollbar-gutter:stable}.brand-intro:focus{outline:none}
 .developer-contact-form h2,.developer-form-success h2{font-family:'Saira',sans-serif;font-size:clamp(25px,3vw,34px);line-height:1.18;font-weight:700;margin:0 0 3px;text-transform:none}
 .developer-form-two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .developer-contact-form label{display:flex;flex-direction:column;gap:8px;font-size:11px;font-weight:700;letter-spacing:.35px;color:#354332}
-.developer-contact-form input,.developer-contact-form select,.developer-contact-form textarea{display:block;box-sizing:border-box;width:100%;padding:12px 13px;background:#fff;border:1px solid #c9cec1;border-radius:4px;min-width:0;font:400 13px inherit;color:#252f23}
+.developer-contact-form input,.developer-contact-form select,.developer-contact-form textarea{display:block;box-sizing:border-box;width:100%;padding:12px 13px;background:#fff;border:1px solid #c9cec1;border-radius:4px;min-width:0;font-size:13px;font-family:inherit;font-weight:400;color:#252f23}
 .developer-contact-form input:focus,.developer-contact-form textarea:focus,.developer-contact-form select:focus{outline:2px solid #69805d;outline-offset:1px}
 .developer-contact-form textarea{resize:vertical;line-height:1.6}
 .developer-honey{position:absolute;left:-10000px;width:1px;height:1px;overflow:hidden}

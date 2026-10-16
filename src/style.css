@@ -2171,8 +2171,14 @@ html{scrollbar-gutter:stable}.brand-intro:focus{outline:none}
 .shop.merch-page .mobile-filter-toggle{display:none!important}
 @media(max-width:780px){
  .shop.merch-page .mobile-filter-toggle{display:flex!important;align-items:center;justify-content:space-between;width:100%;margin:12px 0 0;padding:13px 16px;border:1px solid #c9cebe;background:#f4f1e8;color:#263020;font:700 13px 'Saira',sans-serif;letter-spacing:.3px;cursor:pointer}
- .mobile-filter-toggle span:last-child{font-size:22px;font-weight:400;line-height:1;transition:transform .25s ease}
- .mobile-filter-toggle[aria-expanded="true"] span:last-child{transform:rotate(180deg)}
+ .mobile-filter-toggle .mobile-filter-icon{position:relative;display:block;width:22px;height:20px;flex:0 0 22px}
+ .mobile-filter-icon>span{position:absolute;left:1px;display:block;width:20px;height:2px;border-radius:2px;background:currentColor;transform-origin:center;transition:top .26s ease,transform .26s ease,opacity .18s ease}
+ .mobile-filter-icon>span:nth-child(1){top:3px}
+ .mobile-filter-icon>span:nth-child(2){top:9px}
+ .mobile-filter-icon>span:nth-child(3){top:15px}
+ .mobile-filter-toggle[aria-expanded="true"] .mobile-filter-icon>span:nth-child(1){top:9px;transform:rotate(45deg)}
+ .mobile-filter-toggle[aria-expanded="true"] .mobile-filter-icon>span:nth-child(2){opacity:0;transform:scaleX(0)}
+ .mobile-filter-toggle[aria-expanded="true"] .mobile-filter-icon>span:nth-child(3){top:9px;transform:rotate(-45deg)}
  .merch-layout{gap:14px}
  .merch-sidebar{
    display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:end;
@@ -2196,4 +2202,4 @@ html{scrollbar-gutter:stable}.brand-intro:focus{outline:none}
  .catalog-controls{gap:10px}
 }
 @media(max-width:420px){.merch-sidebar{padding-left:12px;padding-right:12px}.merch-sidebar.mobile-open{padding:12px}.merch-sidebar select{font-size:11px}}
-@media(prefers-reduced-motion:reduce){.merch-sidebar,.merch-sidebar.mobile-open,.mobile-filter-toggle span:last-child{transition:none!important;transform:none!important}}
+@media(prefers-reduced-motion:reduce){.merch-sidebar,.merch-sidebar.mobile-open,.mobile-filter-icon>span{transition:none!important}}

@@ -55,13 +55,9 @@ export default function ProductModal({ product, onClose, onAddToCart, commerce }
   const currentVariant = variantFor(product, selectedSize, selectedColor);
   const currentPrice = currentVariant?.price ?? product.price ?? 0;
   const currentCurrency = currentVariant?.currencyCode ?? product.currencyCode ?? 'USD';
-  const isAvailable = product.available && (currentVariant ? currentVariant.available !== false : true);
+  const isAvailable = Boolean(currentVariant?.available);
 
-  const galleryImages = [
-    ...(colors.map(c => getImageForColor(product, c)).filter(Boolean)),
-    ...(product.imagesByColor ? Object.values(product.imagesByColor) : []),
-    ...(product.image ? [product.image] : [])
-  ].filter((img, idx, arr) => arr.indexOf(img) === idx);
+  const galleryImages = [...new Set([...(product.variants || []).filter(v => !selectedColor || v.color === selectedColor).flatMap(v => v.images || (v.image ? [v.image] : [])), ...(product.images || []), ...(product.image ? [product.image] : [])])];
 
   function handleAdd() {
     if (!isAvailable) return;
@@ -208,7 +204,7 @@ export default function ProductModal({ product, onClose, onAddToCart, commerce }
                   {product.sizes.map(sz => {
                     const isSelected = selectedSize === sz;
                     const variantCheck = variantFor(product, sz, selectedColor);
-                    const sizeAvailable = variantCheck ? variantCheck.available !== false : true;
+                    const sizeAvailable = Boolean(variantCheck?.available && (!selectedColor || variantCheck.color === selectedColor));
                     return (
                       <button
                         key={sz}
@@ -272,7 +268,7 @@ export default function ProductModal({ product, onClose, onAddToCart, commerce }
                 disabled={!isAvailable}
                 onClick={handleBuyNow}
               >
-                BUY NOW WITH 1-CLICK ON-SITE CHECKOUT ➔
+                BUY NOW WITH FOURTHWALL CHECKOUT ➔
               </button>
             </div>
 
@@ -289,7 +285,7 @@ export default function ProductModal({ product, onClose, onAddToCart, commerce }
                   ))}
                   <li>
                     <span className="spec-check">✓</span>
-                    <span>100% On-Site Checkout · Easy 30-day exchange & return guarantee</span>
+                    <span>Secure checkout powered by Fourthwall</span>
                   </li>
                 </ul>
               </div>

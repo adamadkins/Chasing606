@@ -273,11 +273,11 @@ export default function ProductModal({ product, onClose, onAddToCart, commerce }
                 onClick={handleAdd}
               >
                 {addedNotice ? (
-                  <span>✓ ADDED TO BAG</span>
+                  <span>✓ ADDED TO CART</span>
                 ) : !isAvailable ? (
                   <span>OUT OF STOCK</span>
                 ) : (
-                  <span>ADD TO BAG — {money(currentPrice * quantity, currentCurrency)}</span>
+                  <span>ADD TO CART</span>
                 )}
               </button>
             </div>
@@ -289,7 +289,7 @@ export default function ProductModal({ product, onClose, onAddToCart, commerce }
                 disabled={!isAvailable}
                 onClick={handleBuyNow}
               >
-                BUY NOW WITH FOURTHWALL CHECKOUT ➔
+                BUY NOW
               </button>
             </div>
 

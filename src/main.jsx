@@ -96,6 +96,10 @@ function App() {
   const [products, setProducts] = useState([]);
   const [error, setError] = useState(false);
   const [filter, setFilter] = useState('All gear');
+  const [colorFilter, setColorFilter] = useState('');
+  const [sizeFilter, setSizeFilter] = useState('');
+  const [stockOnly, setStockOnly] = useState(false);
+  const [priceLimit, setPriceLimit] = useState('');
   const [selected, setSelected] = useState(null);
 
   useEffect(() => {
@@ -128,9 +132,16 @@ function App() {
     setSelected(p);
   };
 
+  const availableColors = [...new Set(products.flatMap(p => p.colors || []).filter(Boolean))].sort();
+  const availableSizes = [...new Set(products.flatMap(p => p.sizes || []).filter(Boolean))].sort();
+  const maxCatalogPrice = Math.ceil(Math.max(0, ...products.map(p => Math.max(p.price || 0, ...(p.variants || []).map(v => v.price || 0)))));
   const visibleProducts = products
     .filter(p =>
       (filter === 'All gear' || p.category === filter) &&
+      (!colorFilter || p.colors?.includes(colorFilter)) &&
+      (!sizeFilter || p.sizes?.includes(sizeFilter)) &&
+      (!stockOnly || p.variants?.some(v => v.available && (!colorFilter || v.color === colorFilter) && (!sizeFilter || v.size === sizeFilter))) &&
+      (!priceLimit || p.price <= Number(priceLimit)) &&
       `${p.name} ${p.color || ''} ${p.category || ''}`.toLowerCase().includes(search.toLowerCase())
     )
     .sort((a, b) => (sort === 'low' ? a.price - b.price : sort === 'high' ? b.price - a.price : 0));
@@ -222,6 +233,16 @@ function App() {
               </div>
             )}
 
+            {isMerch && <div className="merch-layout"><aside className="merch-sidebar" aria-label="Shop filters">
+              <h3>FILTER THE COLLECTION</h3>
+              <label>Category<select value={filter} onChange={e => setFilter(e.target.value)}><option>All gear</option>{[...new Set(products.map(p => p.category).filter(Boolean))].map(c => <option key={c}>{c}</option>)}</select></label>
+              <label>Color<select value={colorFilter} onChange={e => setColorFilter(e.target.value)}><option value="">All colors</option>{availableColors.map(c => <option key={c}>{c}</option>)}</select></label>
+              <label>Size<select value={sizeFilter} onChange={e => setSizeFilter(e.target.value)}><option value="">All sizes</option>{availableSizes.map(sz => <option key={sz}>{sz}</option>)}</select></label>
+              <label>Maximum price<select value={priceLimit} onChange={e => setPriceLimit(e.target.value)}><option value="">Any price</option>{[25,50,75,100,150,200,250,500].filter(n => n <= maxCatalogPrice || n === 25).map(n => <option value={n} key={n}>Under {money(n)}</option>)}</select></label>
+              <label className="merch-stock-filter"><input type="checkbox" checked={stockOnly} onChange={e => setStockOnly(e.target.checked)}/> In stock only</label>
+              <button type="button" onClick={() => {setFilter('All gear');setColorFilter('');setSizeFilter('');setStockOnly(false);setPriceLimit('');setSearch('');}}>Clear all filters</button>
+            </aside><div className="merch-results">
+            }
             <div className="shop-toolbar">
               <div className="filters" aria-label="Filter products">
                 {['All gear', ...new Set(products.map(p => p.category).filter(Boolean))].map(f => (
@@ -244,7 +265,7 @@ function App() {
               <p role="alert">We couldn’t load the collection. Please refresh to try again.</p>
             ) : (
               <ProductGrid
-                animationKey={`${filter}:${search}:${sort}:${visibleProducts.map(p => p.id).join(',')}`}
+                animationKey={`${filter}:${colorFilter}:${sizeFilter}:${stockOnly}:${priceLimit}:${search}:${sort}:${visibleProducts.map(p => p.id).join(',')}`}
               >
                 {visibleProducts.map(p => (
                   <button className="product" key={p.id} onClick={() => open(p)}>
@@ -280,6 +301,7 @@ function App() {
                   onClick={() => {
                     setSearch('');
                     setFilter('All gear');
+                    setColorFilter(''); setSizeFilter(''); setStockOnly(false); setPriceLimit('');
                   }}
                 >
                   Clear filters
@@ -287,6 +309,7 @@ function App() {
               </p>
             )}
 
+            {isMerch && </div></div>}
             {isHome && (
               <div className="collection-link">
                 <a href="/merch" className="button story-watch">

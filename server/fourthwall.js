@@ -8,6 +8,33 @@ async function api(env,path,options={},fetcher=fetch){
  if(!response.ok)throw new StoreError(response.status===400||response.status===409?'Availability changed. Refresh the collection and review your bag.':'The shop is temporarily unavailable. Please try again.',response.status===400||response.status===409?409:502);
  return response.json();
 }
+// Fourthwall descriptions contain HTML entities even after tags are removed.
+// Decode as plain text; never insert merchant HTML into the page.
+const namedEntities = {
+ amp:'&', apos:"'", quot:'"', nbsp:' ', lt:'<', gt:'>',
+ rsquo:'’', lsquo:'‘', ldquo:'“', rdquo:'”', ndash:'–', mdash:'—', hellip:'…',
+ bull:'•', copy:'©', reg:'®', trade:'™'
+};
+function decodeEntities(value) {
+ let text = String(value ?? '');
+ for (let pass = 0; pass < 2; pass++) {
+  const next = text.replace(/&(#x[0-9a-f]+|#\d+|[a-z]+);/gi, (match, entity) => {
+   if (entity.startsWith('#')) {
+    const hex = entity[1]?.toLowerCase() === 'x';
+    const number = Number.parseInt(entity.slice(hex ? 2 : 1), hex ? 16 : 10);
+    return Number.isInteger(number) && number > 0 && number <= 0x10ffff && !(number >= 0xd800 && number <= 0xdfff)
+      ? String.fromCodePoint(number) : match;
+   }
+   return namedEntities[entity.toLowerCase()] ?? match;
+  });
+  if (next === text) break;
+  text = next;
+ }
+ return text;
+}
+function plainDescription(value) {
+ return decodeEntities(String(value ?? '').replace(/<[^>]*>/g, ' ')).replace(/\s+/g, ' ').trim();
+}
 export function normalize(product){
  const variants = (product.variants || []).map(v => {
   const label = v.attributes?.description || v.name || v.id;
@@ -50,10 +77,10 @@ export function normalize(product){
  }
  return {
   id: product.id,
-  name: product.name,
+  name: decodeEntities(product.name),
   slug: product.slug || product.id,
-  description: (product.description || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim(),
-  category: product.category?.name || product.collection?.name || (typeof product.category === 'string' ? product.category : '') || 'Gear',
+  description: plainDescription(product.description),
+  category: decodeEntities(product.category?.name || product.collection?.name || (typeof product.category === 'string' ? product.category : '') || 'Gear'),
   color: colors.join(', '),
   colors,
   sizes: sizes.length ? sizes : variants.map(v => v.label),
@@ -95,7 +122,8 @@ export async function products(env,fetcher=fetch){
    const product=byId.get(member.id);
    if(product){
     product.collections ||= [];
-    if(!product.collections.includes(collection.name))product.collections.push(collection.name);
+    const collectionName=decodeEntities(collection.name);
+    if(!product.collections.includes(collectionName))product.collections.push(collectionName);
    }
   }
  }
@@ -103,7 +131,7 @@ export async function products(env,fetcher=fetch){
   product.collections ||= [];
   product.category=product.collections[0] || '';
  }
- return {mode:'fourthwall',collections:collections.map(c=>({name:c.name,slug:c.slug})),products:normalized};
+ return {mode:'fourthwall',collections:collections.map(c=>({name:decodeEntities(c.name),slug:c.slug})),products:normalized};
 }
 export async function checkout(env,input,fetcher=fetch){
  if(!Array.isArray(input?.lines)||!input.lines.length||input.lines.length>50)throw new StoreError('Choose between 1 and 50 items.',400);

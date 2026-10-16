@@ -15,7 +15,6 @@ import CheckoutModal from './CheckoutModal';
 import Intro from './Intro';
 import About from './About';
 import StorySlideshow from './StorySlideshow';
-import { defaultStoryPhotos } from './StorySlideshow';
 
 const money = (amount, currency = 'USD') =>
   new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(amount);
@@ -219,12 +218,7 @@ function App() {
         {isContact && <Contact />}
         {isAbout && <About />}
         {isHome && (
-          <section className="hero cinematic-home-hero" aria-label="Chasing 606 introduction">
-            <div className="cinematic-hero-media" aria-hidden="true">
-              <img src={defaultStoryPhotos[2].src} alt="" fetchPriority="high" decoding="async" />
-            </div>
-            <div className="cinematic-hero-shade" aria-hidden="true" />
-            <div className="cinematic-hero-index" aria-hidden="true"><span>FIELD NOTES / 001</span><span>EST. IN THE 606</span></div>
+          <section className="hero">
             <div className="hero-content">
               <p className="eyebrow">
                 <span /> OUT HERE IS WHERE WE BELONG
@@ -249,7 +243,6 @@ function App() {
             </div>
             <div className="hero-bottom">
               <span>GUIDED BY SIGN / SILENCE / HEAVY ANTLERS</span>
-              <a className="cinematic-scroll-cue" href="#shop" aria-label="Scroll to the collection"><span aria-hidden="true" /> SCROLL TO EXPLORE</a>
             </div>
           </section>
         )}

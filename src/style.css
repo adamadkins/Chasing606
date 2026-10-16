@@ -155,7 +155,7 @@ html{scrollbar-gutter:stable}.brand-intro:focus{outline:none}
   display: flex;
   align-items: center;
   overflow: hidden;
-  border-top: 1px solid #ddd7ca;
+  border-top: 0;
   border-bottom: 1px solid #ddd7ca;
 }
 .story-hero-content {

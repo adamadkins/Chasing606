@@ -53,7 +53,7 @@ export function normalize(product){
   name: product.name,
   slug: product.slug || product.id,
   description: (product.description || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim(),
-  category: product.category?.name || product.collection?.name || product.category || 'Gear',
+  category: product.category?.name || product.collection?.name || (typeof product.category === 'string' ? product.category : '') || 'Gear',
   color: colors.join(', '),
   colors,
   sizes: sizes.length ? sizes : variants.map(v => v.label),

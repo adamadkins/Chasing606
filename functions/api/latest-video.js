@@ -15,14 +15,22 @@ function findChannelId(html) {
     /"externalId"\s*:\s*"(UC[\w-]{22})"/,
     /"channelId"\s*:\s*"(UC[\w-]{22})"/,
     /"browseId"\s*:\s*"(UC[\w-]{22})"/,
+    /<link[^>]+rel=["']canonical["'][^>]+href=["'][^"']*\/channel\/(UC[\w-]{22})/i,
+    /<link[^>]+href=["'][^"']*\/channel\/(UC[\w-]{22})[^"']*["'][^>]+rel=["']canonical["']/i,
+    /"rssUrl"\s*:\s*"[^"']*channel_id=(UC[\w-]{22})"/i,
     /https:\/\/www\.youtube\.com\/channel\/(UC[\w-]{22})/
   ];
   return patterns.map(pattern => html.match(pattern)?.[1]).find(Boolean);
 }
 export async function loadLatestVideo({ fetcher = fetch, channelId } = {}) {
   if (!channelPattern.test(channelId ?? '')) {
-    const html = await read(channelUrl, fetcher);
-    channelId = findChannelId(html);
+    const pages = [channelUrl, `${channelUrl}/videos`, `https://www.youtube.com/@Chasing606/about`];
+    for (const page of pages) {
+      try {
+        channelId = findChannelId(await read(page, fetcher));
+        if (channelId) break;
+      } catch { /* Try another public channel page. */ }
+    }
     if (!channelId) throw new Error('YouTube channel ID not available; set YOUTUBE_CHANNEL_ID in Worker runtime settings');
   }
   const feed = await read(`https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`, fetcher);

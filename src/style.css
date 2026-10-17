@@ -2894,10 +2894,3 @@ html{scrollbar-gutter:stable}.brand-intro:focus{outline:none}
 @media (max-width: 850px) {
   .mobile-nav a { text-transform: uppercase; }
 }
-
-/* Prevent the light page background from showing as a strip beneath the
-   sticky mobile header when the logo overlaps the following section. */
-@media (max-width: 850px) {
-  html, body, #root, main { background-color: #20251b; }
-  header { border-bottom-color: rgba(243,239,223,.12); }
-}

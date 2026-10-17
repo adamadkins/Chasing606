@@ -50,3 +50,37 @@ test('discovers channel ID from YouTube channelId JSON metadata', async () => {
  }});
  assert.equal(video.id, 'eeeeeeeeeee');
 });
+
+const videosPage = ({ owner = 'UCl9Y60eT8tlw0VEvcLcPijA', latest = true, legacy = false } = {}) => `<script>var ytInitialData = ${JSON.stringify({
+ metadata: { channelMetadataRenderer: { externalId: owner } },
+ // A decoy outside the selected tab must never be used.
+ unrelated: { videoId: 'xxxxxxxxxxx' },
+ contents: { twoColumnBrowseResultsRenderer: { tabs: [
+  { tabRenderer: { selected: false, content: { videoRenderer: { videoId: 'xxxxxxxxxxx' } } } },
+  { tabRenderer: { selected: true, content: { richGridRenderer: {
+   header: { feedFilterChipBarRenderer: { contents: [{ chipCloudChipRenderer: { isSelected: latest, text: { runs: [{ text: 'Latest' }] } } }] } },
+   contents: [{ richItemRenderer: { content: legacy
+    ? { videoRenderer: { videoId: 'ffffffffff1', title: { runs: [{ text: 'Latest hunt' }] } } }
+    : { lockupViewModel: { contentId: 'ffffffffff1', contentType: 'LOCKUP_CONTENT_TYPE_VIDEO', metadata: { lockupMetadataViewModel: { title: { content: 'Latest hunt' } } } } }
+   } }]
+  } } } }
+ ] } }
+})};</script>`;
+for (const legacy of [false, true]) {
+ test(`feed 404 falls back to selected Latest videos, legacy=${legacy}`, async () => {
+  const urls = [];
+  const video = await loadLatestVideo({ channelId, fetcher: async url => {
+   urls.push(url);
+   return url.includes('/feeds/') ? new Response('', { status: 404 }) : new Response(videosPage({ legacy }));
+  } });
+  assert.equal(video.id, 'ffffffffff1');
+  assert.equal(video.title, 'Latest hunt');
+  assert.equal(video.published, null);
+  assert.equal(urls[1], 'https://www.youtube.com/@Chasing606/videos?hl=en');
+ });
+}
+test('fallback rejects other channels, wrong sort and malformed page data', async () => {
+ for (const html of [videosPage({ owner: channelId }), videosPage({ latest: false }), '<html>Consent required</html>']) {
+  await assert.rejects(loadLatestVideo({ channelId, fetcher: async url => url.includes('/feeds/') ? new Response('', { status: 404 }) : new Response(html) }), /HTTP 404/);
+ }
+});

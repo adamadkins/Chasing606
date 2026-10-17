@@ -22,7 +22,43 @@ function findChannelId(html) {
   ];
   return patterns.map(pattern => html.match(pattern)?.[1]).find(Boolean);
 }
+function latestFromVideosPage(html) {
+  // Parse only the selected channel tab, never recommendations or menu IDs.
+  const json = html.match(/(?:var\s+ytInitialData\s*=|window\["ytInitialData"\]\s*=)\s*({[\s\S]*?})\s*;<\/script>/)?.[1];
+  if (!json) throw new Error('videos_page_unavailable: YouTube channel data missing');
+  const data = JSON.parse(json);
+  const ownerId = data.metadata?.channelMetadataRenderer?.externalId;
+  if (ownerId !== 'UCl9Y60eT8tlw0VEvcLcPijA') throw new Error('videos_page_unavailable: Unexpected YouTube channel');
+  const tabs = data.contents?.twoColumnBrowseResultsRenderer?.tabs ?? [];
+  const selected = tabs.find(tab => tab.tabRenderer?.selected)?.tabRenderer;
+  const grid = selected?.content?.richGridRenderer;
+  // The default Videos view is newest first. Refuse a different sort order.
+  const chips = grid?.header?.feedFilterChipBarRenderer?.contents ?? [];
+  if (chips.length && !chips.some(chip => chip.chipCloudChipRenderer?.isSelected && chip.chipCloudChipRenderer?.text?.runs?.some(run => run.text === 'Latest'))) {
+    throw new Error('videos_page_unavailable: Latest sort not selected');
+  }
+  for (const item of grid?.contents ?? []) {
+    const content = item.richItemRenderer?.content;
+    const legacy = content?.videoRenderer;
+    const lockup = content?.lockupViewModel;
+    const id = legacy?.videoId ?? (lockup?.contentType === 'LOCKUP_CONTENT_TYPE_VIDEO' ? lockup.contentId : null);
+    const title = legacy?.title?.runs?.map(run => run.text).join('') ?? lockup?.metadata?.lockupMetadataViewModel?.title?.content;
+    if (/^[\w-]{11}$/.test(id ?? '') && title) return { id, title, published: null, channelUrl };
+  }
+  throw new Error('videos_page_unavailable: No public videos found');
+}
 export async function loadLatestVideo({ fetcher = fetch, channelId } = {}) {
+  try {
+    return await loadFromFeed({ fetcher, channelId });
+  } catch (feedError) {
+    try {
+      return latestFromVideosPage(await read(`${channelUrl}/videos?hl=en`, fetcher));
+    } catch {
+      throw feedError;
+    }
+  }
+}
+async function loadFromFeed({ fetcher, channelId }) {
   if (!channelPattern.test(channelId ?? '')) {
     const pages = [channelUrl, `${channelUrl}/videos`, `https://www.youtube.com/@Chasing606/about`];
     for (const page of pages) {
@@ -49,7 +85,7 @@ export async function onRequestGet({ request, env = {} }) {
   const cached = await cache?.match(cacheKey);
   if (cached) return cached;
   try {
-    const video = await loadLatestVideo({ channelId: env.YOUTUBE_CHANNEL_ID });
+    const video = await loadLatestVideo({ channelId: env.YOUTUBE_CHANNEL_ID || 'UCl9Y60eT8tlw0VEvcLcPijA' });
     const response = Response.json(video, { headers: { 'Cache-Control': 'public, max-age=300, s-maxage=900' } });
     await cache?.put(cacheKey, response.clone());
     return response;

@@ -32,11 +32,11 @@ Connect this GitHub repository through Cloudflare Workers & Pages → Create app
 
 ## Dynamic newest video
 
-Cloudflare Pages automatically deploys `functions/api/latest-video.js` with the site. It resolves the Chasing606 handle to its channel ID and reads YouTube's public Atom upload feed. The newest published upload (including Shorts if present in the feed) is cached at the edge for 15 minutes and in the browser for 5 minutes. Visitors load the embedded player only after clicking Play. No API key or manual video URL is needed.
+Cloudflare Pages automatically deploys `functions/api/latest-video.js` with the site. It reads YouTube's public Atom upload feed. If the feed fails, it reads the channel's Videos tab in Latest order and verifies the channel identity before selecting the first video. This fallback selects regular videos, not Shorts, and returns no publication timestamp rather than inventing one. The newest published upload (including Shorts if present in the feed) is cached at the edge for 15 minutes and in the browser for 5 minutes. Visitors load the embedded player only after clicking Play. No API key or manual video URL is needed.
 
-An optional Cloudflare variable `YOUTUBE_CHANNEL_ID` can hold the channel's public UC… ID to skip handle resolution. No credential is required. If YouTube blocks a request or the feed is unavailable, the page links to the channel's videos instead of showing an incorrect upload. `npm run dev` serves the same endpoint locally. `npm run preview` serves only the static bundle, so use development mode or Cloudflare to test the endpoint.
+The endpoint defaults to the verified Chasing606 ID `UCl9Y60eT8tlw0VEvcLcPijA`. An optional Cloudflare variable `YOUTUBE_CHANNEL_ID` can override the feed ID. No credential is required. If YouTube blocks a request or the feed is unavailable, the page links to the channel's videos instead of showing an incorrect upload. `npm run dev` serves the same endpoint locally. `npm run preview` serves only the static bundle, so use development mode or Cloudflare to test the endpoint.
 
-Validation: `node --test` tests channel lookup, latest-upload selection, XML decoding, and unavailable/invalid feed handling. Live YouTube retrieval could not be verified in the coding workspace because its outbound YouTube requests are blocked; check `/api/latest-video` on the deployed Pages domain. The successful player UI was tested with a simulated feed response, separately from the real unavailable-feed response.
+Validation: `node --test` tests channel lookup, latest-upload selection, XML decoding, and unavailable/invalid feed handling. The fallback was also verified against a live YouTube Videos page after reproducing HTTP 404 from the verified channel feed.
 
 ### Current hosting: Cloudflare Workers
 

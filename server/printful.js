@@ -68,7 +68,7 @@ export async function printfulCatalogStatus(request, env, fetcher = fetch) {
     if (!Array.isArray(stores.result) || stores.result.length !== 1 || !Number.isInteger(Number(stores.result[0]?.id))) {
       return Response.json({ provider: 'printful', connected: false, reason: 'store_selection_required' }, { status: 409, headers });
     }
-    const response = await fetcher('https://api.printful.com/store/products', {
+    const response = await fetcher('https://api.printful.com/sync/products?limit=1&offset=0', {
       headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
       signal: AbortSignal.timeout(10000)
     });
@@ -95,7 +95,7 @@ export async function printfulCatalogStatus(request, env, fetcher = fetch) {
     }
     const data = await response.json();
     if (data.code !== 200 || !Array.isArray(data.result)) return Response.json({ provider: 'printful', connected: true, catalogAccessible: false, reason: 'unexpected_response' }, { status: 502, headers });
-    return Response.json({ provider: 'printful', connected: true, catalogAccessible: true, productsAvailable: data.paging?.total ?? data.result.length, checkoutEnabled: false }, { headers });
+    return Response.json({ provider: 'printful', connected: true, catalogAccessible: true, productsAvailable: data.paging?.total ?? data.result.length, catalogEndpoint: 'sync/products', checkoutEnabled: false }, { headers });
   } catch (error) {
     return Response.json({ provider: 'printful', connected: false, reason: error?.name === 'TimeoutError' ? 'request_timeout' : 'network_or_response_error' }, { status: 503, headers });
   }

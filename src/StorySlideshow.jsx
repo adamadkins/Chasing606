@@ -6,32 +6,24 @@ import timberBuckFrostImg from './assets/images/timber_buck_frost_1792096499267.
 // Photos for the Our Story section — bundled with Vite and mirrored to public/images for universal mobile & production support
 export const defaultStoryPhotos = [
   {
-    id: 'trophy-buck',
-    src: whitetailBuckImg,
-    publicSrc: '/images/whitetail_buck.jpg',
-    fallbackSrc: 'https://images.unsplash.com/photo-1484406566174-9da000fda645?auto=format&fit=crop&w=1800&q=85',
-    alt: 'Trophy whitetail buck with heavy antlers in the autumn timber',
+    id: 'outdoors',
+    src: '/images/IMG_1754.jpeg',
+    alt: 'Hunters celebrating together beside a mature whitetail buck outdoors',
   },
   {
-    id: 'wild-turkey',
-    src: wildTurkeyImg,
-    publicSrc: '/images/wild_turkey.jpg',
-    fallbackSrc: 'https://images.unsplash.com/photo-1548767797-d8c844163c4c?auto=format&fit=crop&w=1800&q=85',
-    alt: 'Wild tom turkey strutting with fanned feathers along the timber line',
+    id: 'gobble',
+    src: '/images/IMG_1667.jpeg',
+    alt: 'Wild turkey displaying its fan in spring grass',
   },
   {
-    id: 'suburban-frost-buck',
-    src: timberBuckFrostImg,
-    publicSrc: '/images/timber_buck_frost.jpg',
-    fallbackSrc: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1800&q=85',
-    alt: 'Mature whitetail buck moving along a frosty timber creek at dawn',
+    id: 'before-daylight',
+    src: '/images/IMG_8651.jpeg',
+    alt: 'Hunter heading into the woods with a headlamp before daylight',
   },
   {
-    id: 'hardwood-trail',
-    src: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=1800&q=85',
-    publicSrc: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=1800&q=85',
-    fallbackSrc: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=1800&q=85',
-    alt: 'Deep autumn hardwood forest trail in the heart of 606',
+    id: 'on-the-trail',
+    src: '/images/Untitled%20design.jpeg',
+    alt: 'Two whitetail deer standing together among the trees',
   },
 ];
 

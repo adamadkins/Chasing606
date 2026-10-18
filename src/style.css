@@ -3010,3 +3010,41 @@ html{scrollbar-gutter:stable}.brand-intro:focus{outline:none}
  mask-image:linear-gradient(90deg,transparent 8%,#000 100%);
  }
 }
+
+
+/* Compact scripture cards, matching the earlier understated quote treatment. */
+.about-editorial .about-editorial-verse{
+ box-sizing:border-box;
+ width:100%;
+ max-width:540px;
+ margin:22px 0 0;
+ padding:17px 20px;
+ border:0;
+ border-left:4px solid #917052;
+ border-radius:0 8px 8px 0;
+ background:#eee7d8;
+ color:#3d4437;
+ font-size:clamp(.88rem,1.05vw,1rem);
+ font-style:normal;
+ line-height:1.65;
+}
+.about-editorial .about-editorial-verse cite{
+ display:block;
+ margin:0 0 10px;
+ font-size:.68rem;
+ line-height:1.4;
+ font-weight:800;
+ letter-spacing:.15em;
+ color:#917052;
+}
+.about-editorial .about-editorial-verse-close{
+ margin:20px auto 30px;
+ max-width:520px;
+ padding:17px 20px;
+ text-align:left;
+ background:#eee7d8;
+ color:#3d4437;
+}
+@media(max-width:800px){
+ .about-editorial .about-editorial-verse{padding:15px 17px;font-size:.9rem}
+}

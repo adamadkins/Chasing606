@@ -68,9 +68,8 @@ export async function printfulCatalogStatus(request, env, fetcher = fetch) {
     if (!Array.isArray(stores.result) || stores.result.length !== 1 || !Number.isInteger(Number(stores.result[0]?.id))) {
       return Response.json({ provider: 'printful', connected: false, reason: 'store_selection_required' }, { status: 409, headers });
     }
-    const storeId = String(stores.result[0].id);
-    const response = await fetcher('https://api.printful.com/store/products?limit=1&offset=0', {
-      headers: { Authorization: `Bearer ${token}`, 'X-PF-Store-Id': storeId, Accept: 'application/json' },
+    const response = await fetcher('https://api.printful.com/store/products', {
+      headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
       signal: AbortSignal.timeout(10000)
     });
     if (!response.ok) return Response.json({ provider: 'printful', connected: true, catalogAccessible: false, reason: 'products_request_failed', upstreamStatus: response.status }, { status: 503, headers });

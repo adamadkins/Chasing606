@@ -44,6 +44,7 @@ export default function About() {
           <h2>THE WORK<br />BEHIND <em>EVERY STORY.</em></h2>
           <p>The hunt starts long before the shot. It's checking sign, studying movement, getting the wind right, and being willing to go home empty-handed.</p>
           <p>Some days everything comes together. Most days, the woods have something new to teach us.</p>
+          <p className="about-editorial-scripture">“Whatever you do, work at it with all your heart, as working for the Lord.” <span>COLOSSIANS 3:23</span></p>
           <span className="about-editorial-rule">PATIENCE / PREPARATION / RESPECT</span>
         </div>
       </section>
@@ -80,6 +81,7 @@ export default function About() {
           <h2>RESPECT THE LAND.<br /><em>ENJOY THE CHASE.</em></h2>
           <p>We believe in putting in the time, taking ethical shots, respecting wildlife, and being grateful for the opportunity to hunt. Success isn't measured only by what comes home with us.</p>
           <blockquote>“The quiet pull of the woods was about something far deeper than the harvest itself.”<cite>AUSTIN ADKINS / FOUNDER, CHASING 606</cite></blockquote>
+          <p className="about-editorial-scripture">“Let the fields be jubilant, and everything in them; let all the trees of the forest sing for joy.” <span>PSALM 96:12</span></p>
         </div>
       </section>
 
@@ -89,6 +91,7 @@ export default function About() {
           <p className="about-editorial-kicker">COME ALONG FOR THE RIDE</p>
           <h2>THE NEXT STORY<br /><em>IS OUT THERE.</em></h2>
           <p>Follow the hunts, see what we're working on, and be part of the Chasing 606 story.</p>
+          <p className="about-editorial-closing-verse">“But small is the gate and narrow the road that leads to life, and only a few find it.” <span>MATTHEW 7:14</span></p>
           <div className="about-editorial-actions">
             <a href="https://www.youtube.com/@Chasing606" target="_blank" rel="noreferrer" className="button cream">WATCH ON YOUTUBE <Icon name="play" /></a>
             <a href="/merch" className="button story-watch">SHOP THE GEAR <Icon /></a>

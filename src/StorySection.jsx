@@ -65,7 +65,6 @@ export default function StorySection() {
   return (
     <section id="story" className="story-hero home-reveal" aria-labelledby="story-title">
       <div className="story-hero-content">
-        <p className="eyebrow"><span /> OUT HERE IS WHERE WE BELONG</p>
         <StoryHeadline id="story-title" ending={story.ending} reduceMotion={reduceMotion} />
         <div className="story-copy-rotator" aria-live="off">
           <div key={index} className={reduceMotion ? 'story-copy-slide' : 'story-copy-slide story-copy-enter'}>

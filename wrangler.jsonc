@@ -12,6 +12,9 @@
     ]
   },
   "previews": {},
+  "secrets": {
+    "required": ["FOURTHWALL_STOREFRONT_TOKEN", "PRINTFUL_API_TOKEN"]
+  },
   "build": {
     "command": "npm run build"
   }

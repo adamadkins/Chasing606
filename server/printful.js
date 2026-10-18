@@ -49,3 +49,35 @@ export async function printfulStatus(request, env, fetcher = fetch) {
     return Response.json({ provider: 'printful', connected: false, reason: error?.name === 'TimeoutError' || error?.name === 'AbortError' ? 'request_timeout' : 'network_or_response_error' }, { headers, status: 503 });
   }
 }
+
+ 
+// Diagnostic-only catalog summary. Does not expose private product data or
+// replace the Fourthwall catalog that customers currently see.
+export async function printfulCatalogStatus(request, env, fetcher = fetch) {
+  const headers = { 'Cache-Control': 'no-store' };
+  if (request.method !== 'GET') return Response.json({ error: 'Method not allowed.' }, { status: 405, headers });
+  const token = env.PRINTFUL_API_TOKEN?.trim();
+  if (!token) return Response.json({ provider: 'printful', connected: false, reason: 'not_configured' }, { status: 503, headers });
+  try {
+    const storesResponse = await fetcher('https://api.printful.com/stores', {
+      headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
+      signal: AbortSignal.timeout(10000)
+    });
+    if (!storesResponse.ok) return Response.json({ provider: 'printful', connected: false, reason: 'stores_request_failed', upstreamStatus: storesResponse.status }, { status: 503, headers });
+    const stores = await storesResponse.json();
+    if (!Array.isArray(stores.result) || stores.result.length !== 1 || !Number.isInteger(Number(stores.result[0]?.id))) {
+      return Response.json({ provider: 'printful', connected: false, reason: 'store_selection_required' }, { status: 409, headers });
+    }
+    const storeId = String(stores.result[0].id);
+    const response = await fetcher('https://api.printful.com/store/products?limit=1&offset=0', {
+      headers: { Authorization: `Bearer ${token}`, 'X-PF-Store-Id': storeId, Accept: 'application/json' },
+      signal: AbortSignal.timeout(10000)
+    });
+    if (!response.ok) return Response.json({ provider: 'printful', connected: true, catalogAccessible: false, reason: 'products_request_failed', upstreamStatus: response.status }, { status: 503, headers });
+    const data = await response.json();
+    if (data.code !== 200 || !Array.isArray(data.result)) return Response.json({ provider: 'printful', connected: true, catalogAccessible: false, reason: 'unexpected_response' }, { status: 502, headers });
+    return Response.json({ provider: 'printful', connected: true, catalogAccessible: true, productsAvailable: data.paging?.total ?? data.result.length, checkoutEnabled: false }, { headers });
+  } catch (error) {
+    return Response.json({ provider: 'printful', connected: false, reason: error?.name === 'TimeoutError' ? 'request_timeout' : 'network_or_response_error' }, { status: 503, headers });
+  }
+}

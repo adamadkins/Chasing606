@@ -3098,3 +3098,15 @@ html{scrollbar-gutter:stable}.brand-intro:focus{outline:none}
  .about-editorial .about-reveal{opacity:1!important;transform:none!important;transition:none!important}
  .about-editorial-discover,.about-editorial-discover span,.about-editorial-discover::after{transition:none!important}
 }
+
+
+/* Baylee Mayhew: compact photo-and-quote feature */
+.about-editorial-baylee{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);align-items:stretch;background:#eee8dc;color:#313a2e;overflow:hidden}
+.about-editorial-baylee-photo{min-height:330px;overflow:hidden}
+.about-editorial-baylee-photo img{display:block;width:100%;height:100%;object-fit:cover;object-position:center 42%}
+.about-editorial-baylee-copy{display:flex;flex-direction:column;justify-content:center;padding:clamp(28px,4.5vw,75px)}
+.about-editorial-baylee-copy .about-editorial-kicker{color:#997453}
+.about-editorial-baylee-copy blockquote{margin:12px 0 0;padding:0 0 0 20px;border-left:3px solid #a77d55;font-size:clamp(1.2rem,2vw,2rem);font-weight:500;line-height:1.5;letter-spacing:-.015em}
+.about-editorial-baylee-copy blockquote cite{display:block;margin-top:20px;font-size:.7rem;font-weight:800;letter-spacing:.16em;font-style:normal;color:#8b6c4d}
+@media(min-width:801px){.about-editorial-baylee{max-height:510px;min-height:360px}}
+@media(max-width:800px){.about-editorial-baylee{grid-template-columns:1fr}.about-editorial-baylee-photo{min-height:0;aspect-ratio:16/10}.about-editorial-baylee-copy{padding:32px 24px 42px}.about-editorial-baylee-copy blockquote{font-size:clamp(1.12rem,4.5vw,1.5rem)}}

@@ -172,10 +172,12 @@ export async function printfulStorefrontPreview(request, env, fetcher = fetch) {
     const source = data.result;
     const safeImage = url => typeof url === 'string' && /^https:\/\//i.test(url) ? url : null;
     const variantImages = v => {
-      const files = Array.isArray(v.files) ? v.files : [];
-      const images = files.flatMap(file => [file.preview_url, file.thumbnail_url].map(safeImage).filter(Boolean));
-      const primary = safeImage(v.product?.image) || safeImage(v.thumbnail_url);
-      return [...new Set([primary, ...images].filter(Boolean))];
+      // Printful files contain printable artwork, not necessarily product mockups.
+      // Only use the variant's product imagery for customer-facing galleries.
+      return [...new Set([
+        safeImage(v.product?.image),
+        safeImage(v.thumbnail_url)
+      ].filter(Boolean))];
     };
     const variants = source.sync_variants.filter(v => v.synced === true).map(v => {
       const segments = String(v.name || '').split(' / ').map(s => s.trim());

@@ -16,11 +16,20 @@ export async function printfulStatus(request, env, fetcher = fetch) {
       signal: AbortSignal.timeout(10000)
     });
     if (!response.ok) {
+      // Printful may return a safe machine-readable error code. Never relay its
+      // raw response, which may contain account or request details.
+      let providerCode = null;
+      try {
+        const errorBody = await response.json();
+        const code = errorBody?.error?.code ?? errorBody?.code;
+        if (typeof code === 'number' || (typeof code === 'string' && /^[a-zA-Z0-9_-]{1,60}$/.test(code))) providerCode = code;
+      } catch {}
       return Response.json({
         provider: 'printful',
         connected: false,
         reason: response.status === 401 || response.status === 403 ? 'authorization_failed' : response.status === 404 ? 'endpoint_not_found' : response.status === 429 ? 'rate_limited' : response.status >= 500 ? 'printful_server_error' : 'printful_http_error',
-        upstreamStatus: response.status
+        upstreamStatus: response.status,
+        ...(providerCode !== null ? { providerCode } : {})
       }, { headers, status: 503 });
     }
     const data = await response.json();

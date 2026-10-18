@@ -3137,3 +3137,13 @@ html{scrollbar-gutter:stable}.brand-intro:focus{outline:none}
  .about-editorial-baylee-copy{padding:30px 24px 36px}
  .about-editorial-baylee-copy blockquote{font-size:1.1rem;line-height:1.65}
 }
+
+
+/* Alternate Baylee's photo placement so consecutive features don't stack photos on the left. */
+@media(min-width:801px){
+ .about-editorial-baylee-photo{grid-column:2;grid-row:1}
+ .about-editorial-baylee-copy{grid-column:1;grid-row:1}
+}
+@media(max-width:800px){
+ .about-editorial-baylee-photo,.about-editorial-baylee-copy{grid-column:auto;grid-row:auto}
+}

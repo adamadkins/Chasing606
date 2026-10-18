@@ -1,9 +1,10 @@
 import { handleCommerce } from '../server/fourthwall.js';
-import { printfulStatus, printfulCatalogStatus, printfulCatalogPreview } from '../server/printful.js';
+import { printfulStatus, printfulCatalogStatus, printfulCatalogPreview, printfulVariantPreview } from '../server/printful.js';
 import { onRequestGet } from '../functions/api/latest-video.js';
 export default {
   async fetch(request, env) {
     if (['/api/commerce','/api/products','/api/checkout'].includes(new URL(request.url).pathname)) return handleCommerce(request,env);
+    if (new URL(request.url).pathname === '/api/printful/variant-preview') return printfulVariantPreview(request, env);
     if (new URL(request.url).pathname === '/api/printful/catalog-preview') return printfulCatalogPreview(request, env);
     if (new URL(request.url).pathname === '/api/printful/catalog-status') return printfulCatalogStatus(request, env);
     if (new URL(request.url).pathname === '/api/printful/status') return printfulStatus(request, env);

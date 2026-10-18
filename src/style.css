@@ -3147,3 +3147,6 @@ html{scrollbar-gutter:stable}.brand-intro:focus{outline:none}
 @media(max-width:800px){
  .about-editorial-baylee-photo,.about-editorial-baylee-copy{grid-column:auto;grid-row:auto}
 }
+
+/* A small visual pause between Baylee's feature and the next photo section. */
+.about-editorial-baylee{margin-bottom:clamp(18px,2.5vw,30px)}

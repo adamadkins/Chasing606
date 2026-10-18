@@ -79,7 +79,7 @@ export default function About() {
           <p className="about-editorial-kicker">WHAT MATTERS TO US</p>
           <h2>RESPECT THE LAND.<br /><em>ENJOY THE CHASE.</em></h2>
           <p>We believe in putting in the time, taking ethical shots, respecting wildlife, and being grateful for the opportunity to hunt. Success isn't measured only by what comes home with us.</p>
-          <blockquote>“The lazy do not roast any game, but the diligent prize their possession.”<cite>PROVERBS 12:27</cite></blockquote>
+          <blockquote>“The quiet pull of the woods was about something far deeper than the harvest itself.”<cite>AUSTIN ADKINS / FOUNDER, CHASING 606</cite></blockquote>
         </div>
       </section>
 

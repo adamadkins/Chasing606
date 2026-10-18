@@ -48,7 +48,7 @@ export default function About() {
         </div>
       </section>
 
-      <section className="about-editorial-gallery" aria-label="Moments from the Chasing 606 outdoors">
+      <section className="about-editorial-gallery about-editorial-field-story" aria-label="The people and memories behind Chasing 606">
         <div className="about-editorial-gallery-heading">
           <div>
             <p className="about-editorial-kicker">FROM THE FIELD</p>
@@ -56,12 +56,20 @@ export default function About() {
           </div>
           <p>Every season looks a little different. Every trip adds another chapter.</p>
         </div>
-        <div className="about-editorial-mosaic">
-          <figure className="about-editorial-mosaic-large"><img src={image('IMG_1753')} alt="A moment from the Chasing 606 hunting season" loading="lazy" /><figcaption>THE PEOPLE</figcaption></figure>
-          <figure><img src={image('IMG_0377')} alt="Whitetail hunting photography from eastern Kentucky" loading="lazy" /><figcaption>THE WILDLIFE</figcaption></figure>
-          <figure><img src={image('IMG_1176')} alt="Another moment from the woods" loading="lazy" /><figcaption>THE SEASON</figcaption></figure>
-          <figure><img src={image('IMG_1353')} alt="Whitetail buck photographed in the field" loading="lazy" /><figcaption>THE CHASE</figcaption></figure>
-          <figure><img src={image('IMG_1672')} alt="A Chasing 606 hunting moment" loading="lazy" /><figcaption>THE MEMORIES</figcaption></figure>
+        <div className="about-editorial-field-feature">
+          <div className="about-editorial-field-image">
+            <img src={image('IMG_1753')} alt="Two hunters sharing a moment with a whitetail buck" loading="lazy" />
+          </div>
+          <div className="about-editorial-field-copy">
+            <p className="about-editorial-kicker">BEYOND THE HARVEST</p>
+            <h3>IT'S WHO WE<br /><em>SHARE IT WITH.</em></h3>
+            <p>Some of the best parts of hunting happen between the big moments: the conversations on the way in, the hours spent waiting, and the people who are there when a season's worth of effort finally comes together.</p>
+            <p>Those are the stories we want to remember, and the ones we're glad to share.</p>
+          </div>
+        </div>
+        <div className="about-editorial-field-pair">
+          <img src={image('IMG_0377')} alt="Whitetail buck photographed during a hunt" loading="lazy" />
+          <img src={image('IMG_1672')} alt="Hunter sharing a moment from the field after dark" loading="lazy" />
         </div>
       </section>
 

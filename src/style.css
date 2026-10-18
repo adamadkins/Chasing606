@@ -3215,3 +3215,13 @@ html{scrollbar-gutter:stable}.brand-intro:focus{outline:none}
 .printful-preview-variant{font-size:12px;margin:24px 0;color:#4b5346}
 .printful-preview-disabled{width:100%;background:#9b9f93;color:white;border:0;padding:18px;font-size:11px;letter-spacing:1.3px;cursor:not-allowed}
 @media(max-width:700px){.printful-preview-page{padding:24px 5% 65px}.printful-preview-top{flex-direction:column;font-size:9px}.printful-preview-layout{grid-template-columns:1fr;gap:20px;margin-top:26px}.printful-preview-details{padding-top:0}.printful-preview-art{aspect-ratio:1}}
+
+
+.printful-preview-gallery{min-width:0}
+.printful-preview-gallery-controls{position:absolute;bottom:15px;left:15px;right:15px;display:flex;justify-content:space-between;align-items:center;background:#f8f7f2dd;padding:7px 12px;font-size:12px}
+.printful-preview-gallery-controls button{border:0;background:transparent;font-size:30px;line-height:1;padding:0 10px}
+.printful-preview-thumbnails{display:flex;gap:10px;margin-top:12px;overflow-x:auto}
+.printful-preview-thumbnails button{width:72px;height:72px;flex:none;padding:3px;border:1px solid #c6cabc;background:#fff}
+.printful-preview-thumbnails button.selected{border:2px solid #303b2b}
+.printful-preview-thumbnails img{width:100%;height:100%;object-fit:contain}
+.printful-preview-missing{padding:28px;text-align:center;font-size:13px;color:#687163}

@@ -9,7 +9,8 @@ export default function PrintfulPreview() {
   const [product, setProduct] = useState(null);
   const [error, setError] = useState('');
   const [color, setColor] = useState('French Navy');
-  const [size, setSize] = useState('S');\n  const [imageIndex, setImageIndex] = useState(0);
+  const [size, setSize] = useState('S');
+  const [imageIndex, setImageIndex] = useState(0);
   useEffect(() => {
     document.title = 'Printful Preview | Chasing 606';
     const controller = new AbortController();
@@ -19,7 +20,10 @@ export default function PrintfulPreview() {
       .catch(e => { if (e.name !== 'AbortError') setError(e.message); });
     return () => controller.abort();
   }, []);
-  const variant = product?.variants?.find(v => v.color === color && v.size === size);\n  const gallery = product?.galleryByColor?.[color] || [];\n  const image = gallery[imageIndex] || product?.imagesByColor?.[color] || (color === 'French Navy' ? product?.image : null);\n  const changeColor = next => { setColor(next); setImageIndex(0); };
+  const variant = product?.variants?.find(v => v.color === color && v.size === size);
+  const gallery = product?.galleryByColor?.[color] || [];
+  const image = gallery[imageIndex] || product?.imagesByColor?.[color] || (color === 'French Navy' ? product?.image : null);
+  const changeColor = next => { setColor(next); setImageIndex(0); };
   return (
     <>
       <header><a className="header-brand" href="/" aria-label="Chasing 606 home"><Brand header /></a><Navigation /></header>

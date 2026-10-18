@@ -185,13 +185,16 @@ export async function printfulStorefrontPreview(request, env, fetcher = fetch) {
       return {
         id: String(v.id), label: [color, size].filter(Boolean).join(' / '),
         color, size, price: Number.isFinite(price) ? price : 0,
-        currencyCode: v.currency || 'USD', available: true,\n        image: variantImages(v)[0] || null, images: variantImages(v)
+        currencyCode: v.currency || 'USD', available: true,
+        image: variantImages(v)[0] || null, images: variantImages(v)
       };
     });
     const colors = [...new Set(variants.map(v => v.color).filter(Boolean))];
     const sizes = [...new Set(variants.map(v => v.size).filter(Boolean))];
     const prices = variants.map(v => v.price).filter(p => p > 0);
-    const image = safeImage(source.sync_product?.thumbnail_url);\n    const imagesByColor = Object.fromEntries(colors.map(color => [color, variants.find(v => v.color === color && v.image)?.image || null]));\n    const galleryByColor = Object.fromEntries(colors.map(color => [color, [...new Set(variants.filter(v => v.color === color).flatMap(v => v.images))].slice(0, 4)]));
+    const image = safeImage(source.sync_product?.thumbnail_url);
+    const imagesByColor = Object.fromEntries(colors.map(color => [color, variants.find(v => v.color === color && v.image)?.image || null]));
+    const galleryByColor = Object.fromEntries(colors.map(color => [color, [...new Set(variants.filter(v => v.color === color).flatMap(v => v.images))].slice(0, 4)]));
     return Response.json({
       previewOnly: true, checkoutEnabled: false,
       product: {

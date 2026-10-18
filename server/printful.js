@@ -153,3 +153,49 @@ export async function printfulVariantPreview(request, env, fetcher = fetch) {
     return Response.json({ error: 'Variants unavailable.' }, { status: 503, headers });
   }
 }
+
+ 
+// Read-only storefront-shaped preview. No checkout or fulfillment actions.
+export async function printfulStorefrontPreview(request, env, fetcher = fetch) {
+  const headers = { 'Cache-Control': 'no-store' };
+  if (request.method !== 'GET') return Response.json({ error: 'Method not allowed.' }, { status: 405, headers });
+  const token = env.PRINTFUL_API_TOKEN?.trim();
+  if (!token) return Response.json({ error: 'Printful not configured.' }, { status: 503, headers });
+  try {
+    const response = await fetcher('https://api.printful.com/sync/products/482880343', {
+      headers: { Authorization: 'Bearer ' + token, Accept: 'application/json' },
+      signal: AbortSignal.timeout(10000)
+    });
+    if (!response.ok) return Response.json({ error: 'Product unavailable.', upstreamStatus: response.status }, { status: 503, headers });
+    const data = await response.json();
+    if (data.code !== 200 || !Array.isArray(data.result?.sync_variants)) return Response.json({ error: 'Unexpected product data.' }, { status: 502, headers });
+    const source = data.result;
+    const variants = source.sync_variants.filter(v => v.synced === true).map(v => {
+      const segments = String(v.name || '').split(' / ').map(s => s.trim());
+      const size = segments.at(-1) || '';
+      const color = segments.length >= 3 ? segments.at(-2) : '';
+      const price = Number(v.retail_price);
+      return {
+        id: String(v.id), label: [color, size].filter(Boolean).join(' / '),
+        color, size, price: Number.isFinite(price) ? price : 0,
+        currencyCode: v.currency || 'USD', available: true
+      };
+    });
+    const colors = [...new Set(variants.map(v => v.color).filter(Boolean))];
+    const sizes = [...new Set(variants.map(v => v.size).filter(Boolean))];
+    const prices = variants.map(v => v.price).filter(p => p > 0);
+    const image = typeof source.sync_product?.thumbnail_url === 'string' ? source.sync_product.thumbnail_url : null;
+    return Response.json({
+      previewOnly: true, checkoutEnabled: false,
+      product: {
+        id: String(source.sync_product?.id || 482880343),
+        name: source.sync_product?.name || 'Printful test product',
+        image, images: image ? [image] : [], colors, sizes, variants,
+        price: prices.length ? Math.min(...prices) : 0,
+        currencyCode: 'USD', available: variants.length > 0
+      }
+    }, { headers });
+  } catch {
+    return Response.json({ error: 'Product unavailable.' }, { status: 503, headers });
+  }
+}

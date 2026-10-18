@@ -12,12 +12,13 @@ export const defaultStoryPhotos = [
   },
   {
     id: 'gobble',
-    src: '/images/IMG_1667.jpeg',
+    src: '/images/IMG_8651.jpeg',
+    objectPosition: 'center 65%',
     alt: 'Wild turkey displaying its fan in spring grass',
   },
   {
     id: 'before-daylight',
-    src: '/images/IMG_8651.jpeg',
+    src: '/images/IMG_1667.jpeg',
     alt: 'Hunter heading into the woods with a headlamp before daylight',
   },
   {
@@ -45,6 +46,7 @@ export default function StorySlideshow({ photos = defaultStoryPhotos, index = 0,
             fetchPriority={i === 0 ? 'high' : 'auto'}
             referrerPolicy="no-referrer"
             className="story-cinematic-image"
+            style={photo.objectPosition ? { objectPosition: photo.objectPosition } : undefined}
             onError={(e) => {
               if (photo.publicSrc && e.currentTarget.src !== window.location.origin + photo.publicSrc && !e.currentTarget.src.includes(photo.publicSrc)) {
                 e.currentTarget.src = photo.publicSrc;

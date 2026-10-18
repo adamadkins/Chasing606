@@ -3165,3 +3165,16 @@ html{scrollbar-gutter:stable}.brand-intro:focus{outline:none}
 @media(max-width:800px){
  .about-editorial-baylee::after{grid-row:auto;height:clamp(45px,10vw,70px)}
 }
+
+
+/* Match the cream contour treatment above the field story; desktop only. */
+@media(min-width:801px){
+ .about-editorial-baylee::after{
+  height:clamp(56px,7vw,100px);
+  background-color:#eae5d9;
+  background-image:repeating-radial-gradient(ellipse at 96% 14%,transparent 0 17px,rgba(89,107,83,.14) 18px 19px,transparent 20px 34px);
+ }
+}
+@media(max-width:800px){
+ .about-editorial-baylee::after{display:none}
+}

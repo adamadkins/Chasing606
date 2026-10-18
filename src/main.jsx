@@ -480,4 +480,4 @@ function App() {
   );
 }
 
-createRoot(document.getElementById('root')).render(location.pathname.replace(/\\/$/, '') === '/printful-preview' ? <PrintfulPreview /> : <App />);
+createRoot(document.getElementById('root')).render(location.pathname.replace(/\/$/, '') === '/printful-preview' ? <PrintfulPreview /> : <App />);

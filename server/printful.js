@@ -79,8 +79,6 @@ export async function printfulCatalogStatus(request, env, fetcher = fetch) {
         const body = await response.json();
         const rawMessage = body?.error?.message ?? body?.error?.reason ?? (typeof body?.result === 'string' ? body.result : null);
         const detail = typeof rawMessage === 'string' ? rawMessage.toLowerCase() : '';
-        // Temporary server-side diagnostic. Do not log response bodies, tokens, URLs or headers.
-        console.warn('Printful catalog request rejected', { status: response.status, message: typeof rawMessage === 'string' ? rawMessage.slice(0, 300).replace(/[A-Za-z0-9_-]{24,}/g, '[redacted]') : 'No message provided' });
         // Public diagnostic endpoint: report only recognized, non-sensitive messages.
         if (/not supported|not available|unsupported|invalid store type/i.test(detail)) providerMessage = 'This operation is not supported for the selected store.';
         else if (/store id|store-id|x-pf-store/i.test(detail)) providerMessage = 'Printful requires a store identifier.';
@@ -98,5 +96,33 @@ export async function printfulCatalogStatus(request, env, fetcher = fetch) {
     return Response.json({ provider: 'printful', connected: true, catalogAccessible: true, productsAvailable: data.paging?.total ?? data.result.length, catalogEndpoint: 'sync/products', checkoutEnabled: false }, { headers });
   } catch (error) {
     return Response.json({ provider: 'printful', connected: false, reason: error?.name === 'TimeoutError' ? 'request_timeout' : 'network_or_response_error' }, { status: 503, headers });
+  }
+}
+
+ 
+// Safe read-only preview for product migration; this route is not used by the live shop.
+export async function printfulCatalogPreview(request, env, fetcher = fetch) {
+  const headers = { 'Cache-Control': 'no-store' };
+  if (request.method !== 'GET') return Response.json({ error: 'Method not allowed.' }, { status: 405, headers });
+  const token = env.PRINTFUL_API_TOKEN?.trim();
+  if (!token) return Response.json({ error: 'Printful not configured.' }, { status: 503, headers });
+  try {
+    const response = await fetcher('https://api.printful.com/sync/products?limit=20&offset=0', {
+      headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
+      signal: AbortSignal.timeout(10000)
+    });
+    if (!response.ok) return Response.json({ error: 'Printful catalog unavailable.', upstreamStatus: response.status }, { status: 503, headers });
+    const data = await response.json();
+    if (data.code !== 200 || !Array.isArray(data.result)) return Response.json({ error: 'Unexpected Printful response.' }, { status: 502, headers });
+    const products = data.result.map(item => ({
+      id: item.id,
+      name: item.name,
+      thumbnail: typeof item.thumbnail_url === 'string' && item.thumbnail_url.startsWith('https://') ? item.thumbnail_url : null,
+      synced: Number(item.synced) || 0,
+      variants: Number(item.variants) || 0
+    }));
+    return Response.json({ provider: 'printful', previewOnly: true, products, total: data.paging?.total ?? products.length, checkoutEnabled: false }, { headers });
+  } catch {
+    return Response.json({ error: 'Printful catalog unavailable.' }, { status: 503, headers });
   }
 }

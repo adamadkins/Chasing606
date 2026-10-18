@@ -98,6 +98,7 @@ export default function About() {
           <h2>RESPECT THE LAND.<br /><em>ENJOY THE CHASE.</em></h2>
           <p>We believe in putting in the time, taking ethical shots, respecting wildlife, and being grateful for the opportunity to hunt. Success isn't measured only by what comes home with us.</p>
           <blockquote>“The quiet pull of the woods was about something far deeper than the harvest itself.”<cite>AUSTIN ADKINS / FOUNDER, CHASING 606</cite></blockquote>
+          <blockquote>“To me, hunting is a privilege and a blessing. I keep my faith in God, and He blesses me with a bountiful harvest.”<cite>BAYLEE MAYHEW</cite></blockquote>
           <blockquote className="about-editorial-verse">“Let the fields be jubilant, and everything in them; let all the trees of the forest sing for joy.”<cite>PSALM 96:12</cite></blockquote>
         </div>
       </section>

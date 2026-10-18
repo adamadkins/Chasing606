@@ -79,6 +79,8 @@ export async function printfulCatalogStatus(request, env, fetcher = fetch) {
         const body = await response.json();
         const rawMessage = body?.error?.message ?? body?.error?.reason ?? (typeof body?.result === 'string' ? body.result : null);
         const detail = typeof rawMessage === 'string' ? rawMessage.toLowerCase() : '';
+        // Temporary server-side diagnostic. Do not log response bodies, tokens, URLs or headers.
+        console.warn('Printful catalog request rejected', { status: response.status, message: typeof rawMessage === 'string' ? rawMessage.slice(0, 300).replace(/[A-Za-z0-9_-]{24,}/g, '[redacted]') : 'No message provided' });
         // Public diagnostic endpoint: report only recognized, non-sensitive messages.
         if (/not supported|not available|unsupported|invalid store type/i.test(detail)) providerMessage = 'This operation is not supported for the selected store.';
         else if (/store id|store-id|x-pf-store/i.test(detail)) providerMessage = 'Printful requires a store identifier.';

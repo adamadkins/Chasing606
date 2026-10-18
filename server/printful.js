@@ -74,16 +74,22 @@ export async function printfulCatalogStatus(request, env, fetcher = fetch) {
     });
     if (!response.ok) {
       let diagnostic = 'unspecified';
+      let providerMessage = null;
       try {
         const body = await response.json();
-        const detail = [body?.error?.message, body?.error?.reason, typeof body?.result === 'string' ? body.result : ''].filter(Boolean).join(' ').toLowerCase();
+        const rawMessage = body?.error?.message ?? body?.error?.reason ?? (typeof body?.result === 'string' ? body.result : null);
+        const detail = typeof rawMessage === 'string' ? rawMessage.toLowerCase() : '';
+        // Public diagnostic endpoint: report only recognized, non-sensitive messages.
+        if (/not supported|not available|unsupported|invalid store type/i.test(detail)) providerMessage = 'This operation is not supported for the selected store.';
+        else if (/store id|store-id|x-pf-store/i.test(detail)) providerMessage = 'Printful requires a store identifier.';
+        else if (/permission|scope|access denied/i.test(detail)) providerMessage = 'Insufficient permissions for this operation.';
         if (/store.{0,40}(not found|not selected|not specified|id|required)|x-pf-store/i.test(detail)) diagnostic = 'store_selection';
         else if (/scope|permission|access|forbidden|unauthoriz/i.test(detail)) diagnostic = 'permissions';
         else if (/manual|api platform|platform|integration|not supported|not available/i.test(detail)) diagnostic = 'store_type';
         else if (/product/i.test(detail)) diagnostic = 'product_configuration';
         else if (/parameter|invalid|request/i.test(detail)) diagnostic = 'request_validation';
       } catch {}
-      return Response.json({ provider: 'printful', connected: true, catalogAccessible: false, reason: 'products_request_failed', upstreamStatus: response.status, diagnostic }, { status: 503, headers });
+      return Response.json({ provider: 'printful', connected: true, catalogAccessible: false, reason: 'products_request_failed', upstreamStatus: response.status, diagnostic, ...(providerMessage ? { providerMessage } : {}) }, { status: 503, headers });
     }
     const data = await response.json();
     if (data.code !== 200 || !Array.isArray(data.result)) return Response.json({ provider: 'printful', connected: true, catalogAccessible: false, reason: 'unexpected_response' }, { status: 502, headers });

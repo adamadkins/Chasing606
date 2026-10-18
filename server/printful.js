@@ -126,3 +126,30 @@ export async function printfulCatalogPreview(request, env, fetcher = fetch) {
     return Response.json({ error: 'Printful catalog unavailable.' }, { status: 503, headers });
   }
 }
+
+export async function printfulVariantPreview(request, env, fetcher = fetch) {
+  const headers = { 'Cache-Control': 'no-store' };
+  if (request.method !== 'GET') return Response.json({ error: 'Method not allowed.' }, { status: 405, headers });
+  const token = env.PRINTFUL_API_TOKEN?.trim();
+  if (!token) return Response.json({ error: 'Printful not configured.' }, { status: 503, headers });
+  try {
+    const response = await fetcher('https://api.printful.com/sync/products/482880343', {
+      headers: { Authorization: 'Bearer ' + token, Accept: 'application/json' },
+      signal: AbortSignal.timeout(10000)
+    });
+    if (!response.ok) return Response.json({ error: 'Variants unavailable.', upstreamStatus: response.status }, { status: 503, headers });
+    const data = await response.json();
+    if (data.code !== 200 || !Array.isArray(data.result?.sync_variants)) return Response.json({ error: 'Unexpected Printful response.' }, { status: 502, headers });
+    return Response.json({
+      previewOnly: true,
+      productId: 482880343,
+      variants: data.result.sync_variants.map(v => ({
+        id: v.id, variantId: v.variant_id, name: v.name,
+        retailPrice: v.retail_price, currency: v.currency || 'USD', synced: v.synced
+      })),
+      checkoutEnabled: false
+    }, { headers });
+  } catch {
+    return Response.json({ error: 'Variants unavailable.' }, { status: 503, headers });
+  }
+}

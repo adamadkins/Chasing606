@@ -83,12 +83,21 @@ export default function About() {
             <h3>IT'S WHO WE<br /><em>SHARE IT WITH.</em></h3>
             <p>Some of the best parts of hunting happen between the big moments: the conversations on the way in, the hours spent waiting, and the shared excitement when a season's worth of effort finally comes together.</p>
             <p>Those are the stories we want to remember, and the ones we're glad to share.</p>
-          <blockquote className="about-editorial-field-quote">“To me, hunting is a privilege and a blessing. I keep my faith in God, and He blesses me with a bountiful harvest.”<cite>BAYLEE MAYHEW</cite></blockquote>
           </div>
         </div>
         <div className="about-editorial-field-pair about-reveal">
           <img src={image('IMG_0377')} alt="Whitetail buck photographed during a hunt" loading="lazy" />
           <img src={image('IMG_1672')} alt="Hunter sharing a moment from the field after dark" loading="lazy" />
+        </div>
+      </section>
+
+      <section className="about-editorial-baylee" aria-label="Baylee Mayhew on faith and hunting">
+        <div className="about-editorial-baylee-photo about-reveal">
+          <img src="/images/IMG_1769.jpeg" alt="Baylee Mayhew with a whitetail buck in the snowy woods" loading="lazy" />
+        </div>
+        <div className="about-editorial-baylee-copy about-reveal">
+          <p className="about-editorial-kicker">FAITH IN THE FIELD</p>
+          <blockquote>“To me, hunting is a privilege and a blessing. I keep my faith in God, and He blesses me with a bountiful harvest.”<cite>BAYLEE MAYHEW</cite></blockquote>
         </div>
       </section>
 

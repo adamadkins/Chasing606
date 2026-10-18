@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import PrintfulPreview from './PrintfulPreview';
 import { createRoot } from 'react-dom/client';
 import { getProducts, getCommerce, variantFor } from './catalog';
 import './style.css';
@@ -479,4 +480,4 @@ function App() {
   );
 }
 
-createRoot(document.getElementById('root')).render(<App />);
+createRoot(document.getElementById('root')).render(location.pathname.replace(/\\/$/, '') === '/printful-preview' ? <PrintfulPreview /> : <App />);

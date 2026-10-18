@@ -10,7 +10,9 @@ export async function printfulStatus(request, env, fetcher = fetch) {
     return Response.json({ provider: 'printful', connected: false, reason: 'not_configured' }, { headers });
   }
   try {
-    const response = await fetcher('https://api.printful.com/store/products?limit=1&offset=0', {
+    // The stores endpoint does not require a store-selection header. Use it
+    // first to verify authentication without assuming a default store.
+    const response = await fetcher('https://api.printful.com/stores', {
       method: 'GET',
       headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
       signal: AbortSignal.timeout(10000)
@@ -39,7 +41,8 @@ export async function printfulStatus(request, env, fetcher = fetch) {
     return Response.json({
       provider: 'printful',
       connected: true,
-      productsAvailable: data.paging?.total ?? data.result.length,
+      storesAvailable: data.result.length,
+      storeSelectionRequired: data.result.length !== 1,
       checkoutEnabled: false
     }, { headers });
   } catch (error) {

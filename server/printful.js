@@ -72,7 +72,19 @@ export async function printfulCatalogStatus(request, env, fetcher = fetch) {
       headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
       signal: AbortSignal.timeout(10000)
     });
-    if (!response.ok) return Response.json({ provider: 'printful', connected: true, catalogAccessible: false, reason: 'products_request_failed', upstreamStatus: response.status }, { status: 503, headers });
+    if (!response.ok) {
+      let diagnostic = 'unspecified';
+      try {
+        const body = await response.json();
+        const detail = [body?.error?.message, body?.error?.reason, typeof body?.result === 'string' ? body.result : ''].filter(Boolean).join(' ').toLowerCase();
+        if (/store.{0,40}(not found|not selected|not specified|id|required)|x-pf-store/i.test(detail)) diagnostic = 'store_selection';
+        else if (/scope|permission|access|forbidden|unauthoriz/i.test(detail)) diagnostic = 'permissions';
+        else if (/manual|api platform|platform|integration|not supported|not available/i.test(detail)) diagnostic = 'store_type';
+        else if (/product/i.test(detail)) diagnostic = 'product_configuration';
+        else if (/parameter|invalid|request/i.test(detail)) diagnostic = 'request_validation';
+      } catch {}
+      return Response.json({ provider: 'printful', connected: true, catalogAccessible: false, reason: 'products_request_failed', upstreamStatus: response.status, diagnostic }, { status: 503, headers });
+    }
     const data = await response.json();
     if (data.code !== 200 || !Array.isArray(data.result)) return Response.json({ provider: 'printful', connected: true, catalogAccessible: false, reason: 'unexpected_response' }, { status: 502, headers });
     return Response.json({ provider: 'printful', connected: true, catalogAccessible: true, productsAvailable: data.paging?.total ?? data.result.length, checkoutEnabled: false }, { headers });

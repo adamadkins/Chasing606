@@ -2991,3 +2991,22 @@ html{scrollbar-gutter:stable}.brand-intro:focus{outline:none}
 .about-editorial .about-editorial-verse{margin:26px 0 0;padding:22px 0 22px 25px;border-top:0;border-left:3px solid #bb9064;font-size:clamp(1rem,1.45vw,1.2rem);line-height:1.65;font-style:italic;color:#f2eee4;max-width:580px}
 .about-editorial .about-editorial-verse cite{display:block;margin-top:14px;color:#c19a70;font-size:.7rem;font-style:normal;font-weight:800;letter-spacing:.15em}
 .about-editorial .about-editorial-verse-close{margin:20px auto 32px;text-align:left;background:rgba(9,12,9,.35);padding:22px 26px;max-width:540px}
+
+
+/* Echo the homepage's quiet topographic contour pattern on About panels. */
+.about-editorial-intro,.about-editorial-field-story,.about-editorial-belief{position:relative;isolation:isolate}
+.about-editorial-intro::before,.about-editorial-field-story::before,.about-editorial-belief::before{
+ content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:.07;
+ background:repeating-radial-gradient(ellipse at 96% 14%,transparent 0 17px,#596b53 18px 19px,transparent 20px 34px);
+ -webkit-mask-image:linear-gradient(90deg,transparent 30%,#000 100%);
+ mask-image:linear-gradient(90deg,transparent 30%,#000 100%);
+}
+.about-editorial-belief::before{opacity:.13;background:repeating-radial-gradient(ellipse at 93% 10%,transparent 0 17px,#a3ae8b 18px 19px,transparent 20px 34px)}
+.about-editorial-field-story::before{opacity:.1}
+@media(max-width:800px){
+ .about-editorial-intro::before,.about-editorial-field-story::before,.about-editorial-belief::before{
+ background-position:right top;
+ -webkit-mask-image:linear-gradient(90deg,transparent 8%,#000 100%);
+ mask-image:linear-gradient(90deg,transparent 8%,#000 100%);
+ }
+}

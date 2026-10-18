@@ -3178,3 +3178,17 @@ html{scrollbar-gutter:stable}.brand-intro:focus{outline:none}
 @media(max-width:800px){
  .about-editorial-baylee::after{display:none}
 }
+
+
+/* Baylee transition: short, quiet cream divider matching the gallery above. */
+@media(min-width:801px){
+ .about-editorial-baylee::after{
+  height:38px;
+  background:#eae5d9;
+  background-image:repeating-radial-gradient(ellipse at 96% 14%,transparent 0 17px,rgba(89,107,83,.07) 18px 19px,transparent 20px 34px);
+  background-repeat:no-repeat;
+ }
+}
+@media(max-width:800px){
+ .about-editorial-baylee::after{display:none}
+}

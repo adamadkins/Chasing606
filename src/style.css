@@ -3150,3 +3150,18 @@ html{scrollbar-gutter:stable}.brand-intro:focus{outline:none}
 
 /* A small visual pause between Baylee's feature and the next photo section. */
 .about-editorial-baylee{margin-bottom:clamp(18px,2.5vw,30px)}
+
+
+/* Light breathing room inside Baylee's feature, like the open space after Who We Are. */
+.about-editorial-baylee{margin-bottom:0}
+.about-editorial-baylee::after{
+ content:"";
+ display:block;
+ grid-column:1 / -1;
+ grid-row:2;
+ height:clamp(56px,7vw,100px);
+ background:#f4f3ed;
+}
+@media(max-width:800px){
+ .about-editorial-baylee::after{grid-row:auto;height:clamp(45px,10vw,70px)}
+}

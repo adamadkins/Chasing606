@@ -2980,3 +2980,9 @@ html{scrollbar-gutter:stable}.brand-intro:focus{outline:none}
 .about-editorial-field-pair{gap:8px;margin-top:8px}
 .about-editorial-field-pair img{height:clamp(165px,40vw,270px)}
 }
+
+
+/* Scripture accents throughout the About story */
+.about-editorial .about-editorial-scripture{margin-top:24px!important;padding:20px 0 0;border-top:1px solid rgba(193,154,112,.35);font-size:.98rem!important;font-style:italic;line-height:1.7!important;color:#e0d6c6!important}
+.about-editorial .about-editorial-scripture span,.about-editorial .about-editorial-closing-verse span{display:block;font-style:normal;font-size:.67rem;font-weight:800;letter-spacing:.17em;color:#c19a70;margin-top:12px}
+.about-editorial .about-editorial-closing-verse{font-size:.92rem!important;line-height:1.7!important;font-style:italic;color:#e2d6c5;max-width:560px!important;margin:10px auto 30px!important}

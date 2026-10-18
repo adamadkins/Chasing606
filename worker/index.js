@@ -1,9 +1,10 @@
 import { handleCommerce } from '../server/fourthwall.js';
-import { printfulStatus } from '../server/printful.js';
+import { printfulStatus, printfulCatalogStatus } from '../server/printful.js';
 import { onRequestGet } from '../functions/api/latest-video.js';
 export default {
   async fetch(request, env) {
     if (['/api/commerce','/api/products','/api/checkout'].includes(new URL(request.url).pathname)) return handleCommerce(request,env);
+    if (new URL(request.url).pathname === '/api/printful/catalog-status') return printfulCatalogStatus(request, env);
     if (new URL(request.url).pathname === '/api/printful/status') return printfulStatus(request, env);
     if (new URL(request.url).pathname === '/api/latest-video') {
       if (request.method !== 'GET') return new Response('Method not allowed', { status: 405, headers: { Allow: 'GET' } });

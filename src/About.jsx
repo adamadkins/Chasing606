@@ -1,143 +1,93 @@
 import React, { useEffect } from 'react';
 import Icon from './Icon';
 import SocialLinks from './SocialLinks';
-import whitetailBuckImg from './assets/images/whitetail_buck_1792096498234.jpg';
+
+const image = (name) => `/images/about-us/${name}.jpeg`;
 
 export default function About() {
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
+  useEffect(() => { window.scrollTo(0, 0); }, []);
 
   return (
-    <div className="about-page page-shell">
-      <section className="about-hero">
-        <div className="about-hero-content">
-          <p className="eyebrow"><span className="eyebrow-dot"/> OUR STORY · CHASING 606</p>
-          <h1>Every good story<br/>starts <em>outdoors.</em></h1>
-          <p className="about-hero-lead">
-            We're a hunting channel based in eastern Kentucky. We spend our time scouting and hunting mature bucks, and we bring a camera along.
-          </p>
-          <div className="about-scripture-badge">
-            <span className="scripture-ref">Proverbs 12:27</span>
-            <span className="scripture-text">"The lazy do not roast any game, but the diligent prize their possession."</span>
-          </div>
-          <div className="about-hero-actions">
-            <a href="/merch" className="button cream">
-              EXPLORE THE GEAR <Icon/>
-            </a>
-            <a href="https://www.youtube.com/@Chasing606" target="_blank" rel="noreferrer" className="button story-watch">
-              WATCH ON YOUTUBE <Icon name="play"/>
-            </a>
-          </div>
+    <main className="about-page about-editorial page-shell">
+      <section className="about-editorial-hero">
+        <div className="about-editorial-hero-photo">
+          <img src={image('IMG_1757')} alt="Hunter carrying a wild turkey through a green Kentucky field" fetchPriority="high" />
         </div>
-        <div className="about-hero-image-wrap">
-          <img
-            src={whitetailBuckImg || "/images/whitetail_buck.jpg"}
-            alt="Trophy whitetail buck in autumn timber"
-            className="about-hero-img"
-            loading="eager"
-            decoding="sync"
-            fetchPriority="high"
-            referrerPolicy="no-referrer"
-            onError={(e) => {
-              if (e.currentTarget.src !== window.location.origin + '/images/whitetail_buck.jpg' && !e.currentTarget.src.includes('/images/whitetail_buck.jpg')) {
-                e.currentTarget.src = '/images/whitetail_buck.jpg';
-              } else {
-                e.currentTarget.src = 'https://images.unsplash.com/photo-1484406566174-9da000fda645?auto=format&fit=crop&w=1400&q=85';
-              }
-            }}
-          />
-          <div className="about-hero-tag">
-            <span>THE HEART OF 606</span>
-            <span>CHASING 606</span>
-          </div>
+        <div className="about-editorial-hero-shade" />
+        <div className="about-editorial-hero-copy">
+          <p className="about-editorial-kicker">EASTERN KENTUCKY / THE 606</p>
+          <h1>MORE THAN<br />THE <em>HARVEST.</em></h1>
+          <p>Early mornings. Long sits. Stories worth bringing home. This is Chasing 606.</p>
+          <a href="#our-story" className="about-editorial-discover">GET TO KNOW US <span aria-hidden="true">↓</span></a>
+        </div>
+        <span className="about-editorial-hero-corner">OUR STORY / 01</span>
+      </section>
+
+      <section className="about-editorial-intro" id="our-story">
+        <div className="about-editorial-intro-heading">
+          <p className="about-editorial-kicker">WHO WE ARE</p>
+          <h2>ROOTED IN THE<br /><em>OUTDOORS.</em></h2>
+        </div>
+        <div className="about-editorial-intro-text">
+          <p>Chasing 606 is a hunting channel out of eastern Kentucky, built around the time we spend in the woods and the stories that come from it.</p>
+          <p>We're here for the scouting, the preparation, the cold mornings, the close calls, and the moments you don't forget. The camera comes along for all of it, not just the highlight reel.</p>
+          <p>Whether we're chasing whitetails in the fall or listening for gobbles in the spring, we're always looking forward to the next hunt.</p>
         </div>
       </section>
 
-      <section className="about-narrative">
-        <div className="about-grid">
-          <div className="about-card">
-            <span className="card-num">01</span>
-            <h2>Hunting Suburban Giants</h2>
-            <p>
-              Around eastern Kentucky, you can find mature bucks in small timber lots, creek bottoms, and the woods along neighborhoods. That's where a lot of our hunting happens.
-            </p>
-            <p>
-              Deer living close to people still know how to stay out of sight. We spend plenty of time watching trails, checking wind, and figuring out where they travel.
-            </p>
-          </div>
-
-          <div className="about-card">
-            <span className="card-num">02</span>
-            <h2>Long Sits & Fresh Sign</h2>
-            <p>
-              Most hunts start before daylight. Some mornings we see deer, and some we don't. Either way, we're checking scrapes, watching field edges, and learning something for next time.
-            </p>
-            <p>
-              We believe in taking ethical shots, respecting the land, and putting in the time. The hunt doesn't always end with a deer, but we're glad to be out there.
-            </p>
-          </div>
-
-          <div className="about-card">
-            <span className="card-num">03</span>
-            <h2>Our Hunting Videos</h2>
-            <p>
-              We started Chasing 606 to share our hunts on YouTube. You'll see the scouting, the setups, and what actually happens when we're in the stand.
-            </p>
-            <p>
-              Some videos are packed with action. Others are slow mornings, close calls, and lessons we'll remember next season.
-            </p>
-          </div>
-
-          <div className="about-card">
-            <span className="card-num">04</span>
-            <h2>Chasing 606 Gear</h2>
-            <p>
-              We've got Chasing 606 shirts, hats, and other gear for anyone who follows the channel or just likes being outdoors.
-            </p>
-            <p>
-              Check out the collection and find something you like.
-            </p>
-          </div>
+      <section className="about-editorial-feature">
+        <div className="about-editorial-feature-photo">
+          <img src={image('IMG_1772')} alt="Hunter with a mature whitetail buck after dark" loading="lazy" />
+        </div>
+        <div className="about-editorial-feature-copy">
+          <p className="about-editorial-kicker">THE PURSUIT</p>
+          <h2>THE WORK<br />BEHIND <em>EVERY STORY.</em></h2>
+          <p>The hunt starts long before the shot. It's checking sign, studying movement, getting the wind right, and being willing to go home empty-handed.</p>
+          <p>Some days everything comes together. Most days, the woods have something new to teach us.</p>
+          <span className="about-editorial-rule">PATIENCE / PREPARATION / RESPECT</span>
         </div>
       </section>
 
-      <section className="about-values-banner">
-        <div className="values-content">
-          <p className="eyebrow">THE 606 CODE</p>
-          <h2>Patience. Respect. The Pursuit.</h2>
-          <div className="values-row">
-            <div className="value-item">
-              <h3>SIGN</h3>
-              <p>Learning the woods by foot, tracking scrapes, and understanding movement patterns.</p>
-            </div>
-            <div className="value-item">
-              <h3>SILENCE</h3>
-              <p>Entering undetected, mastering wind direction, and holding still through the cold.</p>
-            </div>
-            <div className="value-item">
-              <h3>STEWARDSHIP</h3>
-              <p>Respecting wildlife, ethical shots, and giving thanks for the harvest.</p>
-            </div>
+      <section className="about-editorial-gallery" aria-label="Moments from the Chasing 606 outdoors">
+        <div className="about-editorial-gallery-heading">
+          <div>
+            <p className="about-editorial-kicker">FROM THE FIELD</p>
+            <h2>THE MOMENTS<br /><em>IN BETWEEN.</em></h2>
           </div>
+          <p>Every season looks a little different. Every trip adds another chapter.</p>
+        </div>
+        <div className="about-editorial-mosaic">
+          <figure className="about-editorial-mosaic-large"><img src={image('IMG_1753')} alt="A moment from the Chasing 606 hunting season" loading="lazy" /><figcaption>THE PEOPLE</figcaption></figure>
+          <figure><img src={image('IMG_0377')} alt="Whitetail hunting photography from eastern Kentucky" loading="lazy" /><figcaption>THE WILDLIFE</figcaption></figure>
+          <figure><img src={image('IMG_1176')} alt="Another moment from the woods" loading="lazy" /><figcaption>THE SEASON</figcaption></figure>
+          <figure><img src={image('IMG_1353')} alt="Whitetail buck photographed in the field" loading="lazy" /><figcaption>THE CHASE</figcaption></figure>
+          <figure><img src={image('IMG_1672')} alt="A Chasing 606 hunting moment" loading="lazy" /><figcaption>THE MEMORIES</figcaption></figure>
         </div>
       </section>
 
-      <section className="about-cta-section">
-        <h2>Join the chase.</h2>
-        <p>Watch our hunts on YouTube, shop the merch, or get in touch.</p>
-        <div className="about-cta-buttons">
-          <a href="/merch" className="button story-watch">
-            EXPLORE MERCHANDISE <Icon/>
-          </a>
-          <a href="/contact" className="button cream">
-            CONTACT US <Icon/>
-          </a>
-        </div>
-        <div className="about-social-row">
-          <SocialLinks/>
+      <section className="about-editorial-belief">
+        <div className="about-editorial-belief-photo"><img src={image('IMG_1751')} alt="Chasing 606 hunter in the outdoors" loading="lazy" /></div>
+        <div className="about-editorial-belief-copy">
+          <p className="about-editorial-kicker">WHAT MATTERS TO US</p>
+          <h2>RESPECT THE LAND.<br /><em>ENJOY THE CHASE.</em></h2>
+          <p>We believe in putting in the time, taking ethical shots, respecting wildlife, and being grateful for the opportunity to hunt. Success isn't measured only by what comes home with us.</p>
+          <blockquote>“The lazy do not roast any game, but the diligent prize their possession.”<cite>PROVERBS 12:27</cite></blockquote>
         </div>
       </section>
-    </div>
+
+      <section className="about-editorial-close">
+        <img src={image('IMG_1759')} alt="Chasing 606 hunting memories" loading="lazy" />
+        <div className="about-editorial-close-content">
+          <p className="about-editorial-kicker">COME ALONG FOR THE RIDE</p>
+          <h2>THE NEXT STORY<br /><em>IS OUT THERE.</em></h2>
+          <p>Follow the hunts, see what we're working on, and be part of the Chasing 606 story.</p>
+          <div className="about-editorial-actions">
+            <a href="https://www.youtube.com/@Chasing606" target="_blank" rel="noreferrer" className="button cream">WATCH ON YOUTUBE <Icon name="play" /></a>
+            <a href="/merch" className="button story-watch">SHOP THE GEAR <Icon /></a>
+          </div>
+          <div className="about-social-row"><SocialLinks /></div>
+        </div>
+      </section>
+    </main>
   );
 }

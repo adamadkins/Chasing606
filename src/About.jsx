@@ -29,8 +29,8 @@ export default function About() {
           <h2>ROOTED IN THE<br /><em>OUTDOORS.</em></h2>
         </div>
         <div className="about-editorial-intro-text">
-          <p>Chasing 606 is a hunting channel out of eastern Kentucky, built around the time we spend in the woods and the stories that come from it.</p>
-          <p>We're here for the scouting, the preparation, the cold mornings, the close calls, and the moments you don't forget. The camera comes along for all of it, not just the highlight reel.</p>
+          <p>Founded by Austin in 2023, Chasing 606 is an eastern Kentucky hunting team built around a shared passion for the outdoors and the stories that come from time spent in the woods.</p>
+          <p>The team is about more than any one person. We're here for the scouting, the preparation, the cold mornings, the close calls, and the moments you don't forget. The camera comes along for all of it, not just the highlight reel.</p>
           <p>Whether we're chasing whitetails in the fall or listening for gobbles in the spring, we're always looking forward to the next hunt.</p>
         </div>
       </section>
@@ -63,7 +63,7 @@ export default function About() {
           <div className="about-editorial-field-copy">
             <p className="about-editorial-kicker">BEYOND THE HARVEST</p>
             <h3>IT'S WHO WE<br /><em>SHARE IT WITH.</em></h3>
-            <p>Some of the best parts of hunting happen between the big moments: the conversations on the way in, the hours spent waiting, and the people who are there when a season's worth of effort finally comes together.</p>
+            <p>Some of the best parts of hunting happen between the big moments: the conversations on the way in, the hours spent waiting, and the shared excitement when a season's worth of effort finally comes together.</p>
             <p>Those are the stories we want to remember, and the ones we're glad to share.</p>
           </div>
         </div>

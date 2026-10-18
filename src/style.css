@@ -2986,3 +2986,8 @@ html{scrollbar-gutter:stable}.brand-intro:focus{outline:none}
 .about-editorial .about-editorial-scripture{margin-top:24px!important;padding:20px 0 0;border-top:1px solid rgba(193,154,112,.35);font-size:.98rem!important;font-style:italic;line-height:1.7!important;color:#e0d6c6!important}
 .about-editorial .about-editorial-scripture span,.about-editorial .about-editorial-closing-verse span{display:block;font-style:normal;font-size:.67rem;font-weight:800;letter-spacing:.17em;color:#c19a70;margin-top:12px}
 .about-editorial .about-editorial-closing-verse{font-size:.92rem!important;line-height:1.7!important;font-style:italic;color:#e2d6c5;max-width:560px!important;margin:10px auto 30px!important}
+
+/* Consistent inset blockquote treatment for Bible verses */
+.about-editorial .about-editorial-verse{margin:26px 0 0;padding:22px 0 22px 25px;border-top:0;border-left:3px solid #bb9064;font-size:clamp(1rem,1.45vw,1.2rem);line-height:1.65;font-style:italic;color:#f2eee4;max-width:580px}
+.about-editorial .about-editorial-verse cite{display:block;margin-top:14px;color:#c19a70;font-size:.7rem;font-style:normal;font-weight:800;letter-spacing:.15em}
+.about-editorial .about-editorial-verse-close{margin:20px auto 32px;text-align:left;background:rgba(9,12,9,.35);padding:22px 26px;max-width:540px}

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import PrintfulPreview from './PrintfulPreview';
 import { createRoot } from 'react-dom/client';
 import { getProducts, getCommerce, variantFor } from './catalog';
 import './style.css';
@@ -18,6 +17,7 @@ import CheckoutModal from './CheckoutModal';
 import Intro from './Intro';
 import About from './About';
 import StorySection from './StorySection';
+import { SHOP_CART_URL } from './shop';
 
 const money = (amount, currency = 'USD') =>
   new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(amount);
@@ -214,14 +214,15 @@ function App() {
           <Brand header />
         </a>
         <Navigation />
-        <button
-          className="cart-toggle"
-          aria-label={`Open cart, ${totalCartCount} items`}
-          onClick={() => setCartOpen(true)}
-        >
-          <Icon name="bag" />
-          <span>{totalCartCount}</span>
-        </button>
+        {commerce?.mode === 'spring' ? (
+          <a className="cart-toggle" aria-label="View cart on Spring" href={SHOP_CART_URL}>
+            <Icon name="bag" />
+          </a>
+        ) : (
+          <button className="cart-toggle" aria-label={`Open cart, ${totalCartCount} items`} onClick={() => setCartOpen(true)}>
+            <Icon name="bag" /><span>{totalCartCount}</span>
+          </button>
+        )}
       </header>
 
       <main>
@@ -436,7 +437,7 @@ function App() {
         />
       )}
 
-      <Cart
+      {commerce?.mode !== 'spring' && <Cart
         open={cartOpen}
         onClose={() => setCartOpen(false)}
         cart={cart}
@@ -447,9 +448,9 @@ function App() {
           setCheckoutSubtotal(subtotal);
           setCheckoutOpen(true);
         }}
-      />
+      />}
 
-      <CheckoutModal
+      {commerce?.mode !== 'spring' && <CheckoutModal
         open={checkoutOpen}
         onClose={() => setCheckoutOpen(false)}
         cart={cart}
@@ -473,11 +474,11 @@ function App() {
         onOrderSuccess={() => {
           cart.clear();
         }}
-      />
+      />}
 
       <Intro />
     </>
   );
 }
 
-createRoot(document.getElementById('root')).render(location.pathname.replace(/\/$/, '') === '/printful-preview' ? <PrintfulPreview /> : <App />);
+createRoot(document.getElementById('root')).render(<App />);

@@ -8,7 +8,7 @@ export async function getCommerce() {
     const res = await fetch('/api/commerce');
     if (res.ok) return await res.json();
   } catch {}
-  return { mode: 'fourthwall', checkoutEnabled: false };
+  return { mode: 'spring', checkoutEnabled: false, shopUrl: 'https://chasing606.creator-spring.com' };
 }
 
 export async function getProducts() {

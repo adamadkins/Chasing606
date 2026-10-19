@@ -94,6 +94,7 @@ export default function ProductModal({ product, onClose, onAddToCart, commerce, 
   const currentPrice = currentVariant?.price ?? product.price ?? 0;
   const currentCurrency = currentVariant?.currencyCode ?? product.currencyCode ?? 'USD';
   const isAvailable = Boolean(currentVariant?.available);
+  const isSpring = commerce?.mode === 'spring' || product.provider === 'spring';
 
   // Fourthwall typically orders images as garment front/back, then model poses.
   // Only use photos associated with the selected color; avoid mixing colorways.
@@ -194,6 +195,10 @@ export default function ProductModal({ product, onClose, onAddToCart, commerce, 
 
   function handleAdd() {
     if (!isAvailable || previewOnly) return;
+    if (isSpring && product.shopUrl) {
+      window.location.assign(product.shopUrl);
+      return;
+    }
     onAddToCart(product.id, selectedSize, selectedColor, quantity, displayedImage);
     setAddedNotice(true);
     setTimeout(() => {
@@ -204,6 +209,10 @@ export default function ProductModal({ product, onClose, onAddToCart, commerce, 
 
   function handleBuyNow() {
     if (!isAvailable || previewOnly) return;
+    if (isSpring && product.shopUrl) {
+      window.location.assign(product.shopUrl);
+      return;
+    }
     onAddToCart(product.id, selectedSize, selectedColor, quantity, displayedImage, true);
     onClose();
   }
@@ -279,11 +288,12 @@ export default function ProductModal({ product, onClose, onAddToCart, commerce, 
               <div className="modal-price-row">
                 <span className="modal-price-amount">{money(currentPrice, currentCurrency)}</span>
                 <span className="modal-currency-tag">{currentCurrency}</span>
-                <span className="modal-shipping-pill">Free US shipping over $75</span>
+                {!isSpring && <span className="modal-shipping-pill">Free US shipping over $75</span>}
               </div>
             </div>
 
             <p className="modal-description">{product.description}</p>
+            {isSpring && <p className="modal-provider-note">Preview current options here, then choose the final color and size securely on Spring.</p>}
 
             {/* Color Selector */}
             {colors.length > 0 && (
@@ -353,7 +363,7 @@ export default function ProductModal({ product, onClose, onAddToCart, commerce, 
 
             {/* Quantity Selector & Action CTA */}
             <div className="modal-action-row">
-              <div className="modal-qty-stepper">
+              {!isSpring && <div className="modal-qty-stepper">
                 <button
                   type="button"
                   aria-label="Decrease quantity"
@@ -371,7 +381,7 @@ export default function ProductModal({ product, onClose, onAddToCart, commerce, 
                 >
                   +
                 </button>
-              </div>
+              </div>}
 
               <button
                 type="button"
@@ -384,21 +394,21 @@ export default function ProductModal({ product, onClose, onAddToCart, commerce, 
                 ) : !isAvailable ? (
                   <span>OUT OF STOCK</span>
                 ) : (
-                  <span>ADD TO CART</span>
+                  <span>{isSpring ? 'CONTINUE TO SPRING' : 'ADD TO CART'}</span>
                 )}
               </button>
             </div>
 
-            <div className="modal-buy-now-wrap">
+            {!isSpring && <div className="modal-buy-now-wrap">
               <button
                 type="button"
                 className="modal-buy-now-btn"
                 disabled={!isAvailable || previewOnly}
                 onClick={handleBuyNow}
               >
-                BUY NOW
+                {isSpring ? 'VIEW SECURE CHECKOUT' : 'BUY NOW'}
               </button>
-            </div>
+            </div>}
 
             {/* Feature Highlights */}
             {product.details && (
@@ -413,7 +423,7 @@ export default function ProductModal({ product, onClose, onAddToCart, commerce, 
                   ))}
                   <li>
                     <span className="spec-check">✓</span>
-                    <span>Secure checkout powered by Fourthwall</span>
+                    <span>Secure checkout powered by {isSpring ? 'Spring' : 'Fourthwall'}</span>
                   </li>
                 </ul>
               </div>

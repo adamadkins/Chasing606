@@ -15,7 +15,7 @@ Production: `npm run build`. Serve the build with `npm run preview`.
 
 ## Catalog and commerce
 
-The website reads published products from Fourthwall and provides on-site product selection and a shopping bag. Fourthwall handles hosted checkout. Set the runtime secret `FOURTHWALL_STOREFRONT_TOKEN`; see [Commerce setup](docs/COMMERCE.md).
+The website reads the public catalog from the Chasing 606 Spring storefront. Product names, prices, colors, available sizes, and mockups update from Spring without an API key. Customers browse on this site and continue to the exact Spring listing for secure checkout and fulfillment; Spring does not provide a supported external cart API.
 
 ## Brand assets
 
@@ -23,7 +23,7 @@ The wordmark, garment illustrations, and product details are temporary concepts.
 
 ## Before launch
 
-Publish the Fourthwall shop and verify products, shipping, taxes, checkout, and a test order. Supply approved branding, product photography, contact details, shipping/returns/privacy policies, and domain. This foundation does not collect payments or customer details.
+Publish the Spring products and verify product options, shipping, taxes, checkout, and a test order. Supply approved branding, product photography, contact details, shipping/returns/privacy policies, and domain. This website does not collect payments or customer details.
 
 ## Automatic Cloudflare Pages previews
 
@@ -44,7 +44,7 @@ The current address is https://chasing606.adkins-adam04.workers.dev/. `wrangler.
 
 ## Pages, contact, and preview cart
 
-- `/` is the channel homepage; `/merch` displays the live Fourthwall catalog; `/contact` contains contact details and an email-draft composer. The Workers SPA fallback supports direct visits to each path.
+- `/` is the channel homepage; `/merch` displays the live Spring catalog; `/contact` contains contact details and an email-draft composer. The Workers SPA fallback supports direct visits to each path.
 - The contact form opens a `mailto:` draft addressed to `chasingbucks606@gmail.com`. The visitor reviews and sends it in their email app. It does not send mail from a server or show a false delivery confirmation. Server-side form delivery would require an email service and its credentials.
-- The bag icon opens the on-site cart. Selected real products persist locally; checkout creates a validated Fourthwall cart and redirects for payment.
+- The bag icon opens the hosted Spring cart. Product buttons continue to the corresponding Spring listing for final options and checkout.
 - The centered header uses `public/logo.png` (the original logo), with a modest overhang below the dark sticky header. The alternative upload is retained as `public/header-logo.png`. The original image files are preserved without editing. The landing photograph is framed around the deer with less enlargement; higher-resolution source photography would be needed for more actual detail.

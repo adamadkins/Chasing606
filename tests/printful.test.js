@@ -51,8 +51,15 @@ test('mockup request accepts Printful embroidery preview files and normalizes th
     options: [{ id: 'full_color', value: true }]
   }]);
   assert.deepEqual(request.body.product_options, { embroidery_type: 'flat' });
-  const defaultFileRequest = mockupRequestFor(source, { available_placements: { embroidery_front: 'Front' } });
+  const defaultFileRequest = mockupRequestFor(source, {
+    available_placements: { embroidery_front: 'Front' },
+    variant_printfiles: [{ variant_id: 101, placements: { embroidery_front: 9 } }],
+    printfiles: [{ printfile_id: 9, width: 1800, height: 1200 }]
+  });
   assert.equal(defaultFileRequest.body.files[0].placement, 'embroidery_front');
+  assert.deepEqual(defaultFileRequest.body.files[0].position, {
+    area_width: 1800, area_height: 1200, width: 1800, height: 1200, left: 0, top: 0
+  });
 });
 
 test('generated galleries order product front/back before model front/back for each color', () => {

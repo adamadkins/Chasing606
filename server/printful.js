@@ -212,9 +212,27 @@ export function mockupRequestFor(source, printfileInfo = {}) {
       ? rawPlacement
       : availablePlacements.find(candidate => candidate === `embroidery_${rawPlacement}`)
         || rawPlacement.replace(/^embroidery_/, '');
+    const variantPrintfiles = (printfileInfo.variant_printfiles || []).find(item => Number(item.variant_id) === Number(primary.variant_id));
+    const printfileId = variantPrintfiles?.placements?.[placement];
+    const printfile = (printfileInfo.printfiles || []).find(item => Number(item.printfile_id) === Number(printfileId));
+    let position;
+    if (printfile?.width > 0 && printfile?.height > 0) {
+      const areaWidth = Number(printfile.width);
+      const areaHeight = Number(printfile.height);
+      const imageWidth = Number(file.width) || areaWidth;
+      const imageHeight = Number(file.height) || areaHeight;
+      const scale = Math.min(areaWidth / imageWidth, areaHeight / imageHeight);
+      const width = Math.round(imageWidth * scale);
+      const height = Math.round(imageHeight * scale);
+      position = {
+        area_width: areaWidth, area_height: areaHeight, width, height,
+        left: Math.round((areaWidth - width) / 2), top: Math.round((areaHeight - height) / 2)
+      };
+    }
     return [{
       placement,
       image_url: imageUrl,
+      ...(position ? { position } : {}),
       ...(Array.isArray(file.options) && file.options.length ? { options: file.options } : {})
     }];
   });
@@ -351,7 +369,11 @@ export async function generatedMockupState(request, source, token, fetcher = fet
       variant_ids: generation.body.variant_ids,
       format: generation.body.format,
       width: generation.body.width,
-      files: generation.body.files.map(file => ({ placement: file.placement, image_url: file.image_url }))
+      files: generation.body.files.map(file => ({
+        placement: file.placement,
+        image_url: file.image_url,
+        ...(file.position ? { position: file.position } : {})
+      }))
     };
     try {
       task = await printfulJson(fetcher, `https://api.printful.com/mockup-generator/create-task/${generation.productId}`, token, {

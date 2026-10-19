@@ -46,7 +46,8 @@ export default function StorySection() {
   }, []);
 
   useEffect(() => {
-    if (reduceMotion || defaultStoryPhotos.length <= 1) return;
+    // Reduced motion disables transitions, not the content rotation itself.
+    if (defaultStoryPhotos.length <= 1) return;
     let timer;
     const run = () => {
       window.clearInterval(timer);
@@ -59,7 +60,7 @@ export default function StorySection() {
       window.clearInterval(timer);
       document.removeEventListener('visibilitychange', run);
     };
-  }, [reduceMotion]);
+  }, []);
 
   const story = stories[index] || stories[0];
   return (

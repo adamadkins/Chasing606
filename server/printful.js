@@ -171,12 +171,17 @@ export async function printfulStorefrontPreview(request, env, fetcher = fetch) {
     if (data.code !== 200 || !Array.isArray(data.result?.sync_variants)) return Response.json({ error: 'Unexpected product data.' }, { status: 502, headers });
     const source = data.result;
     const safeImage = url => typeof url === 'string' && /^https:\/\//i.test(url) ? url : null;
-    const variantImages = v => {
+    const primaryVariant = source.sync_variants.find(v => v.synced === true);
+    const primarySegments = String(primaryVariant?.name || '').split(' / ').map(s => s.trim());
+    const primaryColor = primarySegments.length >= 3 ? primarySegments.at(-2) : '';
+    const productThumbnail = safeImage(source.sync_product?.thumbnail_url);
+    const variantImages = (v, color) => {
       // Printful files contain printable artwork, not necessarily product mockups.
       // Only use the variant's product imagery for customer-facing galleries.
       return [...new Set([
         safeImage(v.product?.image),
-        safeImage(v.thumbnail_url)
+        safeImage(v.thumbnail_url),
+        color === primaryColor ? productThumbnail : null
       ].filter(Boolean))];
     };
     const variants = source.sync_variants.filter(v => v.synced === true).map(v => {
@@ -184,17 +189,18 @@ export async function printfulStorefrontPreview(request, env, fetcher = fetch) {
       const size = segments.at(-1) || '';
       const color = segments.length >= 3 ? segments.at(-2) : '';
       const price = Number(v.retail_price);
+      const images = variantImages(v, color);
       return {
         id: String(v.id), label: [color, size].filter(Boolean).join(' / '),
         color, size, price: Number.isFinite(price) ? price : 0,
         currencyCode: v.currency || 'USD', available: true,
-        image: variantImages(v)[0] || null, images: variantImages(v)
+        image: images[0] || null, images
       };
     });
     const colors = [...new Set(variants.map(v => v.color).filter(Boolean))];
     const sizes = [...new Set(variants.map(v => v.size).filter(Boolean))];
     const prices = variants.map(v => v.price).filter(p => p > 0);
-    const image = safeImage(source.sync_product?.thumbnail_url);
+    const image = productThumbnail;
     const imagesByColor = Object.fromEntries(colors.map(color => [color, variants.find(v => v.color === color && v.image)?.image || null]));
     const galleryByColor = Object.fromEntries(colors.map(color => [color, [...new Set(variants.filter(v => v.color === color).flatMap(v => v.images))].slice(0, 4)]));
     return Response.json({
@@ -202,6 +208,7 @@ export async function printfulStorefrontPreview(request, env, fetcher = fetch) {
       product: {
         id: String(source.sync_product?.id || 482880343),
         name: source.sync_product?.name || 'Printful test product',
+        description: source.sync_product?.description || `Preview the available colors and sizes for this ${source.sync_product?.name || 'Printful product'}.`,
         image, images: image ? [image] : [], imagesByColor, galleryByColor, colors, sizes, variants,
         price: prices.length ? Math.min(...prices) : 0,
         currencyCode: 'USD', available: variants.length > 0

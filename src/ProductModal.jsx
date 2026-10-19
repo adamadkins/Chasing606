@@ -366,9 +366,7 @@ export default function ProductModal({ product, onClose, onAddToCart, commerce, 
                 disabled={!isAvailable || previewOnly}
                 onClick={handleAdd}
               >
-                {previewOnly ? (
-                  <span>PREVIEW ONLY</span>
-                ) : addedNotice ? (
+                {addedNotice ? (
                   <span>✓ ADDED TO CART</span>
                 ) : !isAvailable ? (
                   <span>OUT OF STOCK</span>
@@ -378,22 +376,16 @@ export default function ProductModal({ product, onClose, onAddToCart, commerce, 
               </button>
             </div>
 
-            {!previewOnly && <div className="modal-buy-now-wrap">
+            <div className="modal-buy-now-wrap">
               <button
                 type="button"
                 className="modal-buy-now-btn"
-                disabled={!isAvailable}
+                disabled={!isAvailable || previewOnly}
                 onClick={handleBuyNow}
               >
                 BUY NOW
               </button>
-            </div>}
-
-            {previewOnly && (
-              <p className="printful-modal-note" role="note">
-                Printful migration preview. The live store and checkout still use Fourthwall.
-              </p>
-            )}
+            </div>
 
             {/* Feature Highlights */}
             {product.details && (

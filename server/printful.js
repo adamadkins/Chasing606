@@ -316,14 +316,24 @@ export async function generatedMockupState(request, source, token, fetcher = fet
 
   const isEmbroidery = (primary.files || []).some(file => /embroidery/i.test(file.type || ''));
   const technique = isEmbroidery ? '?technique=EMBROIDERY' : '';
-  const printfileInfo = await printfulJson(fetcher, `https://api.printful.com/mockup-generator/printfiles/${productId}${technique}`, token);
+  let printfileInfo;
+  try {
+    printfileInfo = await printfulJson(fetcher, `https://api.printful.com/mockup-generator/printfiles/${productId}${technique}`, token);
+  } catch (error) {
+    return { status: 'unavailable', reason: 'printfile_request_failed', upstreamStatus: error?.status || 502 };
+  }
   const generation = mockupRequestFor(source, printfileInfo);
   if (!generation) return { status: 'unavailable', reason: 'print_file_missing' };
-  const task = await printfulJson(fetcher, `https://api.printful.com/mockup-generator/create-task/${generation.productId}`, token, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(generation.body)
-  });
+  let task;
+  try {
+    task = await printfulJson(fetcher, `https://api.printful.com/mockup-generator/create-task/${generation.productId}`, token, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(generation.body)
+    });
+  } catch (error) {
+    return { status: error?.status === 429 ? 'rate_limited' : 'unavailable', reason: 'task_creation_failed', upstreamStatus: error?.status || 502 };
+  }
   const pending = { status: task.status === 'completed' ? 'completed' : 'pending', taskKey: task.task_key, colorVariants: generation.colorVariants, createdAt: now };
   if (task.status === 'completed') pending.galleries = galleriesFromMockups(task.mockups, generation.colorVariants);
   await writeCache(cache, cacheKey, pending, task.status === 'completed' ? 48 * 60 * 60 : 600);
@@ -385,6 +395,7 @@ export async function printfulStorefrontPreview(request, env, fetcher = fetch, c
     }));
     return Response.json({
       previewOnly: true, checkoutEnabled: false, mockupStatus: mockupState.status,
+      ...(mockupState.reason ? { mockupReason: mockupState.reason, mockupUpstreamStatus: mockupState.upstreamStatus } : {}),
       product: {
         id: String(source.sync_product?.id || syncProductId),
         name: source.sync_product?.name || 'Printful test product',

@@ -198,10 +198,12 @@ export function mockupRequestFor(source, printfileInfo = {}) {
   const productId = Number(primary?.product?.product_id);
   const files = (primary?.files || []).flatMap(file => {
     if (file.type === 'preview') return [];
-    const imageUrl = safeImage(file.url);
+    const imageUrl = safeImage(file.url) || safeImage(file.preview_url);
     if (!imageUrl) return [];
+    const rawPlacement = !file.type || file.type === 'default' ? 'front' : file.type;
+    const placement = rawPlacement.replace(/^embroidery_/, '');
     return [{
-      placement: !file.type || file.type === 'default' ? 'front' : file.type,
+      placement,
       image_url: imageUrl,
       ...(Array.isArray(file.options) && file.options.length ? { options: file.options } : {})
     }];

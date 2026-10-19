@@ -36,6 +36,23 @@ test('mockup request uses one variant per color and requests flat/lifestyle fron
   assert.deepEqual(request.colorVariants, { Navy: 101, White: 201 });
 });
 
+test('mockup request accepts Printful embroidery preview files and normalizes their placement', () => {
+  const embroiderySource = structuredClone(source);
+  embroiderySource.sync_variants[0].files = [{
+    type: 'embroidery_front',
+    preview_url: 'https://example.com/embroidery-preview.png',
+    options: [{ id: 'full_color', value: true }]
+  }];
+  embroiderySource.sync_variants[0].options = [{ id: 'embroidery_type', value: 'flat' }];
+  const request = mockupRequestFor(embroiderySource);
+  assert.deepEqual(request.body.files, [{
+    placement: 'front',
+    image_url: 'https://example.com/embroidery-preview.png',
+    options: [{ id: 'full_color', value: true }]
+  }]);
+  assert.deepEqual(request.body.product_options, { embroidery_type: 'flat' });
+});
+
 test('generated galleries order product front/back before model front/back for each color', () => {
   const mockups = [{
     placement: 'front', display_name: 'Front print', variant_ids: [101], mockup_url: 'https://example.com/product-front.jpg',

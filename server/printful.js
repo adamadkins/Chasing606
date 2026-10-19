@@ -217,6 +217,9 @@ export function mockupRequestFor(source, printfileInfo = {}) {
   const back = allOptions.find(value => /back/i.test(value));
   const optionGroups = [...new Set([flat, lifestyle].filter(Boolean))];
   const options = [...new Set([front, back].filter(Boolean))];
+  const productOptions = Object.fromEntries((primary.options || [])
+    .filter(option => typeof option?.id === 'string' && option.value !== undefined)
+    .map(option => [option.id, option.value]));
   return {
     productId,
     colorVariants: Object.fromEntries(representatives.map(variant => {
@@ -228,6 +231,7 @@ export function mockupRequestFor(source, printfileInfo = {}) {
       format: 'jpg',
       width: 1200,
       files: uniqueFiles,
+      ...(Object.keys(productOptions).length ? { product_options: productOptions } : {}),
       ...(optionGroups.length ? { option_groups: optionGroups } : {}),
       ...(options.length ? { options } : {})
     }
@@ -310,7 +314,9 @@ export async function generatedMockupState(request, source, token, fetcher = fet
     return completed;
   }
 
-  const printfileInfo = await printfulJson(fetcher, `https://api.printful.com/mockup-generator/printfiles/${productId}`, token);
+  const isEmbroidery = (primary.files || []).some(file => /embroidery/i.test(file.type || ''));
+  const technique = isEmbroidery ? '?technique=EMBROIDERY' : '';
+  const printfileInfo = await printfulJson(fetcher, `https://api.printful.com/mockup-generator/printfiles/${productId}${technique}`, token);
   const generation = mockupRequestFor(source, printfileInfo);
   if (!generation) return { status: 'unavailable', reason: 'print_file_missing' };
   const task = await printfulJson(fetcher, `https://api.printful.com/mockup-generator/create-task/${generation.productId}`, token, {

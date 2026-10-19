@@ -98,7 +98,13 @@ export default function ProductModal({ product, onClose, onAddToCart, commerce, 
   // Fourthwall typically orders images as garment front/back, then model poses.
   // Only use photos associated with the selected color; avoid mixing colorways.
   const matchingVariants = (product.variants || []).filter(v => !selectedColor || (v.color || '').toLowerCase() === selectedColor.toLowerCase());
-  const colorImages = [...new Set(matchingVariants.flatMap(v => v.images?.length ? v.images : (v.image ? [v.image] : [])))];
+  const galleryColorKey = Object.keys(product.galleryByColor || {}).find(key => key.toLowerCase() === selectedColor.toLowerCase());
+  const generatedColorImages = galleryColorKey ? product.galleryByColor[galleryColorKey] : [];
+  const colorImages = [...new Set(
+    generatedColorImages?.length
+      ? generatedColorImages
+      : matchingVariants.flatMap(v => v.images?.length ? v.images : (v.image ? [v.image] : []))
+  )];
   // Fourthwall's Comfort Colors tee provides four garment-only renders first,
   // followed by model front/back. Skip the extra garment poses (including folded sleeve).
   // Other products retain up to four photos until their layouts are explicitly mapped.

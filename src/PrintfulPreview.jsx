@@ -10,11 +10,13 @@ export default function PrintfulPreview() {
   const [product, setProduct] = useState(null);
   const [error, setError] = useState('');
   const [open, setOpen] = useState(false);
+  const [mockupStatus, setMockupStatus] = useState('');
 
   useEffect(() => {
     document.title = 'Printful Preview | Chasing 606';
     const controller = new AbortController();
-    fetch('/api/printful/storefront-preview', { signal: controller.signal })
+    let retryTimer;
+    const load = () => fetch('/api/printful/storefront-preview', { signal: controller.signal })
       .then(response => {
         if (!response.ok) throw new Error('Product preview is unavailable.');
         return response.json();
@@ -22,12 +24,15 @@ export default function PrintfulPreview() {
       .then(data => {
         if (!data.product) throw new Error('No preview product found.');
         setProduct(data.product);
+        setMockupStatus(data.mockupStatus || '');
         setOpen(true);
+        if (data.mockupStatus === 'pending') retryTimer = window.setTimeout(load, 11000);
       })
       .catch(fetchError => {
         if (fetchError.name !== 'AbortError') setError(fetchError.message);
       });
-    return () => controller.abort();
+    load();
+    return () => { controller.abort(); window.clearTimeout(retryTimer); };
   }, []);
 
   const image = product ? getImageForColor(product, product.colors?.[0]) : '';
@@ -50,6 +55,7 @@ export default function PrintfulPreview() {
         </section>
         {error && <p role="alert" className="printful-preview-note">{error}</p>}
         {!error && !product && <p role="status">Loading Printful product…</p>}
+        {product && mockupStatus === 'pending' && <p role="status" className="printful-preview-note">Generating the four Printful product views…</p>}
         {product && (
           <div className="printful-preview-product">
             <button className="product" type="button" onClick={() => setOpen(true)} aria-label={`Preview ${product.name}`}>

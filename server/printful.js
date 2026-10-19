@@ -133,7 +133,15 @@ export async function printfulVariantPreview(request, env, fetcher = fetch) {
   const token = env.PRINTFUL_API_TOKEN?.trim();
   if (!token) return Response.json({ error: 'Printful not configured.' }, { status: 503, headers });
   try {
-    const response = await fetcher('https://api.printful.com/sync/products/482880343', {
+    const listing = await fetcher('https://api.printful.com/sync/products?limit=1&offset=0', {
+      headers: { Authorization: 'Bearer ' + token, Accept: 'application/json' },
+      signal: AbortSignal.timeout(10000)
+    });
+    if (!listing.ok) return Response.json({ error: 'Variants unavailable.', upstreamStatus: listing.status }, { status: 503, headers });
+    const listingData = await listing.json();
+    const syncProductId = listingData.result?.[0]?.id;
+    if (!syncProductId) return Response.json({ error: 'No synced Printful product found.' }, { status: 404, headers });
+    const response = await fetcher(`https://api.printful.com/sync/products/${syncProductId}`, {
       headers: { Authorization: 'Bearer ' + token, Accept: 'application/json' },
       signal: AbortSignal.timeout(10000)
     });
@@ -142,7 +150,7 @@ export async function printfulVariantPreview(request, env, fetcher = fetch) {
     if (data.code !== 200 || !Array.isArray(data.result?.sync_variants)) return Response.json({ error: 'Unexpected Printful response.' }, { status: 502, headers });
     return Response.json({
       previewOnly: true,
-      productId: 482880343,
+      productId: syncProductId,
       variants: data.result.sync_variants.map(v => ({
         id: v.id, variantId: v.variant_id, name: v.name,
         retailPrice: v.retail_price, currency: v.currency || 'USD', synced: v.synced
@@ -154,26 +162,184 @@ export async function printfulVariantPreview(request, env, fetcher = fetch) {
   }
 }
 
- 
-// Read-only storefront-shaped preview. No checkout or fulfillment actions.
-export async function printfulStorefrontPreview(request, env, fetcher = fetch) {
+const safeImage = url => typeof url === 'string' && /^https:\/\//i.test(url) ? url : null;
+const printfulHeaders = token => ({ Authorization: `Bearer ${token}`, Accept: 'application/json' });
+const slug = value => String(value || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 80);
+
+async function printfulJson(fetcher, url, token, options = {}) {
+  const response = await fetcher(url, {
+    ...options,
+    headers: { ...printfulHeaders(token), ...(options.headers || {}) },
+    signal: AbortSignal.timeout(15000)
+  });
+  let data = null;
+  try { data = await response.json(); } catch {}
+  if (!response.ok || data?.code !== 200) {
+    const error = new Error('Printful request failed.');
+    error.status = response.status;
+    throw error;
+  }
+  return data.result;
+}
+
+export function mockupRequestFor(source, printfileInfo = {}) {
+  const synced = (source?.sync_variants || []).filter(variant => variant.synced === true);
+  const representatives = [];
+  const seenColors = new Set();
+  for (const variant of synced) {
+    const color = variant.color || String(variant.name || '').split(' / ').at(-2) || '';
+    const key = color.toLowerCase();
+    if (!seenColors.has(key) && Number.isInteger(Number(variant.variant_id))) {
+      representatives.push(variant);
+      seenColors.add(key);
+    }
+  }
+  const primary = representatives[0] || synced[0];
+  const productId = Number(primary?.product?.product_id);
+  const files = (primary?.files || []).flatMap(file => {
+    if (file.type === 'preview') return [];
+    const imageUrl = safeImage(file.url);
+    if (!imageUrl) return [];
+    return [{
+      placement: !file.type || file.type === 'default' ? 'front' : file.type,
+      image_url: imageUrl,
+      ...(Array.isArray(file.options) && file.options.length ? { options: file.options } : {})
+    }];
+  });
+  const uniqueFiles = [...new Map(files.map(file => [file.placement, file])).values()];
+  if (!productId || !representatives.length || !uniqueFiles.length) return null;
+
+  const allGroups = Array.isArray(printfileInfo.option_groups) ? printfileInfo.option_groups : [];
+  const allOptions = Array.isArray(printfileInfo.options) ? printfileInfo.options : [];
+  const flat = allGroups.find(value => /flat|product|default/i.test(value) && !/life|model/i.test(value));
+  const lifestyle = allGroups.find(value => /life|model/i.test(value));
+  const front = allOptions.find(value => /front/i.test(value));
+  const back = allOptions.find(value => /back/i.test(value));
+  const optionGroups = [...new Set([flat, lifestyle].filter(Boolean))];
+  const options = [...new Set([front, back].filter(Boolean))];
+  return {
+    productId,
+    colorVariants: Object.fromEntries(representatives.map(variant => {
+      const color = variant.color || String(variant.name || '').split(' / ').at(-2) || 'Default';
+      return [color, Number(variant.variant_id)];
+    })),
+    body: {
+      variant_ids: representatives.map(variant => Number(variant.variant_id)),
+      format: 'jpg',
+      width: 1200,
+      files: uniqueFiles,
+      ...(optionGroups.length ? { option_groups: optionGroups } : {}),
+      ...(options.length ? { options } : {})
+    }
+  };
+}
+
+export function galleriesFromMockups(mockups, colorVariants) {
+  const output = {};
+  for (const [color, variantId] of Object.entries(colorVariants || {})) {
+    const candidates = [];
+    for (const mockup of Array.isArray(mockups) ? mockups : []) {
+      if (Array.isArray(mockup.variant_ids) && !mockup.variant_ids.map(Number).includes(Number(variantId))) continue;
+      const baseLabel = [mockup.placement, mockup.display_name].filter(Boolean).join(' ');
+      const baseUrl = safeImage(mockup.mockup_url);
+      if (baseUrl) candidates.push({ url: baseUrl, side: mockup.placement || mockup.display_name || '', style: 'product', label: baseLabel });
+      for (const extra of Array.isArray(mockup.extra) ? mockup.extra : []) {
+        const url = safeImage(extra.url);
+        if (url) candidates.push({
+          url,
+          side: extra.option || extra.title || mockup.placement || '',
+          style: extra.option_group || extra.title || '',
+          label: [baseLabel, extra.title, extra.option, extra.option_group].filter(Boolean).join(' ')
+        });
+      }
+    }
+    const unique = [...new Map(candidates.map(item => [item.url, item])).values()];
+    const selected = [];
+    for (const [side, style] of [
+      [/front/i, /flat|product|default/i],
+      [/back/i, /flat|product|default/i],
+      [/front/i, /life|model/i],
+      [/back/i, /life|model/i]
+    ]) {
+      const match = unique.find(item => side.test(item.side) && style.test(item.style) && !selected.includes(item));
+      if (match) selected.push(match);
+    }
+    for (const item of unique) if (selected.length < 4 && !selected.includes(item)) selected.push(item);
+    output[color] = selected.slice(0, 4).map(item => item.url);
+  }
+  return output;
+}
+
+async function readCache(cache, key) {
+  if (!cache) return null;
+  const response = await cache.match(key);
+  if (!response) return null;
+  try { return await response.json(); } catch { return null; }
+}
+
+async function writeCache(cache, key, value, seconds) {
+  if (!cache) return;
+  await cache.put(key, Response.json(value, { headers: { 'Cache-Control': `public, max-age=${seconds}` } }));
+}
+
+export async function generatedMockupState(request, source, token, fetcher = fetch, cache = globalThis.caches?.default) {
+  const synced = (source?.sync_variants || []).filter(variant => variant.synced === true);
+  const primary = synced[0];
+  const productId = Number(primary?.product?.product_id);
+  if (!productId) return { status: 'unavailable', reason: 'catalog_product_missing' };
+  const fingerprint = slug([source.sync_product?.id, ...synced.map(v => `${v.variant_id}:${(v.files || []).map(f => f.hash || f.id || f.url).join(',')}`)].join('|'));
+  const cacheKey = new Request(`${new URL(request.url).origin}/api/printful/mockup-cache/${source.sync_product?.id}/${fingerprint}`);
+  const cached = await readCache(cache, cacheKey);
+  const now = Date.now();
+  if (cached?.status === 'completed' && now - cached.createdAt < 48 * 60 * 60 * 1000) return cached;
+
+  if (cached?.status === 'pending' && cached.taskKey) {
+    if (now - cached.createdAt < 10000) return cached;
+    const task = await printfulJson(fetcher, `https://api.printful.com/mockup-generator/task?task_key=${encodeURIComponent(cached.taskKey)}`, token);
+    if (task.status === 'pending') {
+      await writeCache(cache, cacheKey, { ...cached, checkedAt: now }, 600);
+      return { ...cached, checkedAt: now };
+    }
+    if (task.status !== 'completed') {
+      const failed = { status: 'failed', reason: 'generation_failed', createdAt: now };
+      await writeCache(cache, cacheKey, failed, 300);
+      return failed;
+    }
+    const completed = { status: 'completed', galleries: galleriesFromMockups(task.mockups, cached.colorVariants), createdAt: now };
+    await writeCache(cache, cacheKey, completed, 48 * 60 * 60);
+    return completed;
+  }
+
+  const printfileInfo = await printfulJson(fetcher, `https://api.printful.com/mockup-generator/printfiles/${productId}`, token);
+  const generation = mockupRequestFor(source, printfileInfo);
+  if (!generation) return { status: 'unavailable', reason: 'print_file_missing' };
+  const task = await printfulJson(fetcher, `https://api.printful.com/mockup-generator/create-task/${generation.productId}`, token, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(generation.body)
+  });
+  const pending = { status: task.status === 'completed' ? 'completed' : 'pending', taskKey: task.task_key, colorVariants: generation.colorVariants, createdAt: now };
+  if (task.status === 'completed') pending.galleries = galleriesFromMockups(task.mockups, generation.colorVariants);
+  await writeCache(cache, cacheKey, pending, task.status === 'completed' ? 48 * 60 * 60 : 600);
+  return pending;
+}
+
+// Read-only storefront-shaped preview. It may create a Printful mockup task,
+// but never creates products, orders, checkouts, or fulfillment actions.
+export async function printfulStorefrontPreview(request, env, fetcher = fetch, cache = globalThis.caches?.default) {
   const headers = { 'Cache-Control': 'no-store' };
   if (request.method !== 'GET') return Response.json({ error: 'Method not allowed.' }, { status: 405, headers });
   const token = env.PRINTFUL_API_TOKEN?.trim();
   if (!token) return Response.json({ error: 'Printful not configured.' }, { status: 503, headers });
   try {
-    const response = await fetcher('https://api.printful.com/sync/products/482880343', {
-      headers: { Authorization: 'Bearer ' + token, Accept: 'application/json' },
-      signal: AbortSignal.timeout(10000)
-    });
-    if (!response.ok) return Response.json({ error: 'Product unavailable.', upstreamStatus: response.status }, { status: 503, headers });
-    const data = await response.json();
-    if (data.code !== 200 || !Array.isArray(data.result?.sync_variants)) return Response.json({ error: 'Unexpected product data.' }, { status: 502, headers });
-    const source = data.result;
-    const safeImage = url => typeof url === 'string' && /^https:\/\//i.test(url) ? url : null;
+    const listing = await printfulJson(fetcher, 'https://api.printful.com/sync/products?limit=1&offset=0', token);
+    const syncProductId = listing?.[0]?.id;
+    if (!syncProductId) return Response.json({ error: 'No synced Printful product found.' }, { status: 404, headers });
+    const source = await printfulJson(fetcher, `https://api.printful.com/sync/products/${syncProductId}`, token);
+    if (!Array.isArray(source?.sync_variants)) return Response.json({ error: 'Unexpected product data.' }, { status: 502, headers });
     const primaryVariant = source.sync_variants.find(v => v.synced === true);
     const primarySegments = String(primaryVariant?.name || '').split(' / ').map(s => s.trim());
-    const primaryColor = primarySegments.length >= 3 ? primarySegments.at(-2) : '';
+    const primaryColor = primaryVariant?.color || (primarySegments.length >= 3 ? primarySegments.at(-2) : '');
     const productThumbnail = safeImage(source.sync_product?.thumbnail_url);
     const variantImages = (v, color) => {
       // Printful files contain printable artwork, not necessarily product mockups.
@@ -186,8 +352,8 @@ export async function printfulStorefrontPreview(request, env, fetcher = fetch) {
     };
     const variants = source.sync_variants.filter(v => v.synced === true).map(v => {
       const segments = String(v.name || '').split(' / ').map(s => s.trim());
-      const size = segments.at(-1) || '';
-      const color = segments.length >= 3 ? segments.at(-2) : '';
+      const size = v.size || segments.at(-1) || '';
+      const color = v.color || (segments.length >= 3 ? segments.at(-2) : '');
       const price = Number(v.retail_price);
       const images = variantImages(v, color);
       return {
@@ -202,11 +368,19 @@ export async function printfulStorefrontPreview(request, env, fetcher = fetch) {
     const prices = variants.map(v => v.price).filter(p => p > 0);
     const image = productThumbnail;
     const imagesByColor = Object.fromEntries(colors.map(color => [color, variants.find(v => v.color === color && v.image)?.image || null]));
-    const galleryByColor = Object.fromEntries(colors.map(color => [color, [...new Set(variants.filter(v => v.color === color).flatMap(v => v.images))].slice(0, 4)]));
+    let mockupState = { status: 'unavailable' };
+    try { mockupState = await generatedMockupState(request, source, token, fetcher, cache); } catch (error) {
+      mockupState = { status: error?.status === 429 ? 'rate_limited' : 'unavailable' };
+    }
+    const galleryByColor = Object.fromEntries(colors.map(color => {
+      const generated = mockupState.galleries?.[color] || [];
+      const fallback = [...new Set(variants.filter(v => v.color === color).flatMap(v => v.images))];
+      return [color, [...new Set([...generated, ...fallback])].slice(0, 4)];
+    }));
     return Response.json({
-      previewOnly: true, checkoutEnabled: false,
+      previewOnly: true, checkoutEnabled: false, mockupStatus: mockupState.status,
       product: {
-        id: String(source.sync_product?.id || 482880343),
+        id: String(source.sync_product?.id || syncProductId),
         name: source.sync_product?.name || 'Printful test product',
         description: source.sync_product?.description || `Preview the available colors and sizes for this ${source.sync_product?.name || 'Printful product'}.`,
         image, images: image ? [image] : [], imagesByColor, galleryByColor, colors, sizes, variants,

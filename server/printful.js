@@ -177,6 +177,8 @@ async function printfulJson(fetcher, url, token, options = {}) {
   if (!response.ok || data?.code !== 200) {
     const error = new Error('Printful request failed.');
     error.status = response.status;
+    const providerCode = data?.error?.reason ?? data?.error?.code;
+    if (typeof providerCode === 'string' && /^[a-zA-Z0-9_-]{1,80}$/.test(providerCode)) error.providerCode = providerCode;
     throw error;
   }
   return data.result;
@@ -334,7 +336,22 @@ export async function generatedMockupState(request, source, token, fetcher = fet
       body: JSON.stringify(generation.body)
     });
   } catch (error) {
-    return { status: error?.status === 429 ? 'rate_limited' : 'unavailable', reason: 'task_creation_failed', upstreamStatus: error?.status || 502 };
+    if (error?.status !== 400) return { status: error?.status === 429 ? 'rate_limited' : 'unavailable', reason: 'task_creation_failed', upstreamStatus: error?.status || 502, providerCode: error?.providerCode };
+    // Some embroidery products reject saved file/product options even though
+    // the same image and placement work with Printful's default mockup style.
+    const minimalBody = {
+      variant_ids: generation.body.variant_ids,
+      format: generation.body.format,
+      width: generation.body.width,
+      files: generation.body.files.map(file => ({ placement: file.placement, image_url: file.image_url }))
+    };
+    try {
+      task = await printfulJson(fetcher, `https://api.printful.com/mockup-generator/create-task/${generation.productId}`, token, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(minimalBody)
+      });
+    } catch (fallbackError) {
+      return { status: fallbackError?.status === 429 ? 'rate_limited' : 'unavailable', reason: 'task_creation_failed', upstreamStatus: fallbackError?.status || 502, providerCode: fallbackError?.providerCode };
+    }
   }
   const pending = { status: task.status === 'completed' ? 'completed' : 'pending', taskKey: task.task_key, colorVariants: generation.colorVariants, createdAt: now };
   if (task.status === 'completed') pending.galleries = galleriesFromMockups(task.mockups, generation.colorVariants);
@@ -398,6 +415,7 @@ export async function printfulStorefrontPreview(request, env, fetcher = fetch, c
     return Response.json({
       previewOnly: true, checkoutEnabled: false, mockupStatus: mockupState.status,
       ...(mockupState.reason ? { mockupReason: mockupState.reason, mockupUpstreamStatus: mockupState.upstreamStatus } : {}),
+      ...(mockupState.providerCode ? { mockupProviderCode: mockupState.providerCode } : {}),
       product: {
         id: String(source.sync_product?.id || syncProductId),
         name: source.sync_product?.name || 'Printful test product',

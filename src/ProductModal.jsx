@@ -103,7 +103,12 @@ export default function ProductModal({ product, onClose, onAddToCart, commerce, 
   // followed by model front/back. Skip the extra garment poses (including folded sleeve).
   // Other products retain up to four photos until their layouts are explicitly mapped.
   const preferredIndexes = product.slug === 'chasing-606-comfort-colors-tee' ? [0, 1, 4, 5] : [0, 1, 2, 3];
-  const galleryImages = preferredIndexes.map(index => colorImages[index]).filter(Boolean);
+  const availableGalleryImages = preferredIndexes.map(index => colorImages[index]).filter(Boolean);
+  // The migration preview mirrors Fourthwall's four-view gallery. Keep empty
+  // slots visible when Printful has not supplied a front/back or model mockup.
+  const galleryImages = previewOnly
+    ? [...availableGalleryImages, ...Array(Math.max(0, 4 - availableGalleryImages.length)).fill(null)].slice(0, 4)
+    : availableGalleryImages;
   const [galleryIndex, setGalleryIndex] = useState(0);
   const touchStartX = useRef(null);
   const swipedGallery = useRef(false);
@@ -162,7 +167,9 @@ export default function ProductModal({ product, onClose, onAddToCart, commerce, 
     if (Math.abs(dx) >= 50 && Math.abs(dx) > Math.abs(dy) * 1.25) changePhoto(dx < 0 ? 1 : -1);
   };
   const [zoomOpen, setZoomOpen] = useState(false);
-  const displayedImage = galleryImages[galleryIndex] || galleryImages[0] || getImageForColor(product, selectedColor);
+  const displayedImage = previewOnly
+    ? galleryImages[galleryIndex]
+    : galleryImages[galleryIndex] || galleryImages[0] || getImageForColor(product, selectedColor);
   useEffect(() => { setGalleryIndex(0); resetPhotoView(); }, [selectedColor, product.id]);
   const changePhoto = direction => {
     resetPhotoView();
@@ -235,12 +242,13 @@ export default function ProductModal({ product, onClose, onAddToCart, commerce, 
                   />
                 </button>
               ) : (
-                <div className={`product-art ${product.type || 'tee'}`} style={{ '--garment': product.tone || '#5d6748' }}>
-                  <svg viewBox="0 0 320 280" aria-hidden="true">
-                    <text x="160" y="140" fill="#eee9da" textAnchor="middle" fontFamily="Georgia" fontSize="13" fontWeight="bold">CHASING 606</text>
-                  </svg>
-                  <span className="concept">OFFICIAL 606 GEAR</span>
-                </div>
+                previewOnly ? <div className="product-preview-unavailable"><Icon name="bag" /><span>Preview image not available from Printful</span></div> :
+                  <div className={`product-art ${product.type || 'tee'}`} style={{ '--garment': product.tone || '#5d6748' }}>
+                    <svg viewBox="0 0 320 280" aria-hidden="true">
+                      <text x="160" y="140" fill="#eee9da" textAnchor="middle" fontFamily="Georgia" fontSize="13" fontWeight="bold">CHASING 606</text>
+                    </svg>
+                    <span className="concept">OFFICIAL 606 GEAR</span>
+                  </div>
               )}
               {galleryImages.length > 1 && <>
                 <button type="button" className="product-gallery-arrow prev" aria-label="Previous product photo" onClick={() => changePhoto(-1)}>‹</button>
@@ -254,7 +262,7 @@ export default function ProductModal({ product, onClose, onAddToCart, commerce, 
             </div>
 
             {galleryImages.length > 1 && <div className="product-modal-thumbnails">
-              {galleryImages.map((img, idx) => <button key={img} type="button" className={`product-thumb-btn ${galleryIndex === idx ? 'is-active' : ''}`} onClick={() => setGalleryIndex(idx)} aria-label={`View photo ${idx + 1}`} aria-pressed={galleryIndex === idx}><img src={img} alt={`${product.name} photo ${idx + 1}`} /></button>)}
+              {galleryImages.map((img, idx) => <button key={img || `missing-${idx}`} type="button" className={`product-thumb-btn ${galleryIndex === idx ? 'is-active' : ''} ${!img ? 'is-missing' : ''}`} onClick={() => setGalleryIndex(idx)} aria-label={img ? `View photo ${idx + 1}` : `Photo ${idx + 1} unavailable`} aria-pressed={galleryIndex === idx}>{img ? <img src={img} alt={`${product.name} photo ${idx + 1}`} /> : <span aria-hidden="true">{idx + 1}</span>}</button>)}
             </div>}
           </div>
 

@@ -110,11 +110,10 @@ export default function ProductModal({ product, onClose, onAddToCart, commerce, 
   // Other products retain up to four photos until their layouts are explicitly mapped.
   const preferredIndexes = product.slug === 'chasing-606-comfort-colors-tee' ? [0, 1, 4, 5] : [0, 1, 2, 3];
   const availableGalleryImages = preferredIndexes.map(index => colorImages[index]).filter(Boolean);
-  // The migration preview mirrors Fourthwall's four-view gallery. Keep empty
-  // slots visible when Printful has not supplied a front/back or model mockup.
-  const galleryImages = previewOnly
-    ? [...availableGalleryImages, ...Array(Math.max(0, 4 - availableGalleryImages.length)).fill(null)].slice(0, 4)
-    : availableGalleryImages;
+  // Printful products expose the mockup styles selected for that product.
+  // Preserve that exact set instead of inventing empty slots or mixing in
+  // generic catalog photos.
+  const galleryImages = availableGalleryImages;
   const [galleryIndex, setGalleryIndex] = useState(0);
   const touchStartX = useRef(null);
   const swipedGallery = useRef(false);

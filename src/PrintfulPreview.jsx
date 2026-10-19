@@ -55,7 +55,7 @@ export default function PrintfulPreview() {
         </section>
         {error && <p role="alert" className="printful-preview-note">{error}</p>}
         {!error && !product && <p role="status">Loading Printful product…</p>}
-        {product && mockupStatus === 'pending' && <p role="status" className="printful-preview-note">Generating the four Printful product views…</p>}
+        {product && mockupStatus === 'pending' && <p role="status" className="printful-preview-note">Generating the selected Printful product views…</p>}
         {product && (
           <div className="printful-preview-product">
             <button className="product" type="button" onClick={() => setOpen(true)} aria-label={`Preview ${product.name}`}>

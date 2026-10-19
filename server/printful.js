@@ -440,7 +440,10 @@ export async function printfulStorefrontPreview(request, env, fetcher = fetch, c
     const galleryByColor = Object.fromEntries(colors.map(color => {
       const generated = mockupState.galleries?.[color] || [];
       const fallback = [...new Set(variants.filter(v => v.color === color).flatMap(v => v.images))];
-      return [color, [...new Set([...generated, ...fallback])].slice(0, 4)];
+      // Once Printful has generated mockups, show exactly those selected
+      // mockups. Mixing catalog photos into the set can introduce blank
+      // garments and inconsistent image sizing.
+      return [color, generated.length ? generated : fallback.slice(0, 4)];
     }));
     return Response.json({
       previewOnly: true, checkoutEnabled: false, mockupStatus: mockupState.status,

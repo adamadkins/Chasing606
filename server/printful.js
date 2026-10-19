@@ -321,7 +321,7 @@ export async function generatedMockupState(request, source, token, fetcher = fet
   const primary = synced[0];
   const productId = Number(primary?.product?.product_id);
   if (!productId) return { status: 'unavailable', reason: 'catalog_product_missing' };
-  const fingerprint = slug([source.sync_product?.id, ...synced.map(v => `${v.variant_id}:${(v.files || []).map(f => f.hash || f.id || f.url).join(',')}`)].join('|'));
+  const fingerprint = slug(['styled-v2', source.sync_product?.id, ...synced.map(v => `${v.variant_id}:${(v.files || []).map(f => f.hash || f.id || f.url).join(',')}`)].join('|'));
   const cacheKey = new Request(`${new URL(request.url).origin}/api/printful/mockup-cache/${source.sync_product?.id}/${fingerprint}`);
   const cached = await readCache(cache, cacheKey);
   const now = Date.now();

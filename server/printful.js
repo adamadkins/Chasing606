@@ -203,7 +203,9 @@ export function mockupRequestFor(source, printfileInfo = {}) {
     const imageUrl = safeImage(file.url) || safeImage(file.preview_url);
     if (!imageUrl) return [];
     const rawPlacement = !file.type || file.type === 'default' ? 'front' : file.type;
-    const placement = rawPlacement.replace(/^embroidery_/, '');
+    const placement = Object.hasOwn(printfileInfo.available_placements || {}, rawPlacement)
+      ? rawPlacement
+      : rawPlacement.replace(/^embroidery_/, '');
     return [{
       placement,
       image_url: imageUrl,

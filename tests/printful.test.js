@@ -44,9 +44,9 @@ test('mockup request accepts Printful embroidery preview files and normalizes th
     options: [{ id: 'full_color', value: true }]
   }];
   embroiderySource.sync_variants[0].options = [{ id: 'embroidery_type', value: 'flat' }];
-  const request = mockupRequestFor(embroiderySource);
+  const request = mockupRequestFor(embroiderySource, { available_placements: { embroidery_front: 'Front' } });
   assert.deepEqual(request.body.files, [{
-    placement: 'front',
+    placement: 'embroidery_front',
     image_url: 'https://example.com/embroidery-preview.png',
     options: [{ id: 'full_color', value: true }]
   }]);

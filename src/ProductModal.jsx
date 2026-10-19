@@ -9,6 +9,7 @@ const money = (amount, currency = 'USD') =>
 const COLOR_SWATCH_MAP = {
   'black': '#080808',
   'white': '#ffffff',
+  'french navy': '#243650',
   'pepper': '#514f4c',
   'moss': '#5d6748',
   'oat': '#c5bbaa',
@@ -33,7 +34,7 @@ export function getImageForColor(prod, color) {
   return prod.image || '';
 }
 
-export default function ProductModal({ product, onClose, onAddToCart, commerce }) {
+export default function ProductModal({ product, onClose, onAddToCart, commerce, previewOnly = false }) {
   if (!product) return null;
 
   // Lock background scrolling while this dialog is mounted. Using a fixed body
@@ -180,7 +181,7 @@ export default function ProductModal({ product, onClose, onAddToCart, commerce }
 
 
   function handleAdd() {
-    if (!isAvailable) return;
+    if (!isAvailable || previewOnly) return;
     onAddToCart(product.id, selectedSize, selectedColor, quantity, displayedImage);
     setAddedNotice(true);
     setTimeout(() => {
@@ -190,7 +191,7 @@ export default function ProductModal({ product, onClose, onAddToCart, commerce }
   }
 
   function handleBuyNow() {
-    if (!isAvailable) return;
+    if (!isAvailable || previewOnly) return;
     onAddToCart(product.id, selectedSize, selectedColor, quantity, displayedImage, true);
     onClose();
   }
@@ -361,11 +362,13 @@ export default function ProductModal({ product, onClose, onAddToCart, commerce }
 
               <button
                 type="button"
-                className={`button story-watch modal-add-cta ${!isAvailable ? 'unavailable' : ''}`}
-                disabled={!isAvailable}
+                className={`button story-watch modal-add-cta ${!isAvailable || previewOnly ? 'unavailable' : ''}`}
+                disabled={!isAvailable || previewOnly}
                 onClick={handleAdd}
               >
-                {addedNotice ? (
+                {previewOnly ? (
+                  <span>PREVIEW ONLY</span>
+                ) : addedNotice ? (
                   <span>✓ ADDED TO CART</span>
                 ) : !isAvailable ? (
                   <span>OUT OF STOCK</span>
@@ -375,7 +378,7 @@ export default function ProductModal({ product, onClose, onAddToCart, commerce }
               </button>
             </div>
 
-            <div className="modal-buy-now-wrap">
+            {!previewOnly && <div className="modal-buy-now-wrap">
               <button
                 type="button"
                 className="modal-buy-now-btn"
@@ -384,7 +387,13 @@ export default function ProductModal({ product, onClose, onAddToCart, commerce }
               >
                 BUY NOW
               </button>
-            </div>
+            </div>}
+
+            {previewOnly && (
+              <p className="printful-modal-note" role="note">
+                Printful migration preview. The live store and checkout still use Fourthwall.
+              </p>
+            )}
 
             {/* Feature Highlights */}
             {product.details && (

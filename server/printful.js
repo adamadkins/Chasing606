@@ -179,6 +179,10 @@ async function printfulJson(fetcher, url, token, options = {}) {
     error.status = response.status;
     const providerCode = data?.error?.reason ?? data?.error?.code;
     if (typeof providerCode === 'string' && /^[a-zA-Z0-9_-]{1,80}$/.test(providerCode)) error.providerCode = providerCode;
+    const providerMessage = data?.error?.message ?? (typeof data?.result === 'string' ? data.result : null);
+    if (typeof providerMessage === 'string' && providerMessage.length <= 300 && !/bearer|token|authorization/i.test(providerMessage)) {
+      error.providerMessage = providerMessage.replace(/https?:\/\/\S+/gi, '[url]');
+    }
     throw error;
   }
   return data.result;
@@ -352,7 +356,7 @@ export async function generatedMockupState(request, source, token, fetcher = fet
         method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(minimalBody)
       });
     } catch (fallbackError) {
-      return { status: fallbackError?.status === 429 ? 'rate_limited' : 'unavailable', reason: 'task_creation_failed', upstreamStatus: fallbackError?.status || 502, providerCode: fallbackError?.providerCode };
+      return { status: fallbackError?.status === 429 ? 'rate_limited' : 'unavailable', reason: 'task_creation_failed', upstreamStatus: fallbackError?.status || 502, providerCode: fallbackError?.providerCode, providerMessage: fallbackError?.providerMessage };
     }
   }
   const pending = { status: task.status === 'completed' ? 'completed' : 'pending', taskKey: task.task_key, colorVariants: generation.colorVariants, createdAt: now };
@@ -418,6 +422,7 @@ export async function printfulStorefrontPreview(request, env, fetcher = fetch, c
       previewOnly: true, checkoutEnabled: false, mockupStatus: mockupState.status,
       ...(mockupState.reason ? { mockupReason: mockupState.reason, mockupUpstreamStatus: mockupState.upstreamStatus } : {}),
       ...(mockupState.providerCode ? { mockupProviderCode: mockupState.providerCode } : {}),
+      ...(mockupState.providerMessage ? { mockupProviderMessage: mockupState.providerMessage } : {}),
       product: {
         id: String(source.sync_product?.id || syncProductId),
         name: source.sync_product?.name || 'Printful test product',

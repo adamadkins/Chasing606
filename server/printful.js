@@ -207,9 +207,11 @@ export function mockupRequestFor(source, printfileInfo = {}) {
     const imageUrl = safeImage(file.url) || safeImage(file.preview_url);
     if (!imageUrl) return [];
     const rawPlacement = !file.type || file.type === 'default' ? 'front' : file.type;
+    const availablePlacements = Object.keys(printfileInfo.available_placements || {});
     const placement = Object.hasOwn(printfileInfo.available_placements || {}, rawPlacement)
       ? rawPlacement
-      : rawPlacement.replace(/^embroidery_/, '');
+      : availablePlacements.find(candidate => candidate === `embroidery_${rawPlacement}`)
+        || rawPlacement.replace(/^embroidery_/, '');
     return [{
       placement,
       image_url: imageUrl,

@@ -51,6 +51,8 @@ test('mockup request accepts Printful embroidery preview files and normalizes th
     options: [{ id: 'full_color', value: true }]
   }]);
   assert.deepEqual(request.body.product_options, { embroidery_type: 'flat' });
+  const defaultFileRequest = mockupRequestFor(source, { available_placements: { embroidery_front: 'Front' } });
+  assert.equal(defaultFileRequest.body.files[0].placement, 'embroidery_front');
 });
 
 test('generated galleries order product front/back before model front/back for each color', () => {

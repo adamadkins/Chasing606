@@ -32,11 +32,13 @@ export function normalizePortalProduct(product) {
     if (!colors.includes(color)) colors.push(color);
     if (!sizes.includes(size)) sizes.push(size);
     const image = httpsImage(v.image);
-    if (image) galleryByColor[color] = [...new Set([...(galleryByColor[color] || []), image])];
+    // Every picture Printful has for this variant, so pictures added or removed there follow along.
+    const pictures = [...new Set([...(Array.isArray(v.images) ? v.images : []), v.image].map(httpsImage).filter(Boolean))];
+    if (pictures.length) galleryByColor[color] = [...new Set([...(galleryByColor[color] || []), ...pictures])];
     return {
       id: String(v.id), label: `${color} / ${size}`, color, size,
       price: v.price_cents / 100, currencyCode: v.currency || 'USD',
-      available: v.available !== false, image, images: image ? [image] : []
+      available: v.available !== false, image, images: pictures
     };
   });
   const imagesByColor = Object.fromEntries(Object.entries(galleryByColor).map(([color, images]) => [color, images[0]]));

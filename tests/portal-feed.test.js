@@ -9,7 +9,7 @@ const feedProduct = {
     { id: '902', size: 'L', color: 'Green', price_cents: 4100, currency: 'USD', available: false, image: 'http://insecure.test/x.png' }
   ]
 };
-const env = { PORTAL_FEED_KEY: 'k'.repeat(43) };
+const env = { PORTAL_SHOP: 'true' };
 const feed = body => async (url, options) => { feed.last = { url: String(url), options }; return Response.json(body); };
 
 test('portal feed maps Printful products into the storefront shape', () => {
@@ -26,11 +26,12 @@ test('portal feed maps Printful products into the storefront shape', () => {
   assert.equal(normalizePortalProduct({ id: '1', name: 'x', variants: [] }), null);
 });
 
-test('portal feed sends the site key and returns normalized products', async () => {
-  const result = await portalProducts(env, feed({ products: [feedProduct] }));
+test('portal feed names the site by its address and returns normalized products', async () => {
+  const result = await portalProducts(env, 'https://chasing606.example', feed({ products: [feedProduct] }));
   assert.equal(result.mode, 'printful');
   assert.equal(result.products.length, 1);
-  assert.equal(feed.last.options.headers.Authorization, `Bearer ${env.PORTAL_FEED_KEY}`);
+  assert.equal(feed.last.options.headers['X-Site-Origin'], 'https://chasing606.example');
+  assert.equal(feed.last.options.headers.Authorization, undefined, 'no secret is sent');
 });
 
 test('portal commerce hides upstream detail, and is opt-in', async () => {
@@ -55,7 +56,8 @@ test('checkout forwards only variants and quantities, with return addresses on t
   const response = await handleCheckout(checkoutRequest({ lines: [{ merchandiseId: '901', quantity: 2, price: 1 }], success_url: 'https://evil.test' }), env, fetcher);
   assert.deepEqual(await response.json(), { checkoutUrl: 'https://checkout.stripe.com/c/pay/cs_1' });
   assert.deepEqual(sent.body, { lines: [{ variant_id: '901', quantity: 2 }], success_url: 'https://chasing606.example/merch?order=success', cancel_url: 'https://chasing606.example/merch' });
-  assert.equal(sent.options.headers.Authorization, `Bearer ${env.PORTAL_FEED_KEY}`);
+  assert.equal(sent.options.headers['X-Site-Origin'], 'https://chasing606.example');
+  assert.equal(sent.options.headers.Authorization, undefined);
 });
 
 test('checkout rejects bad carts before calling the portal and keeps upstream errors generic', async () => {

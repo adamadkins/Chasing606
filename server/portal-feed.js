@@ -1,13 +1,14 @@
 // Products come from the client's connected Printful store through the TLT Studios
-// portal. The portal holds the Printful token; this Worker only holds a read-only
-// site key (PORTAL_FEED_KEY) and never talks to Printful itself.
+// portal. The portal holds the Printful and Stripe connections; this Worker holds no secret. It names its
+// own address (X-Site-Origin) and the portal looks up whose shop that is. It never talks to Printful itself.
 const DEFAULT_FEED = 'https://portal.tlt-studios.com/api/site/printful/products';
 
 class PortalFeedError extends Error {
   constructor(message, status = 502) { super(message); this.status = status; }
 }
 
-export const portalFeedEnabled = env => Boolean(env?.PORTAL_FEED_KEY);
+// Switched on by PORTAL_SHOP=true in wrangler.jsonc, so no secret has to be set in Cloudflare.
+export const portalFeedEnabled = env => env?.PORTAL_SHOP === 'true';
 
 const categoryFor = name => {
   if (/hoodie|sweatshirt|crewneck/i.test(name)) return 'Hoodies & Sweatshirts';
@@ -55,11 +56,11 @@ export function normalizePortalProduct(product) {
   };
 }
 
-export async function portalProducts(env, fetcher = fetch) {
+export async function portalProducts(env, origin, fetcher = fetch) {
   let response;
   try {
     response = await fetcher(env.PORTAL_FEED_URL || DEFAULT_FEED, {
-      headers: { Authorization: `Bearer ${env.PORTAL_FEED_KEY}`, Accept: 'application/json' },
+      headers: { 'X-Site-Origin': origin, Accept: 'application/json' },
       signal: AbortSignal.timeout(20000)
     });
   } catch { throw new PortalFeedError('The shop is temporarily unavailable.'); }
@@ -87,7 +88,7 @@ export async function handleCheckout(request, env, fetcher = fetch) {
   try {
     response = await fetcher(env.PORTAL_CHECKOUT_URL || CHECKOUT_FEED, {
       method: 'POST',
-      headers: { Authorization: `Bearer ${env.PORTAL_FEED_KEY}`, 'Content-Type': 'application/json', Accept: 'application/json' },
+      headers: { 'X-Site-Origin': origin, 'Content-Type': 'application/json', Accept: 'application/json' },
       body: JSON.stringify({ lines: lines.map(line => ({ variant_id: line.merchandiseId, quantity: line.quantity })), success_url: `${origin}/merch?order=success`, cancel_url: `${origin}/merch` }),
       signal: AbortSignal.timeout(25000)
     });
@@ -106,7 +107,7 @@ export async function handlePortalCommerce(request, env, fetcher = fetch) {
     return Response.json({ mode: 'printful', checkoutEnabled: true, accountUrl: null, shopUrl: null }, { headers });
   }
   if (path === '/api/products' && request.method === 'GET') {
-    try { return Response.json(await portalProducts(env, fetcher), { headers }); }
+    try { return Response.json(await portalProducts(env, new URL(request.url).origin, fetcher), { headers }); }
     catch (error) {
       return Response.json({ error: error instanceof PortalFeedError ? error.message : 'The shop is temporarily unavailable.' }, { status: 502, headers: { 'Cache-Control': 'no-store' } });
     }

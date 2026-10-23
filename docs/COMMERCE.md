@@ -13,10 +13,10 @@ Keep the Spring storefront published and verify its branding, checkout, shipping
 ## Printful via the TLT Studios portal (opt-in)
 Austin creates products in Printful and connects his store in the portal. The portal holds the Printful token; this Worker never calls Printful.
 
-1. In the portal, the studio issues a site key for Austin: `POST /api/admin/site-feed/<client id>/key` (shown once).
-2. Set it on this Worker: `npx wrangler secret put PORTAL_FEED_KEY`. Optional `PORTAL_FEED_URL` overrides `https://portal.tlt-studios.com/api/site/printful/products`.
-3. While `PORTAL_FEED_KEY` is unset the site keeps using Spring. Once set, `/api/products` serves Printful products (`server/portal-feed.js`).
+1. In the portal, the studio opens Clients → Manage → Austin → **Website shop** and enters this site's address (the one customers use, e.g. `https://chasing606.com`) and the flat US shipping fee. No key or secret is needed, and nothing is set in Cloudflare.
+2. `wrangler.jsonc` sets `PORTAL_SHOP=true`. **Merging this branch to `main` is the switch**: from then on `/api/products` serves Printful products and the Worker names itself to the portal with `X-Site-Origin` (`server/portal-feed.js`). Optional `PORTAL_FEED_URL` / `PORTAL_CHECKOUT_URL` override the portal addresses.
+3. Merge only after the portal side is ready (Website shop registered, Printful and Stripe connected, Stripe Tax on). Until `PORTAL_SHOP` is set the site uses Spring.
 
 Checkout: the cart and bag work as before. `POST /api/checkout` sends variant ids and quantities to the portal (`/api/site/printful/checkout`), which prices them from Printful and returns a Stripe Checkout URL on Austin's account. After paying, Stripe returns the customer to `/merch?order=success`, which empties the bag and shows a thank-you. The portal places the Printful order when Stripe confirms payment. See `Client-Portal/INTEGRATIONS.md` ("Website checkout") for the portal setup.
 
-Before setting `PORTAL_FEED_KEY` on the live site: update the Privacy, Terms and Shipping & Returns text (`src/LegalPage.jsx`), which still says purchases are completed on Spring.
+The Privacy, Terms and Shipping & Returns text (`src/LegalPage.jsx`) now describes Stripe and Printful. Austin should read it before this goes live.

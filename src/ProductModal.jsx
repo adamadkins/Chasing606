@@ -288,7 +288,7 @@ export default function ProductModal({ product, onClose, onAddToCart, commerce, 
               <div className="modal-price-row">
                 <span className="modal-price-amount">{money(currentPrice, currentCurrency)}</span>
                 <span className="modal-currency-tag">{currentCurrency}</span>
-                {!isSpring && <span className="modal-shipping-pill">Free US shipping over $75</span>}
+                {!isSpring && <span className="modal-shipping-pill">US shipping at checkout</span>}
               </div>
             </div>
 
@@ -423,7 +423,7 @@ export default function ProductModal({ product, onClose, onAddToCart, commerce, 
                   ))}
                   <li>
                     <span className="spec-check">✓</span>
-                    <span>Secure checkout powered by {isSpring ? 'Spring' : 'Fourthwall'}</span>
+                    <span>Secure checkout powered by {isSpring ? 'Spring' : 'Stripe'}</span>
                   </li>
                 </ul>
               </div>

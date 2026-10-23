@@ -131,6 +131,13 @@ function App() {
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [checkoutLines, setCheckoutLines] = useState([]);
   const [checkoutSubtotal, setCheckoutSubtotal] = useState(0);
+  // Stripe returns the customer here after paying: empty the bag once, say thanks, and tidy the address.
+  const [orderPlaced, setOrderPlaced] = useState(() => new URLSearchParams(location.search).get('order') === 'success');
+  useEffect(() => {
+    if (!orderPlaced) return;
+    cart.clear();
+    history.replaceState(null, '', location.pathname);
+  }, []);
 
   const currentPath = location.pathname.replace(/\/$/, '') || '/';
   const isLegal = legalPaths.includes(currentPath);
@@ -262,6 +269,7 @@ function App() {
 
         {!isContact && !isAbout && !isLegal && !isDeveloper && (
           <section id="shop" className={isMerch ? 'shop merch-page' : 'shop home-reveal'}>
+            {orderPlaced && <p className="order-thanks" role="status">Thank you! Your order is in. A receipt is on its way to your email.<button type="button" aria-label="Dismiss" onClick={() => setOrderPlaced(false)}>×</button></p>}
             <div className="section-top">
               <div>
                 <p className="eyebrow">CHASING 606 GEAR</p>

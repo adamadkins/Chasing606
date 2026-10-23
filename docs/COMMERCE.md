@@ -17,4 +17,6 @@ Austin creates products in Printful and connects his store in the portal. The po
 2. Set it on this Worker: `npx wrangler secret put PORTAL_FEED_KEY`. Optional `PORTAL_FEED_URL` overrides `https://portal.tlt-studios.com/api/site/printful/products`.
 3. While `PORTAL_FEED_KEY` is unset the site keeps using Spring. Once set, `/api/products` serves Printful products (`server/portal-feed.js`).
 
-Checkout is **not** wired for Printful: `/api/checkout` returns 409 and products have no `shopUrl`. Set the key only once a checkout path (hosted platform or Stripe + Printful order webhook) is chosen, or products will display without a way to buy them.
+Checkout: the cart and bag work as before. `POST /api/checkout` sends variant ids and quantities to the portal (`/api/site/printful/checkout`), which prices them from Printful and returns a Stripe Checkout URL on Austin's account. After paying, Stripe returns the customer to `/merch?order=success`, which empties the bag and shows a thank-you. The portal places the Printful order when Stripe confirms payment. See `Client-Portal/INTEGRATIONS.md` ("Website checkout") for the portal setup.
+
+Before setting `PORTAL_FEED_KEY` on the live site: update the Privacy, Terms and Shipping & Returns text (`src/LegalPage.jsx`), which still says purchases are completed on Spring.

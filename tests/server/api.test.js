@@ -44,7 +44,7 @@ test('latest video failures report a short reason', quiet(async () => {
 }));
 
 test('unknown routes are 404 and non-GET methods are 405', async () => {
-  assert.equal((await handleApi(request('/api/checkout', 'POST'))).status, 404);
+  assert.equal((await handleApi(request('/api/nope', 'POST'))).status, 404);
   const denied = await handleApi(request('/api/products', 'POST'));
   assert.equal(denied.status, 405);
   assert.equal(denied.headers.get('allow'), 'GET, HEAD');

@@ -4,19 +4,22 @@
 //            shopUrl, colors: [{ name, hex, images }], sizes: [string],
 //            variants: [{ color, size, price, available }] }
 
+/** Products plus how checkout works: `checkout.mode` is 'stripe', 'demo', or null (links out to the shop). */
 export async function fetchCatalog(signal) {
   const response = await fetch('/api/products', { signal });
   if (!response.ok) throw new Error('The collection could not be loaded.');
   const data = await response.json();
   if (!Array.isArray(data.products)) throw new Error('The collection could not be loaded.');
-  return data.products;
+  return { products: data.products, checkout: data.checkout ?? NO_CHECKOUT };
 }
+
+export const NO_CHECKOUT = Object.freeze({ mode: null, shipping: { flatCents: 0, freeOverCents: 0 }, automaticTax: false });
 
 /**
  * Spring's mockup service serves any square size from the same URL pattern
  * (`/<id>/1200/1200.jpg`). Ask for no more pixels than will be shown.
  */
-export const imageAtSize = (url, size) => url.replace(/\/\d+\/\d+\.jpg$/, `/${size}/${size}.jpg`);
+export const imageAtSize = (url, size) => (url.startsWith('https://mockup-api.teespring.com/') ? url.replace(/\/\d+\/\d+\.jpg$/, `/${size}/${size}.jpg`) : url);
 
 export const findVariant = (product, color, size) =>
   product.variants.find(variant => variant.color === color && variant.size === size) ?? null;

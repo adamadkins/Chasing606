@@ -2,16 +2,21 @@ import { useEffect, useRef } from 'react';
 import Footer from './components/layout/Footer';
 import Header from './components/layout/Header';
 import Intro from './components/layout/Intro';
+import CartDrawer from './components/shop/CartDrawer';
+import { CartProvider } from './hooks/useCart';
 import { CatalogProvider } from './hooks/useCatalog';
+import useCart from './hooks/useCart';
 import { applyHead } from './lib/head';
 import { Router, useRouter } from './lib/router';
 import About from './pages/About';
+import Checkout from './pages/Checkout';
 import Contact from './pages/Contact';
 import Developer from './pages/Developer';
 import Home from './pages/Home';
 import Legal from './pages/Legal';
 import Merch from './pages/Merch';
 import NotFound from './pages/NotFound';
+import OrderComplete from './pages/OrderComplete';
 import { LEGAL_PAGES } from './data/legal';
 
 const TITLE_SUFFIX = ' | Chasing 606';
@@ -36,6 +41,18 @@ const ROUTES = {
     Page: Contact,
     title: `Contact us${TITLE_SUFFIX}`,
     description: 'Questions about merch, our videos, or working together? Send Chasing 606 a message.'
+  },
+  '/checkout': {
+    Page: Checkout,
+    title: `Checkout${TITLE_SUFFIX}`,
+    description: 'Check out securely.',
+    noindex: true
+  },
+  '/order/complete': {
+    Page: OrderComplete,
+    title: `Order confirmation${TITLE_SUFFIX}`,
+    description: 'Your Chasing 606 order.',
+    noindex: true
   },
   '/behind-the-build': {
     Page: Developer,
@@ -62,6 +79,7 @@ const NOT_FOUND = {
 function Layout() {
   const { path, navigate } = useRouter();
   const main = useRef(null);
+  const cart = useCart();
   const firstRender = useRef(true);
 
   const redirect = REDIRECTS[path];
@@ -86,6 +104,7 @@ function Layout() {
         <route.Page />
       </main>
       <Footer />
+      {cart.open && <CartDrawer />}
       <Intro />
     </>
   );
@@ -95,7 +114,9 @@ export default function App() {
   return (
     <Router>
       <CatalogProvider>
-        <Layout />
+        <CartProvider>
+          <Layout />
+        </CartProvider>
       </CatalogProvider>
     </Router>
   );

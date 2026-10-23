@@ -113,6 +113,7 @@
 .size-chip:has(input:focus-visible) { outline: 3px solid var(--amber); outline-offset: 2px; }
 
 .product-modal__cta { height: 48px; margin-top: 10px; font-size: 11px; }
+.product-modal__fine { margin-top: 10px; font-size: 12px; color: var(--text-subtle); }
 
 /* Gallery ---------------------------------------------------------------- */
 .gallery { grid-area: gallery; min-width: 0; padding: 26px 24px; border-right: 1px solid rgb(32 37 27 / 0.08); background: #eeece5; }

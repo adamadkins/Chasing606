@@ -1,0 +1,69 @@
+.cart-drawer {
+  position: fixed;
+  inset: 0 0 0 auto;
+  width: min(440px, 100%);
+  max-width: none;
+  height: 100dvh;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: #f6f4ed;
+  color: #20251b;
+  box-shadow: -20px 0 60px rgb(0 0 0 / 0.3);
+}
+.cart-drawer[open] { animation: drawer-in 0.35s var(--ease-out); }
+.cart-drawer::backdrop { background: rgb(16 21 15 / 0.7); backdrop-filter: blur(3px); }
+@keyframes drawer-in { from { transform: translateX(100%); } to { transform: none; } }
+
+.cart-drawer__panel { display: flex; flex-direction: column; height: 100%; }
+
+.cart-drawer__header { display: flex; align-items: center; justify-content: space-between; padding: 22px 24px; border-bottom: 1px solid var(--line); }
+.cart-drawer__header h2 { font-size: 20px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; }
+.cart-drawer__header h2 span { font-weight: 500; color: var(--text-subtle); }
+.cart-drawer__close { display: grid; place-items: center; width: 38px; height: 38px; border: 1px solid rgb(32 37 27 / 0.12); border-radius: 50%; background: transparent; color: inherit; }
+.cart-drawer__close:hover { background: #20251b; color: #f6f4ed; }
+.cart-drawer__close .icon { width: 16px; height: 16px; }
+
+.cart-drawer__empty { display: flex; flex: 1; flex-direction: column; align-items: center; justify-content: center; gap: 18px; padding: 40px; text-align: center; color: var(--text-muted); }
+.cart-drawer__empty .icon { width: 44px; height: 44px; }
+
+.cart-lines { flex: 1; margin: 0; padding: 0 24px; overflow-y: auto; list-style: none; }
+.cart-line { display: grid; grid-template-columns: 76px 1fr auto; gap: 14px; padding: 20px 0; border-bottom: 1px solid var(--line); }
+.cart-line.is-unavailable { opacity: 0.75; }
+.cart-line__photo { display: grid; place-items: center; width: 76px; height: 76px; overflow: hidden; border-radius: 6px; background: var(--sand); }
+.cart-line__photo img { width: 100%; height: 100%; object-fit: contain; }
+.cart-line__info h3 { font-size: 13px; font-weight: 700; line-height: 1.35; text-transform: uppercase; }
+.cart-line__info p { margin-top: 3px; font-size: 12px; color: var(--text-muted); }
+.cart-line__warning { color: var(--danger) !important; }
+.cart-line__price { display: flex; flex-direction: column; align-items: flex-end; justify-content: space-between; font-size: 13px; font-weight: 700; }
+.cart-line__remove { padding: 0; border: 0; background: none; font-size: 11px; color: var(--text-subtle); text-decoration: underline; }
+.cart-line__remove:hover { color: var(--danger); }
+
+.stepper { display: inline-flex; align-items: center; margin-top: 10px; border: 1px solid var(--line-strong); border-radius: 4px; background: #fff; }
+.stepper button { width: 34px; height: 34px; border: 0; background: none; font-size: 16px; }
+.stepper button:hover:not(:disabled) { background: #eae7dc; }
+.stepper button:disabled { opacity: 0.35; }
+.stepper span { min-width: 28px; text-align: center; font-size: 13px; font-weight: 700; }
+
+.cart-drawer__footer { padding: 20px 24px calc(24px + env(safe-area-inset-bottom)); border-top: 1px solid var(--line); background: #f0eee5; }
+.cart-drawer__fine { margin-top: 10px; font-size: 11px; color: var(--text-subtle); }
+.cart-drawer__footer .btn { margin-top: 16px; }
+.btn.is-disabled { opacity: 0.45; pointer-events: none; }
+
+.shipping-note { margin-bottom: 14px; font-size: 12px; color: var(--text-muted); }
+.shipping-note strong { color: var(--text-strong); }
+.shipping-note.is-free { color: #3d6b2e; font-weight: 600; }
+
+.totals { margin: 0; }
+.totals > div { display: flex; justify-content: space-between; padding: 4px 0; font-size: 13px; }
+.totals dt { color: var(--text-muted); }
+.totals dd { margin: 0; font-weight: 600; }
+.totals__total { margin-top: 6px; padding-top: 10px !important; border-top: 1px solid var(--line-strong); font-size: 16px !important; }
+.totals__total dt { color: var(--text-strong); font-weight: 700; }
+
+@media (max-width: 560px) {
+  .cart-drawer__header { padding: 18px 20px; }
+  .cart-lines { padding: 0 20px; }
+  .cart-drawer__footer { padding-left: 20px; padding-right: 20px; }
+}

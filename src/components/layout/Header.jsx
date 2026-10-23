@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { NAV_LINKS, SITE } from '../../config/site';
+import useCart from '../../hooks/useCart';
+import useCatalog from '../../hooks/useCatalog';
 import { Link, useRouter } from '../../lib/router';
 import Icon from '../ui/Icon';
 import SocialLinks from '../ui/SocialLinks';
@@ -49,6 +51,8 @@ function useMobileMenu(open, close, trigger, panel) {
 
 export default function Header() {
   const { path } = useRouter();
+  const { checkout } = useCatalog();
+  const cart = useCart();
   // The menu belongs to the page it was opened on, so navigating closes it.
   const [openedOn, setOpenedOn] = useState(null);
   const open = openedOn === path;
@@ -85,9 +89,16 @@ export default function Header() {
         <span className="menu-morph" aria-hidden="true"><span /><span /><span /></span>
       </button>
 
-      <a className="header-cart" href={SITE.cartUrl} aria-label="View your cart on Spring">
-        <Icon name="bag" />
-      </a>
+      {checkout.mode ? (
+        <button type="button" className="header-cart" aria-label={`Open your bag, ${cart.count} ${cart.count === 1 ? 'item' : 'items'}`} onClick={cart.openBag}>
+          <Icon name="bag" />
+          {cart.count > 0 && <span className="header-cart__count" aria-hidden="true">{cart.count}</span>}
+        </button>
+      ) : (
+        <a className="header-cart" href={SITE.cartUrl} aria-label="View your cart on Spring">
+          <Icon name="bag" />
+        </a>
+      )}
 
       <div ref={panel} id="mobile-menu" className={`mobile-menu${open ? ' is-open' : ''}`} role="region" aria-label="Navigation menu" inert={!open}>
         <div className="mobile-menu-body">

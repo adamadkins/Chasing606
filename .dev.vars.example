@@ -1,0 +1,24 @@
+# Copy to .dev.vars (git-ignored). Wrangler and `npm run dev` both read it.
+# Production values go in Cloudflare: Settings -> Variables and Secrets.
+
+# --- Try the whole checkout with no accounts (fake products, fake payment) ---
+# SHOP_MODE=demo
+
+# --- Printify (products + fulfillment) ---
+# PRINTIFY_API_TOKEN=      # Printify -> My Profile -> Connections (secret)
+# PRINTIFY_SHOP_ID=        # the number in your shop's URL / API
+
+# --- Stripe (payment) ---
+# STRIPE_SECRET_KEY=sk_test_...       # secret
+# STRIPE_PUBLISHABLE_KEY=pk_test_...  # public
+# STRIPE_WEBHOOK_SECRET=whsec_...     # secret; from the webhook endpoint for /api/stripe-webhook
+# STRIPE_AUTOMATIC_TAX=false          # "true" once Stripe Tax is set up
+
+# --- Shipping charged to customers ---
+# SHIPPING_FLAT_CENTS=599
+# FREE_SHIPPING_OVER_CENTS=7500       # 0 turns free shipping off
+# SHIPPING_COUNTRIES=US
+
+# --- Emails to Austin when an order needs attention (https://resend.com, free) ---
+# RESEND_API_KEY=
+# ALERT_EMAIL=             # must be the email on the Resend account

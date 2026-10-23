@@ -11,6 +11,9 @@
     // Only API calls run the Worker; everything else is served straight from assets.
     "run_worker_first": ["/api/*"]
   },
+  // Order records (payment id -> supplier order) so a repeated Stripe webhook never ships twice.
+  // Wrangler creates this database automatically on the first deploy.
+  "d1_databases": [{ "binding": "DB" }],
   "build": {
     "command": "npm run build"
   }

@@ -2,6 +2,8 @@
 // browser-friendly catalog. Spring has no public API, so the product list is
 // extracted from the Next.js payload embedded in the storefront's HTML.
 
+import { categoryFor } from './categories.js';
+
 export const SPRING_STORE_URL = 'https://chasing606.creator-spring.com';
 
 const MAX_HTML_BYTES = 3_000_000;
@@ -84,16 +86,6 @@ function safeImageUrl(value) {
 function swatchHex(value) {
   const match = /^#?([0-9a-f]{6})(?:[0-9a-f]{2})?$/i.exec(String(value ?? '').trim());
   return match ? `#${match[1].toLowerCase()}` : null;
-}
-
-function categoryFor(...descriptions) {
-  const text = descriptions.filter(Boolean).join(' ');
-  if (/hoodie|sweatshirt|pullover|crewneck/i.test(text)) return 'Hoodies & Sweatshirts';
-  if (/tee|shirt|tank/i.test(text)) return 'T-Shirts';
-  if (/tumbler|mug|bottle|drink/i.test(text)) return 'Drinkware';
-  if (/sticker/i.test(text)) return 'Stickers';
-  if (/tapestry|poster|blanket|pillow/i.test(text)) return 'Home & Wall';
-  return 'Accessories';
 }
 
 const toPrice = value => {

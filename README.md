@@ -3,7 +3,7 @@
 The website for the Chasing 606 hunting channel: home, merch, our story, contact, and legal pages.
 Built with React and Vite, served by a Cloudflare Worker.
 
-- **Merch** comes live from the Chasing 606 [Spring storefront](https://chasing606.creator-spring.com). Names, prices, colors, sizes, photos, and stock update on their own. Checkout happens on Spring.
+- **Merch** comes live from the Chasing 606 [Spring storefront](https://chasing606.creator-spring.com) today (checkout happens on Spring). The site is also ready to switch to **on-site checkout with Stripe and Printify**; see [docs/CHECKOUT.md](docs/CHECKOUT.md). Try it locally with `SHOP_MODE=demo npm run dev`.
 - **Latest video** is found automatically from the YouTube channel's public feed. No API key.
 - **Contact forms** are delivered by [FormSubmit](https://formsubmit.co), so there is no mail server or database.
 
@@ -44,8 +44,11 @@ src/
   assets/images/           Photos and logo (WebP). Imported, so Vite fingerprints and caches them
   styles/                  tokens.css (colors, spacing), base.css, components.css (buttons, shared bits)
 server/
-  api.js                   The JSON API router: /api/products, /api/latest-video
-  spring.js                Reads the Spring storefront and normalises products
+  api.js                   The JSON API router: products, latest video, checkout, webhook
+  spring.js, printify.js   Product catalogs (Spring today, Printify for on-site checkout)
+  stripe.js, checkout.js   Payment sessions, webhook verification, bag pricing
+  fulfillment.js, orders.js  Send paid orders to Printify exactly once; the D1 order record
+  demo.js, services.js     Fake shop for local testing; picks real or fake pieces by mode
   youtube.js               Finds the newest upload
   cache.js                 Edge cache that serves the last good copy if an upstream is down
 worker/index.js            Cloudflare Worker entry: API first, everything else is static assets
@@ -92,6 +95,7 @@ repository in Cloudflare (Workers & Pages → Create → Import a repository) wi
   for fingerprinted files. If you add a new third-party service (analytics, another embed, another form
   provider), allow it in that file's `Content-Security-Policy` line or the browser will block it.
 - Optional variable `YOUTUBE_CHANNEL_ID` overrides the channel the latest video is read from.
+- On-site checkout needs more settings and a D1 database; see `.dev.vars.example` and [docs/CHECKOUT.md](docs/CHECKOUT.md).
 - The canonical site URL is set in `src/config/site.js`, `index.html`, `robots.txt`, and
   `sitemap.xml`. Update all four if the domain changes.
 

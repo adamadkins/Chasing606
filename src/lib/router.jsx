@@ -9,7 +9,7 @@ const SCROLL_KEY = 'chasing606-scroll';
 
 export const normalizePath = path => path.replace(/\/+$/, '') || '/';
 
-const readLocation = () => ({ path: normalizePath(window.location.pathname), hash: window.location.hash });
+const readLocation = () => ({ path: normalizePath(window.location.pathname), search: window.location.search, hash: window.location.hash });
 
 const isInternal = href => typeof href === 'string' && href.startsWith('/') && !href.startsWith('//');
 

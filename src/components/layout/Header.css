@@ -99,6 +99,21 @@
   right: 5%;
 }
 .header-cart .icon { width: 23px; height: 23px; }
+.header-cart__count {
+  position: absolute;
+  top: 4px;
+  right: -9px;
+  display: grid;
+  place-items: center;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 4px;
+  border-radius: 9px;
+  background: var(--gold);
+  color: var(--ink);
+  font-size: 10px;
+  font-weight: 800;
+}
 
 .menu-button {
   display: none;

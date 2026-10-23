@@ -11,6 +11,9 @@
       "/api/*"
     ]
   },
+  "vars": {
+    "PORTAL_SHOP": "true"
+  },
   "previews": {},
   "build": {
     "command": "npm run build"

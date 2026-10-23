@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { createCheckout } from './catalog';
 
-// Customers proceed straight to Fourthwall. Keep an error screen only if redirect fails.
+// Customers proceed straight to Stripe's hosted checkout. Keep an error screen only if redirect fails.
 export default function CheckoutModal({ open, onClose, lines = [] }) {
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
@@ -21,7 +21,7 @@ export default function CheckoutModal({ open, onClose, lines = [] }) {
         quantity: line.quantity
       })));
       const destination = new URL(url);
-      if (destination.protocol !== 'https:' || destination.hostname !== 'chasing-606-shop.fourthwall.com') {
+      if (destination.protocol !== 'https:' || destination.hostname !== 'checkout.stripe.com') {
         throw new Error('Checkout returned an unexpected destination.');
       }
       window.location.assign(destination.href);

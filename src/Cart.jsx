@@ -83,9 +83,6 @@ export default function Cart({ open, onClose, cart, products, commerce, onOpenCh
   }).filter(line => line.product);
 
   const subtotal = lines.reduce((total, line) => total + line.unitPrice * line.quantity, 0);
-  const freeShippingThreshold = 75;
-  const progressPercent = Math.min(100, Math.round((subtotal / freeShippingThreshold) * 100));
-  const diffToFreeShipping = Math.max(0, freeShippingThreshold - subtotal);
 
   function proceed() {
     onClose();
@@ -119,21 +116,6 @@ export default function Cart({ open, onClose, cart, products, commerce, onOpenCh
           <Icon name="close" />
         </button>
       </div>
-
-      {subtotal > 0 && (
-        <div className="free-shipping-bar">
-          <div className="shipping-text">
-            {diffToFreeShipping === 0 ? (
-              <span><strong>✓ You qualify for Free US Shipping!</strong></span>
-            ) : (
-              <span>Add <strong>{money(diffToFreeShipping)}</strong> more for <strong>Free US Shipping</strong></span>
-            )}
-          </div>
-          <div className="shipping-progress-track">
-            <div className="shipping-progress-fill" style={{ width: `${progressPercent}%` }} />
-          </div>
-        </div>
-      )}
 
       {lines.length > 0 ? (
         <>
@@ -196,7 +178,7 @@ export default function Cart({ open, onClose, cart, products, commerce, onOpenCh
               <span className="value">{money(subtotal, lines[0]?.currencyCode || 'USD')}</span>
             </div>
             <p className="cart-tax-notice">
-              Taxes and shipping calculated at checkout. Free shipping over $75.
+              Taxes and shipping calculated at checkout.
             </p>
 
             <button

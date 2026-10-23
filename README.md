@@ -1,50 +1,102 @@
 # Chasing 606
 
-A responsive React storefront foundation for the Chasing 606 hunting channel.
+The website for the Chasing 606 hunting channel: home, merch, our story, contact, and legal pages.
+Built with React and Vite, served by a Cloudflare Worker.
 
-## Development
+- **Merch** comes live from the Chasing 606 [Spring storefront](https://chasing606.creator-spring.com). Names, prices, colors, sizes, photos, and stock update on their own. Checkout happens on Spring.
+- **Latest video** is found automatically from the YouTube channel's public feed. No API key.
+- **Contact forms** are delivered by [FormSubmit](https://formsubmit.co), so there is no mail server or database.
 
-Requires Node.js 22.12+ (validated on Node 24).
+## Getting started
+
+Requires Node.js 22.12 or newer (`.node-version` pins 22).
 
 ```sh
-npm ci --cache /workspace/.npm-cache
-npm run dev
+npm install
+npm run dev        # http://localhost:3000 — includes the /api routes
 ```
 
-Production: `npm run build`. Serve the build with `npm run preview`.
+| Command | What it does |
+| --- | --- |
+| `npm run dev` | Dev server with hot reload. `/api/*` runs the same code as production. |
+| `npm run build` | Production build into `dist/`. |
+| `npm run preview` | Serves the production build (with `/api/*`). |
+| `npm test` | Unit tests (`node --test`). |
+| `npm run lint` | ESLint, including the React hooks rules. |
+| `npm run check` | Lint, tests, and build — run this before pushing. |
+| `npm run deploy` | Build and deploy with Wrangler. |
 
-## Catalog and commerce
+## Project layout
 
-The website reads the public catalog from the Chasing 606 Spring storefront. Product names, prices, colors, available sizes, and mockups update from Spring without an API key. Customers browse on this site and continue to the exact Spring listing for secure checkout and fulfillment; Spring does not provide a supported external cart API.
+```
+src/
+  main.jsx, App.jsx        Entry point; route table, page layout, per-page title/meta
+  pages/                   One file per page (Home, Merch, About, Contact, Legal, Developer, NotFound)
+  components/
+    layout/                Header, mobile menu, Footer, one-time logo Intro
+    home/                  Hero, FeaturedGear, LatestVideo, StorySection
+    shop/                  Product card/grid/filters and the product dialog (gallery + lightbox)
+    ui/                    Icon, SocialLinks
+  hooks/                   useCatalog, useReveal, useModalDialog, useFormSubmit, …
+  lib/                     router, catalog helpers (pure, tested), formatting, <head> updates
+  config/site.js           Name, email, store/YouTube/social URLs, navigation links
+  data/                    Page content that is not layout: legal text, story slides
+  assets/images/           Photos and logo (WebP). Imported, so Vite fingerprints and caches them
+  styles/                  tokens.css (colors, spacing), base.css, components.css (buttons, shared bits)
+server/
+  api.js                   The JSON API router: /api/products, /api/latest-video
+  spring.js                Reads the Spring storefront and normalises products
+  youtube.js               Finds the newest upload
+  cache.js                 Edge cache that serves the last good copy if an upstream is down
+worker/index.js            Cloudflare Worker entry: API first, everything else is static assets
+public/                    Served as-is: favicon, OG image, fonts, robots.txt, sitemap.xml, _headers
+tests/                     server/ and client/ unit tests
+```
+
+Each component keeps its CSS next to it (`Header.jsx` + `Header.css`). Colors and sizes that appear
+in more than one place are variables in `src/styles/tokens.css`.
+
+## Common changes
+
+| I want to… | Edit |
+| --- | --- |
+| Change the contact email, social links, or nav | `src/config/site.js` |
+| Reword the privacy / terms / shipping pages | `src/data/legal.jsx` (and the "Last updated" date there) |
+| Change the homepage story slides | `src/data/story.js` (+ photos in `src/assets/images/`) |
+| Change About page copy or photos | `src/pages/About.jsx` |
+| Change a color | `src/styles/tokens.css` |
+| Add or rename a page | Add a file in `src/pages/` and a line in the route table in `src/App.jsx`; add it to `public/sitemap.xml` |
+| Change products, prices, photos | In Spring. The site picks it up within about five minutes. |
+
+## How the shop works
+
+`server/spring.js` fetches the public Spring storefront page and extracts its product data (Spring has
+no public API). Products are cached at Cloudflare's edge for 5 minutes; if Spring is down or changes
+its markup, the last good catalog is served for up to a day instead of an error. The browser gets a
+small, normalised catalog, and every "Continue to Spring" button links to that product's exact Spring
+listing. The site never handles payment or customer details.
+
+If Spring ever changes its page format, `/api/products` returns an error and the shop shows a retry
+message (or the cached catalog). The parser and its tests are in `server/spring.js` and
+`tests/server/spring.test.js`.
+
+## Deploying (Cloudflare Workers)
+
+`wrangler.jsonc` deploys `worker/index.js` together with the built `dist/` assets. Connect the GitHub
+repository in Cloudflare (Workers & Pages → Create → Import a repository) with the deploy command
+`npx wrangler deploy` (the build runs automatically), or run `npm run deploy`.
+
+- Only `/api/*` runs the Worker; every other path is served from static assets, and unknown paths fall
+  back to `index.html` so the client-side router can show the page (or the 404 page).
+- `public/_headers` sets security headers (including a Content-Security-Policy) and long-lived caching
+  for fingerprinted files. If you add a new third-party service (analytics, another embed, another form
+  provider), allow it in that file's `Content-Security-Policy` line or the browser will block it.
+- Optional variable `YOUTUBE_CHANNEL_ID` overrides the channel the latest video is read from.
+- The canonical site URL is set in `src/config/site.js`, `index.html`, `robots.txt`, and
+  `sitemap.xml`. Update all four if the domain changes.
 
 ## Brand assets
 
-The wordmark, garment illustrations, and product details are temporary concepts. The original SVG woodland texture is a placeholder, not licensed Bottomland artwork. Replace it with owner-provided or licensed artwork. The owner-provided white logo is bundled at `public/logo.png` and used on dark backgrounds in the sticky header, mobile menu, and footer. The landing photograph is owner-provided. Saira is self-hosted with its license in public/fonts; the story section uses the owner-provided hunting photograph.
-
-## Before launch
-
-Publish the Spring products and verify product options, shipping, taxes, checkout, and a test order. Supply approved branding, product photography, contact details, shipping/returns/privacy policies, and domain. This website does not collect payments or customer details.
-
-## Automatic Cloudflare Pages previews
-
-Connect this GitHub repository through Cloudflare Workers & Pages → Create application → Pages → Import an existing Git repository. Select production branch `main`, build command `npm run build`, and output directory `dist`; leave root directory blank. The `.node-version` file selects Node 24. Enable automatic production deployments. Every push to `main` triggers a new deployment at the same Pages URL. This is a build-and-refresh preview, not instant development-server hot reload.
-
-
-## Dynamic newest video
-
-Cloudflare Pages automatically deploys `functions/api/latest-video.js` with the site. It reads YouTube's public Atom upload feed. If the feed fails, it reads the channel's Videos tab in Latest order and verifies the channel identity before selecting the first video. This fallback selects regular videos, not Shorts, and returns no publication timestamp rather than inventing one. The newest published upload (including Shorts if present in the feed) is cached at the edge for 15 minutes and in the browser for 5 minutes. Visitors load the embedded player only after clicking Play. No API key or manual video URL is needed.
-
-The endpoint defaults to the verified Chasing606 ID `UCl9Y60eT8tlw0VEvcLcPijA`. An optional Cloudflare variable `YOUTUBE_CHANNEL_ID` can override the feed ID. No credential is required. If YouTube blocks a request or the feed is unavailable, the page links to the channel's videos instead of showing an incorrect upload. `npm run dev` serves the same endpoint locally. `npm run preview` serves only the static bundle, so use development mode or Cloudflare to test the endpoint.
-
-Validation: `node --test` tests channel lookup, latest-upload selection, XML decoding, and unavailable/invalid feed handling. The fallback was also verified against a live YouTube Videos page after reproducing HTTP 404 from the verified channel feed.
-
-### Current hosting: Cloudflare Workers
-
-The current address is https://chasing606.adkins-adam04.workers.dev/. `wrangler.jsonc` deploys `worker/index.js` and the built `dist` assets together. Use the Cloudflare deploy command `npx wrangler deploy`. Wrangler runs `npm run build` through its configured custom build step, so a separate Cloudflare build command is optional. Requests to `/api/*` run the Worker; other requests serve static assets. The same feed implementation remains compatible with Pages. A static-assets-only deploy will not run the video feed, so retain the Worker entry point and asset binding in the configuration.
-
-## Pages, contact, and preview cart
-
-- `/` is the channel homepage; `/merch` displays the live Spring catalog; `/contact` contains contact details and an email-draft composer. The Workers SPA fallback supports direct visits to each path.
-- The contact form opens a `mailto:` draft addressed to `chasingbucks606@gmail.com`. The visitor reviews and sends it in their email app. It does not send mail from a server or show a false delivery confirmation. Server-side form delivery would require an email service and its credentials.
-- The bag icon opens the hosted Spring cart. Product buttons continue to the corresponding Spring listing for final options and checkout.
-- The centered header uses `public/logo.png` (the original logo), with a modest overhang below the dark sticky header. The alternative upload is retained as `public/header-logo.png`. The original image files are preserved without editing. The landing photograph is framed around the deer with less enlargement; higher-resolution source photography would be needed for more actual detail.
+The white logo is `src/assets/images/logo.webp`; favicon, touch icon, and the social-share image
+(`og-image.jpg`) are in `public/`. Saira is self-hosted in `public/fonts` with its license. Photography
+is owner-provided and was resized for the web; keep originals elsewhere.

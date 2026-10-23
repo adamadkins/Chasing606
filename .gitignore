@@ -1,7 +1,8 @@
 node_modules/
 dist/
+.wrangler/
+.dev.vars
 .env
-.env.local
+.env.*
 *.log
-.aistudio/
-bun.lock
+.DS_Store

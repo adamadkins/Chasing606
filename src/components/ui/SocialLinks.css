@@ -1,0 +1,25 @@
+.social-links {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.social-links a {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  transition: color 0.2s, transform 0.2s;
+}
+
+.social-links a:hover {
+  color: var(--gold);
+  transform: translateY(-3px);
+}
+
+.social-links svg {
+  width: 17px;
+  height: 17px;
+}

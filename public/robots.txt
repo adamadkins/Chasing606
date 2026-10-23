@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+
+Sitemap: https://chasing606.adkins-adam04.workers.dev/sitemap.xml

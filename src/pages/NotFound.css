@@ -1,0 +1,10 @@
+.not-found {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.not-found h1 { margin: 20px 0; font-size: clamp(38px, 5vw, 64px); line-height: 1.1; letter-spacing: -2px; text-transform: uppercase; }
+.not-found > p:not(.eyebrow) { max-width: 440px; font-size: 14px; line-height: 1.9; color: var(--text-subtle); }
+.not-found__actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 28px; margin-top: 35px; }

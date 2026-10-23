@@ -1,0 +1,121 @@
+/* Buttons ------------------------------------------------------------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 35px;
+  padding: 17px 27px;
+  border: 0;
+  font-family: var(--font);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+  white-space: nowrap;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+.btn .icon {
+  width: 14px;
+  height: 14px;
+  transition: transform 0.3s ease;
+}
+.btn:hover .icon { transform: translate(2px, -2px); }
+
+.btn--light { background: #ede9d9; color: var(--forest); }
+.btn--light:hover { background: #d8cead; }
+
+.btn--dark { background: var(--forest); color: #f1eddd; }
+.btn--dark:hover:not(:disabled) { background: var(--forest-hover); }
+.btn--dark:disabled { opacity: 0.65; }
+
+.btn--block { width: 100%; justify-content: center; }
+
+/* Arrow text link */
+.text-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 0;
+  border-bottom: 1px solid currentColor;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  transition: color 0.25s ease;
+}
+.text-link .icon { width: 14px; height: 14px; transition: transform 0.3s ease; }
+.text-link:hover .icon { transform: translate(2px, -2px); }
+
+/* Section heading used by Home and Merch */
+.section-heading { text-align: center; }
+.section-heading h1,
+.section-heading h2 {
+  margin-top: 16px;
+  font-size: clamp(32px, 3.3vw, 50px);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -1.3px;
+  text-transform: uppercase;
+}
+.section-heading > p:last-child {
+  margin-top: 20px;
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--text-subtle);
+}
+
+/* Simple content page (Contact, Legal, Merch) */
+.page-shell {
+  min-height: 70vh;
+  padding: 100px 7% 85px;
+}
+.page-heading {
+  max-width: 720px;
+  margin: 0 auto 60px;
+  text-align: center;
+}
+.page-heading h1 {
+  margin: 20px 0;
+  font-size: clamp(38px, 5vw, 64px);
+  line-height: 1.1;
+  letter-spacing: -2px;
+  text-transform: uppercase;
+}
+.page-heading > p:last-child {
+  font-size: 14px;
+  line-height: 1.9;
+  color: var(--text-subtle);
+}
+
+@media (max-width: 850px) {
+  .page-shell { padding: 85px 5% 60px; }
+}
+@media (max-width: 560px) {
+  .page-heading { margin-bottom: 40px; }
+  .page-heading h1 { font-size: 38px; }
+  .page-heading > p:last-child { font-size: 13px; }
+}
+
+/* Quiet topographic contour lines behind editorial panels ---------------- */
+.topo {
+  position: relative;
+  isolation: isolate;
+}
+.topo::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.07;
+  background: repeating-radial-gradient(ellipse at 96% 14%, transparent 0 17px, #596b53 18px 19px, transparent 20px 34px);
+  mask-image: linear-gradient(90deg, transparent 45%, #000 100%);
+}
+
+/* Spam trap for forms: off-screen so people never see or tab to it. */
+.honeypot {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}

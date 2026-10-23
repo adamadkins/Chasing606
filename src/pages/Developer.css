@@ -1,0 +1,157 @@
+.developer {
+  position: relative;
+  isolation: isolate;
+  min-height: calc(100svh - var(--header-height));
+  padding: 55px 6% 75px;
+  overflow: hidden;
+  background: #111a14;
+  color: #f4f0e4;
+}
+.developer::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 76% 10%, rgb(153 139 99 / 0.13), transparent 51%),
+    repeating-radial-gradient(ellipse at 0% 95%, transparent 0 28px, rgb(179 189 155 / 0.04) 29px 30px, transparent 31px 55px);
+}
+.developer__shell { max-width: 1120px; margin: 0 auto; }
+.developer__back { display: inline-flex; margin-bottom: 29px; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; color: #d5d5c4; }
+.developer__back:hover { color: #e3c896; }
+
+.developer__card {
+  overflow: hidden;
+  border: 1px solid #8d9382;
+  border-radius: 5px;
+  background: #e9e7dd;
+  color: #21291e;
+  box-shadow: 0 32px 90px rgb(0 0 0 / 0.2);
+}
+.developer__card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 18px 30px;
+  border-bottom: 1px solid #d0d0c4;
+}
+.developer__kicker,
+.developer__edition,
+.developer__overline,
+.developer__role,
+.developer__form-kicker { font-size: 10px; font-weight: 700; letter-spacing: 1.6px; }
+.developer__kicker { display: flex; align-items: center; gap: 9px; }
+.developer__kicker span { width: 7px; height: 7px; border-radius: 50%; background: #a37c4b; }
+.developer__edition { font-size: 9px; color: #5d6a58; }
+
+.developer__grid { display: grid; grid-template-columns: minmax(0, 0.93fr) minmax(0, 1.07fr); }
+.developer__intro { padding: clamp(30px, 5vw, 64px) clamp(28px, 5vw, 60px); border-right: 1px solid #d6d6c9; }
+
+.developer__profile {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) clamp(105px, 11vw, 148px);
+  align-items: center;
+  gap: 16px;
+}
+.developer__overline { font-size: 9px; color: #5f7058; }
+.developer h1 {
+  margin: 18px 0;
+  font-size: clamp(39px, 3.65vw, 65px);
+  font-weight: 700;
+  line-height: 0.93;
+  letter-spacing: -1.5px;
+  text-transform: uppercase;
+}
+.developer h1 em { font-style: normal; color: #7f6243; }
+.developer__role { font-size: 9px; line-height: 1.6; color: #485844; }
+.developer__portrait {
+  justify-self: end;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  object-position: center 30%;
+  border: 4px solid #f6f4ec;
+  border-radius: 12px;
+  background: #b5b3b0;
+  box-shadow: 0 12px 30px rgb(23 34 22 / 0.18);
+}
+.developer__lead { max-width: 420px; margin-top: 27px; font-size: 16px; line-height: 1.8; }
+.developer__bio { margin-top: 60px; padding-top: 21px; border-top: 1px solid #c8cabe; }
+.developer__bio span { font-size: 10px; font-weight: 700; letter-spacing: 1.3px; color: #6f7862; }
+.developer__bio p { max-width: 400px; margin-top: 10px; font-size: 13px; line-height: 1.85; color: #566050; }
+
+/* Form */
+.developer__panel { padding: clamp(25px, 4vw, 50px); background: #f7f6ef; }
+.developer__form { display: flex; flex-direction: column; gap: 18px; }
+.developer__form-kicker { color: #66725a; }
+.developer__form h2,
+.developer__success h2 { margin-bottom: 3px; font-size: clamp(25px, 3vw, 34px); font-weight: 700; line-height: 1.18; }
+.developer__row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.developer__form label { display: flex; flex-direction: column; gap: 8px; font-size: 11px; font-weight: 700; letter-spacing: 0.35px; color: #354332; }
+.developer__form :is(input, select, textarea) {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  padding: 12px 13px;
+  border: 1px solid #c9cec1;
+  border-radius: 4px;
+  background: #fff;
+  color: #252f23;
+  font-size: 13px;
+  font-weight: 400;
+}
+.developer__form :is(input, select, textarea):focus-visible { outline: 2px solid #69805d; outline-offset: 1px; }
+.developer__form textarea { resize: vertical; line-height: 1.6; }
+
+.developer__send {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 17px 19px;
+  border: 0;
+  border-radius: 3px;
+  background: #283c2b;
+  color: #f9f7eb;
+  font: 700 11px var(--font);
+  letter-spacing: 1.2px;
+  transition: background 0.18s ease;
+}
+.developer__send:hover:not(:disabled) { background: #456046; }
+.developer__send:disabled { opacity: 0.65; cursor: wait; }
+.developer__send span { font-size: 20px; }
+.developer__note { font-size: 11px; line-height: 1.7; color: #626a5e; }
+.developer__error { font-size: 12px; line-height: 1.6; color: var(--danger); }
+.developer__error a { text-decoration: underline; }
+
+.developer__success { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 18px; height: 100%; min-height: 330px; }
+.developer__success p { font-size: 14px; line-height: 1.8; color: #566652; }
+.developer__success > span { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%; background: #314c34; color: #fff; font-size: 23px; }
+.developer__success button { padding: 15px 19px; border: 0; background: #2a3b2a; color: #fff; }
+.developer__footnote { margin-top: 25px; text-align: center; font-size: 10px; letter-spacing: 0.6px; color: #abb1a5; }
+
+@media (max-width: 850px) {
+  .developer__grid { grid-template-columns: 1fr; }
+  .developer__intro { border-right: 0; border-bottom: 1px solid #d6d6c9; }
+  .developer__profile { grid-template-columns: minmax(0, 1fr) clamp(120px, 22vw, 180px); gap: 22px; }
+  .developer h1 { font-size: clamp(46px, 8vw, 75px); }
+  .developer__bio { margin-top: 30px; }
+  .developer__panel { padding: 30px; }
+}
+
+@media (max-width: 520px) {
+  .developer { padding: 33px 4% 56px; }
+  .developer__card-top { padding: 15px 20px; }
+  .developer__edition { display: none; }
+  .developer__intro { padding: 32px 22px; }
+  .developer__profile { grid-template-columns: minmax(0, 1fr) clamp(96px, 29vw, 128px); gap: 11px; }
+  .developer h1 { margin: 14px 0; font-size: clamp(37px, 10vw, 54px); }
+  .developer__overline { font-size: 8px; letter-spacing: 0.9px; }
+  .developer__role { font-size: 8px; letter-spacing: 0.7px; }
+  .developer__portrait { border-width: 3px; border-radius: 9px; }
+  .developer__lead { font-size: 14px; }
+  .developer__panel { padding: 25px 20px; }
+  .developer__row { grid-template-columns: 1fr; }
+}

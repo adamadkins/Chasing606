@@ -1,0 +1,57 @@
+@font-face {
+  font-family: 'Saira';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/saira-latin-wght-normal.woff2') format('woff2');
+}
+
+:root {
+  --font: 'Saira', Arial, sans-serif;
+
+  /* Dark greens: header, footer, dark sections */
+  --ink: #181d16;
+  --ink-soft: #20251b;
+  --forest: #303b2b;
+  --forest-hover: #49543c;
+  --forest-deep: #242c21;
+
+  /* Light surfaces */
+  --paper: #f8f7f2;
+  --paper-warm: #f3f1e8;
+  --sand: #edeae0;
+  --sand-deep: #e9e8df;
+  --cream: #ede8dc;
+  --line: #dcded3;
+  --line-strong: #c9cdbd;
+
+  /* Accents */
+  --gold: #c2ad84;
+  --gold-soft: #d9cc9e;
+  --bronze: #8c6847;
+  --bronze-ink: #7a5a3c; /* bronze for small text on cream */
+  --amber: #b98a58;
+
+  /* Text on light / on dark */
+  --text: #292d25;
+  --text-strong: #1a2016;
+  --text-muted: #565e4c;
+  --text-subtle: #5c6651;
+  --on-dark: #f3efdf;
+  --on-dark-muted: #b8bea9;
+
+  --danger: #993b2e;
+
+  --header-height: 94px;
+  --radius: 4px;
+  --shadow-lg: 0 25px 80px rgb(0 0 0 / 0.45);
+  --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+@media (max-width: 850px) {
+  :root { --header-height: 82px; }
+}
+
+@media (max-width: 560px) {
+  :root { --header-height: 76px; }
+}

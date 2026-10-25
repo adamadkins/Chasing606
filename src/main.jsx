@@ -409,7 +409,7 @@ function App() {
           </div>
           <div className="footer-copyright">
             <span>© {new Date().getFullYear()} Chasing 606</span>
-            <a className="footer-developer-credit" href="/behind-the-build">Website Designed &amp; Developed by Adam Adkins</a>
+            <a className="footer-developer-credit" href="https://tlt-studios.com/" target="_blank" rel="noopener noreferrer">Built by The Little Things Studios</a>
           </div>
         </div>
       </footer>
